@@ -21,9 +21,9 @@ except Exception as exc:  # pragma: no cover
 
 
 INPUT_CSV = "kompass_regionalliga_4x20.csv"
-INPUT_CSV_MATRIX = "kompass_regionalliga_4x20_matrix.csv"
+INPUT_CSV_ALT = "kompass_regionalliga_4x20_centroid.csv"
 MAP_HTML = "kompass_regionalliga_4x20_map.html"
-MAP_HTML_MATRIX = "kompass_regionalliga_4x20_map_matrix.html"
+MAP_HTML_ALT = "kompass_regionalliga_4x20_map_centroid.html"
 MAP_COMPARE_HTML = "kompass_regionalliga_compare.html"
 CLUB_METRICS_CSV = "kompass_away_metrics_per_club.csv"
 LEAGUE_METRICS_CSV = "kompass_away_metrics_per_league.csv"
@@ -806,7 +806,13 @@ def print_summary(club_df: pd.DataFrame, league_df: pd.DataFrame, trips_df: pd.D
         )
 
 
-def create_compare_html(left_map: str, right_map: str, out_html: str) -> None:
+def create_compare_html(
+    left_map: str,
+    right_map: str,
+    out_html: str,
+    left_title: str = "Hauptkarte",
+    right_title: str = "Vergleich",
+) -> None:
     html = f"""<!doctype html>
 <html lang="de">
 <head>
@@ -823,11 +829,11 @@ def create_compare_html(left_map: str, right_map: str, out_html: str) -> None:
 <body>
   <div class="grid">
     <div class="pane">
-      <div class="head">Centroid-Optimierung</div>
+      <div class="head">{left_title}</div>
       <iframe src="{left_map}"></iframe>
     </div>
     <div class="pane">
-      <div class="head">Distanzmatrix-Optimierung</div>
+      <div class="head">{right_title}</div>
       <iframe src="{right_map}"></iframe>
     </div>
   </div>
@@ -850,7 +856,7 @@ def main() -> None:
     transitions = load_transitions(TRANSITIONS_JSON)
 
     changed: Dict[str, Tuple[str, str]] = {}
-    in_alt = Path(INPUT_CSV_MATRIX)
+    in_alt = Path(INPUT_CSV_ALT)
     if in_alt.exists():
         tmp_alt = pd.read_csv(in_alt)
         for col in ("Liga", "Verein"):
@@ -863,9 +869,7 @@ def main() -> None:
                 changed[team] = (liga_std, liga_alt)
 
     df_map, map_coord_stats = resolve_map_coordinates(df)
-    unresolved_overlay = build_map(
-        df_map, MAP_HTML, transitions, changed_teams=changed, variant="std"
-    )
+    unresolved_overlay = build_map(df_map, MAP_HTML, transitions, changed_teams=changed, variant="matrix")
     df_map.to_csv(MAP_COORDS_CSV, index=False, encoding="utf-8")
     missing_df = df_map[df_map["coord_source"] == "club_fallback"][["Liga", "Verein"]].copy()
     missing_df.to_csv(STADIUM_MISSING_CSV, index=False, encoding="utf-8")
@@ -898,7 +902,7 @@ def main() -> None:
     print(f"Pro Liga: {LEAGUE_METRICS_CSV}")
     print(f"Laengste Reisen (Top 100): {LONGEST_TRIPS_CSV}")
 
-    # Optionale zweite Karte aus Distanzmatrix-CSV + Vergleichs-HTML
+    # Optionale zweite Karte aus Vergleichs-CSV + Vergleichs-HTML
     if in_alt.exists():
         df_alt = pd.read_csv(in_alt)
         for col in ("Liga", "Verein"):
@@ -906,9 +910,15 @@ def main() -> None:
         df_alt["lat"] = pd.to_numeric(df_alt["lat"], errors="raise")
         df_alt["lon"] = pd.to_numeric(df_alt["lon"], errors="raise")
         df_alt_map, _ = resolve_map_coordinates(df_alt)
-        build_map(df_alt_map, MAP_HTML_MATRIX, transitions, changed_teams=changed, variant="matrix")
-        create_compare_html(MAP_HTML, MAP_HTML_MATRIX, MAP_COMPARE_HTML)
-        print(f"Karte (Distanzmatrix): {MAP_HTML_MATRIX}")
+        build_map(df_alt_map, MAP_HTML_ALT, transitions, changed_teams=changed, variant="centroid")
+        create_compare_html(
+            MAP_HTML,
+            MAP_HTML_ALT,
+            MAP_COMPARE_HTML,
+            left_title="Distanzmatrix-Optimierung (Hauptkarte)",
+            right_title="Centroid-Optimierung (Vergleich)",
+        )
+        print(f"Karte (Centroid-Vergleich): {MAP_HTML_ALT}")
         print(f"Kartenvergleich: {MAP_COMPARE_HTML}")
         print(f"Sichtbare Unterschiede markiert: {len(changed)}")
 

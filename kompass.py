@@ -111,6 +111,7 @@ ADDED_TEAMS_LOG_FILE = "added_teams.log"
 SEASON_TRANSITIONS_FILE = "season_transitions.json"
 OUT_CSV_DEFAULT = "kompass_regionalliga_4x20.csv"
 OUT_CSV_MATRIX = "kompass_regionalliga_4x20_matrix.csv"
+OUT_CSV_CENTROID = "kompass_regionalliga_4x20_centroid.csv"
 WIKIPEDIA_API = "https://de.wikipedia.org/w/api.php"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 USER_AGENT = "CompassRegionalligaBot/1.0 (your_email_or_github_here)"
@@ -1879,8 +1880,6 @@ def main() -> None:
         df.to_csv(out_csv, index=False, encoding="utf-8")
         print(f"\nCSV geschrieben: {out_csv}")
 
-    export_solution(labels, OUT_CSV_DEFAULT, "4 Kompass-Ligen (Centroid-Optimierung)")
-
     if ENABLE_DISTANCE_MATRIX_VARIANT:
         dist_matrix = compute_distance_matrix_km(clubs)
         if ENFORCE_DERBY_SAME_LEAGUE:
@@ -1924,7 +1923,11 @@ def main() -> None:
         print(
             f"Durchschnitt Auswaertsdistanz pro Verein: {avg_base:.2f} -> {avg_alt:.2f} km"
         )
+        export_solution(labels_matrix, OUT_CSV_DEFAULT, "4 Kompass-Ligen (Distanzmatrix-Optimierung, Hauptausgabe)")
         export_solution(labels_matrix, OUT_CSV_MATRIX, "4 Kompass-Ligen (Distanzmatrix-Optimierung)")
+        export_solution(labels, OUT_CSV_CENTROID, "4 Kompass-Ligen (Centroid-Optimierung, Vergleich)")
+    else:
+        export_solution(labels, OUT_CSV_DEFAULT, "4 Kompass-Ligen (Centroid-Optimierung)")
 
 
 if __name__ == "__main__":

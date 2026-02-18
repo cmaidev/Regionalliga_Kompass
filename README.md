@@ -1,6 +1,6 @@
 # Kompass-Regionalliga 4x20
 
-Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis einer saisonalen Reformlogik. Dazu werden Teamdaten gesammelt, Koordinaten ermittelt, Vereine auf vier Ligen verteilt und die Ergebnisse als CSV sowie Kartenansichten ausgegeben.
+Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis einer saisonalen Reformlogik. Teamdaten werden gesammelt, Koordinaten ermittelt, Vereine auf vier Ligen verteilt und die Ergebnisse als CSV sowie Kartenansichten ausgegeben.
 
 ## Projektziel
 - 80 Vereine in vier Regionalligen mit je 20 Teams zusammenstellen
@@ -16,6 +16,12 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
   - 2 Zusatzplätze (aktuell Bayern + Nordost)
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
 - Quellenpriorität: `FuPa -> Wikipedia`
+
+## Optimierungsmodus (aktuell)
+- Hauptausgabe ist die **Distanzmatrix-Optimierung**.
+- `kompass_regionalliga_4x20.csv` enthält die Hauptlösung (Distanzmatrix).
+- `kompass_regionalliga_4x20_matrix.csv` enthält ebenfalls die Distanzmatrix-Lösung (Kompatibilität).
+- `kompass_regionalliga_4x20_centroid.csv` enthält die Centroid-Lösung als Vergleich.
 
 ## Wichtige Dateien
 - `kompass.py`: Datenbeschaffung, Saisonlogik, Clustering, CSV-Export
@@ -33,7 +39,6 @@ python kompass_report.py
 ```
 
 ## GitHub Pages
-
 `https://cmaidev.github.io/Regionalliga_Kompass/`
 
 ## Credits

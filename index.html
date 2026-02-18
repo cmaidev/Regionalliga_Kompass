@@ -80,6 +80,11 @@
       margin-bottom: 4px;
       color: var(--muted);
     }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
     .clubs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -131,11 +136,11 @@
 <body>
   <main>
     <h1>Kompass-Regionalliga 4x20</h1>
-    <p>Interaktive Hauptkarte mit Datenstand, Auswahlregeln und Vereinsübersicht.</p>
+    <p>Interaktive Hauptkarte auf Basis der Distanzmatrix-Optimierung mit Datenstand, Auswahlregeln, Statistiken und Vereinsübersicht.</p>
     <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
 
     <section class="card">
-      <h2>Hauptkarte</h2>
+      <h2>Hauptkarte (Distanzmatrix-Optimierung)</h2>
       <p>Falls die Einbettung nicht lädt, öffne die Karte direkt: <a href="kompass_regionalliga_4x20_map.html">kompass_regionalliga_4x20_map.html</a>.</p>
       <iframe class="map-frame" src="kompass_regionalliga_4x20_map.html" title="Kompass-Regionalliga Hauptkarte"></iframe>
     </section>
@@ -158,7 +163,50 @@
         <li>Hinzu kommen 14 Oberliga-Meister.</li>
         <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
         <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
+        <li>Die Ligazuteilung der Hauptkarte erfolgt über Distanzmatrix-Optimierung.</li>
       </ul>
+    </section>
+
+    <section>
+      <h2>Statistiken</h2>
+      <div class="stats-grid">
+        <div class="card">
+          <h3>Gesamt</h3>
+          <table class="league-table">
+            <tbody>
+              <tr><th>Kennzahl</th><th>Wert</th></tr>
+              <tr><td>Durchschnitt pro Team</td><td>146.83 km</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Pro Liga</h3>
+          <table class="league-table">
+            <thead><tr><th>Liga</th><th>Ø Distanz</th><th>Längste Reise</th></tr></thead>
+            <tbody>
+              <tr><td>Nord</td><td>134.54 km</td><td>SC Paderborn 07 -> SC Weiche Flensburg 08 (339.99 km)</td></tr>
+              <tr><td>West</td><td>124.33 km</td><td>1. FC Bocholt -> FK Pirmasens (303.40 km)</td></tr>
+              <tr><td>Ost</td><td>180.27 km</td><td>1. FC Schweinfurt 05 -> Greifswalder FC (499.80 km)</td></tr>
+              <tr><td>Süd</td><td>148.18 km</td><td>VfR Mannheim -> Wacker Burghausen (351.77 km)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Top 5 längste Reisen (gesamt)</h3>
+          <table class="league-table">
+            <thead><tr><th>#</th><th>Route</th><th>Distanz</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1. FC Schweinfurt 05 -> Greifswalder FC</td><td>499.80 km</td></tr>
+              <tr><td>2</td><td>SpVgg Bayreuth -> Greifswalder FC</td><td>479.52 km</td></tr>
+              <tr><td>3</td><td>SG Barockstadt Fulda-Lehnerz -> Greifswalder FC</td><td>467.70 km</td></tr>
+              <tr><td>4</td><td>Greifswalder FC -> KSV Hessen Kassel</td><td>408.20 km</td></tr>
+              <tr><td>5</td><td>Greifswalder FC -> FC Erzgebirge Aue</td><td>392.80 km</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section>
@@ -170,7 +218,7 @@
             <thead><tr><th>#</th><th>Verein</th></tr></thead>
             <tbody>
               <tr><td>1</td><td>1. FC Germania Egestorf/Langreder</td></tr>
-              <tr><td>2</td><td>1. FC Phoenix Lübeck</td></tr>
+              <tr><td>2</td><td>1. FC Phönix Lübeck</td></tr>
               <tr><td>3</td><td>Bremer SV</td></tr>
               <tr><td>4</td><td>ETSV Hamburg</td></tr>
               <tr><td>5</td><td>FC Gütersloh</td></tr>
