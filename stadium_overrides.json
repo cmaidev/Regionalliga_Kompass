@@ -1,0 +1,86 @@
+﻿{
+  "SC Fortuna Köln": {
+    "lat": 50.92245,
+    "lon": 6.97423,
+    "stadium": "Südstadion",
+    "source_url": "https://de.wikipedia.org/wiki/S%C3%BCdstadion_(K%C3%B6ln)"
+  },
+  "FC 08 Homburg": {
+    "lat": 49.32307,
+    "lon": 7.35514,
+    "stadium": "Waldstadion Homburg",
+    "source_url": "https://de.wikipedia.org/wiki/Waldstadion_Homburg"
+  },
+  "FC Gütersloh": {
+    "lat": 51.891765,
+    "lon": 8.388059,
+    "stadium": "Heidewaldstadion",
+    "source_url": "https://de.wikipedia.org/wiki/Heidewaldstadion"
+  },
+  "SV Todesfelde": {
+    "lat": 53.883333333333,
+    "lon": 10.166666666667,
+    "stadium": "JODA Sportpark",
+    "source_url": "https://de.wikipedia.org/wiki/SV_Todesfelde"
+  },
+  "TV Eiche Horn": {
+    "lat": 53.0965913,
+    "lon": 8.8838672,
+    "stadium": "BSA Fritzewiese",
+    "source_url": "https://de.wikipedia.org/wiki/TV_Eiche_Horn"
+  },
+  "SpVgg Ansbach 09": {
+    "lat": 49.3,
+    "lon": 10.583333333333334,
+    "stadium": "Xaver-Bertsch-Sportpark",
+    "source_url": "https://de.wikipedia.org/wiki/SpVgg_Ansbach"
+  },
+  "TSV Aubstadt": {
+    "lat": 49.07861111111111,
+    "lon": 11.385555555555555,
+    "stadium": "NGN-Arena",
+    "source_url": "https://de.wikipedia.org/wiki/TSV_Aubstadt"
+  },
+  "Ratingen 04/19": {
+    "lat": 51.3,
+    "lon": 6.85,
+    "stadium": "Stadion Ratingen",
+    "source_url": "https://de.wikipedia.org/wiki/Ratingen_04/19"
+  },
+  "Rot-Weiß Oberhausen": {
+    "lat": 51.493611,
+    "lon": 6.854444,
+    "stadium": "Stadion Niederrhein",
+    "source_url": "https://de.wikipedia.org/wiki/Stadion_Niederrhein"
+  },
+  "SG Wattenscheid 09": {
+    "lat": 51.48555556,
+    "lon": 7.11861111,
+    "stadium": "Lohrheidestadion",
+    "source_url": "https://de.wikipedia.org/wiki/Lohrheidestadion"
+  },
+  "SV Bergisch Gladbach 09": {
+    "lat": 50.99394968,
+    "lon": 7.11969316,
+    "stadium": "BELKAW-Arena",
+    "source_url": "https://de.wikipedia.org/wiki/BELKAW-Arena"
+  },
+  "SV Eintracht Trier": {
+    "lat": 49.76805556,
+    "lon": 6.64777778,
+    "stadium": "Moselstadion",
+    "source_url": "https://de.wikipedia.org/wiki/Moselstadion"
+  },
+  "Sportfreunde Siegen": {
+    "lat": 50.85222222,
+    "lon": 8.02611111,
+    "stadium": "Leimbachstadion",
+    "source_url": "https://de.wikipedia.org/wiki/Leimbachstadion"
+  },
+  "TSV Steinbach Haiger": {
+    "lat": 50.7752801,
+    "lon": 8.2129059,
+    "stadium": "SIBRE-Sportzentrum Haarwasen",
+    "source_url": "https://de.wikipedia.org/wiki/TSV_Steinbach_Haiger"
+  }
+}

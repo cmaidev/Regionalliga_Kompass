@@ -1,0 +1,70 @@
+{
+  "promoted_to_3liga": [
+    "1. FC Lokomotive Leipzig",
+    "1. FC Nürnberg",
+    "SC Fortuna Köln",
+    "SGV Freiberg",
+    "SV Meppen"
+  ],
+  "promoted_to_3liga_league": {
+    "SV Meppen": "Nord",
+    "1. FC Lokomotive Leipzig": "Nordost",
+    "SC Fortuna Köln": "West",
+    "1. FC Nürnberg": "Bayern",
+    "SGV Freiberg": "Südwest"
+  },
+  "relegated_from_regionalliga": [
+    "Altona 93",
+    "BFC Dynamo",
+    "BSG Chemie Leipzig",
+    "Bahlinger SC",
+    "Bayern Alzenau",
+    "FC Augsburg",
+    "FC Eilenburg",
+    "FC Eintracht Norderstedt",
+    "FC Hertha 03 Zehlendorf",
+    "FC St. Pauli",
+    "FSV Schöningen",
+    "Greifswalder FC",
+    "SC Freiburg",
+    "SC Wiedenbrück",
+    "SSVg Velbert",
+    "SV Rödinghausen",
+    "SpVgg Greuther Fürth",
+    "SpVgg Hankofen-Hailing",
+    "TSG Balingen",
+    "TSV Schott Mainz",
+    "TSV Schwaben Augsburg",
+    "TuS Blau-Weiß Lohne",
+    "VfL Bochum",
+    "Viktoria Aschaffenburg",
+    "Wuppertaler SV"
+  ],
+  "relegated_from_3liga": [
+    "1. FC Schweinfurt 05",
+    "FC Erzgebirge Aue",
+    "SSV Ulm 1846",
+    "TSV Havelse"
+  ],
+  "promoted_from_oberliga": [
+    "1. FC Germania Egestorf/Langreder",
+    "SV Todesfelde",
+    "ETSV Hamburg",
+    "TV Eiche Horn",
+    "SG Wattenscheid 09",
+    "Ratingen 04/19",
+    "SV Bergisch Gladbach 09",
+    "SV Tasmania Berlin",
+    "BSV Eintracht Mahlsdorf",
+    "VfR Mannheim",
+    "FC Eddersheim",
+    "FK Pirmasens",
+    "ASV Neumarkt",
+    "TSV Landsberg"
+  ],
+  "reform_rule": "12+4+14+2",
+  "extra_startplaces": {
+    "Bayern": 1,
+    "Nordost": 1
+  }
+}
