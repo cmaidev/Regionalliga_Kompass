@@ -556,7 +556,12 @@ def build_map(
     }
     center_lat = float(df["lat"].mean())
     center_lon = float(df["lon"].mean())
-    m = folium.Map(location=[center_lat, center_lon], zoom_start=6, tiles="CartoDB positron")
+    m = folium.Map(location=[center_lat, center_lon], zoom_start=6, tiles=None)
+    folium.TileLayer(
+        tiles="https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        name="OpenStreetMap DE",
+    ).add_to(m)
     by_csv_liga = {
         normalize_text(row["Verein"]): normalize_text(row["Liga"])
         for _, row in df.iterrows()

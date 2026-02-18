@@ -33,13 +33,8 @@ python kompass_report.py
 ```
 
 ## GitHub Pages
-Für die Webansicht (Startseite + Hauptkarte):
-1. `Settings -> Pages`
-2. `Source: Deploy from a branch`
-3. `Branch: main`, Ordner `/ (root)`
-4. Speichern
 
-Danach ist die Seite unter `https://<username>.github.io/<repo>/` erreichbar.
+`https://cmaidev.github.io/Regionalliga_Kompass/`
 
 ## Credits
 Dieses Projekt wurde mit Hilfe von **GPT-5.3-Codex** erstellt und weiterentwickelt.
