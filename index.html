@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kompass-Regionalliga 4x20</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #17212b;
+      --muted: #4f5f72;
+      --accent: #0b6fd9;
+      --border: #dbe3ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 0%, #e9f2ff 0%, var(--bg) 45%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+    }
+    p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    a.card {
+      display: block;
+      text-decoration: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      color: inherit;
+      transition: transform 120ms ease, border-color 120ms ease;
+    }
+    a.card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .title {
+      margin: 0 0 4px;
+      font-weight: 600;
+    }
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .note {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kompass-Regionalliga 4x20</h1>
+    <p>Interaktive Karten und Vergleichsansicht.</p>
+
+    <div class="grid">
+      <a class="card" href="kompass_regionalliga_4x20_map.html">
+        <p class="title">Hauptkarte</p>
+        <p class="desc">Visualisierung der Hauptlösung.</p>
+      </a>
+      <a class="card" href="kompass_regionalliga_4x20_map_matrix.html">
+        <p class="title">Matrix-Karte</p>
+        <p class="desc">Visualisierung der Matrix-Variante.</p>
+      </a>
+      <a class="card" href="kompass_regionalliga_compare.html">
+        <p class="title">Vergleichsansicht</p>
+        <p class="desc">Direkter Vergleich beider Varianten.</p>
+      </a>
+    </div>
+
+    <p class="note">
+      Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
+    </p>
+  </main>
+</body>
+</html>
