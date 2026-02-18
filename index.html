@@ -6,64 +6,112 @@
   <title>Kompass-Regionalliga 4x20</title>
   <style>
     :root {
-      --bg: #f4f6fb;
+      --bg: #f6f7fb;
       --card: #ffffff;
-      --text: #17212b;
-      --muted: #4f5f72;
-      --accent: #0b6fd9;
-      --border: #dbe3ec;
+      --text: #1c2530;
+      --muted: #536375;
+      --accent: #005ecb;
+      --border: #d9e1eb;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      background: radial-gradient(circle at 20% 0%, #e9f2ff 0%, var(--bg) 45%);
+      background: radial-gradient(circle at 10% 0%, #e9f2ff 0%, var(--bg) 38%);
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.45;
     }
     main {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 28px 16px 40px;
+      padding: 24px 16px 36px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
     }
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-size: clamp(1.7rem, 3.2vw, 2.2rem);
+    }
+    h2 {
+      margin-top: 22px;
+      font-size: 1.25rem;
     }
     p {
-      margin: 0 0 18px;
+      margin: 0 0 14px;
       color: var(--muted);
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 12px;
-    }
-    a.card {
-      display: block;
-      text-decoration: none;
+    .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 14px;
-      color: inherit;
-      transition: transform 120ms ease, border-color 120ms ease;
+      margin-bottom: 14px;
     }
-    a.card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
+    .map-frame {
+      width: 100%;
+      min-height: 70vh;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
     }
-    .title {
-      margin: 0 0 4px;
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .meta div {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--muted);
+    }
+    .meta strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .selection ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .selection li {
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .league-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    .league-table th,
+    .league-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 6px 4px;
+      text-align: left;
+      color: var(--muted);
+      vertical-align: top;
+    }
+    .league-table th {
+      color: var(--text);
       font-weight: 600;
     }
-    .desc {
-      margin: 0;
-      color: var(--muted);
+    .league-table td:first-child,
+    .league-table th:first-child {
+      width: 34px;
+    }
+    .repo-link {
+      margin-top: 8px;
       font-size: 0.95rem;
     }
     .note {
-      margin-top: 20px;
+      margin-top: 18px;
       padding: 12px;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -71,31 +119,185 @@
       color: var(--muted);
       font-size: 0.95rem;
     }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>Kompass-Regionalliga 4x20</h1>
-    <p>Interaktive Karten und Vergleichsansicht.</p>
+    <p>Interaktive Hauptkarte mit Datenstand, Auswahlregeln und Vereinsübersicht.</p>
+    <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
 
-    <div class="grid">
-      <a class="card" href="kompass_regionalliga_4x20_map.html">
-        <p class="title">Hauptkarte</p>
-        <p class="desc">Visualisierung der Hauptlösung.</p>
-      </a>
-      <a class="card" href="kompass_regionalliga_4x20_map_matrix.html">
-        <p class="title">Matrix-Karte</p>
-        <p class="desc">Visualisierung der Matrix-Variante.</p>
-      </a>
-      <a class="card" href="kompass_regionalliga_compare.html">
-        <p class="title">Vergleichsansicht</p>
-        <p class="desc">Direkter Vergleich beider Varianten.</p>
-      </a>
-    </div>
+    <section class="card">
+      <h2>Hauptkarte</h2>
+      <p>Falls die Einbettung nicht lädt, öffne die Karte direkt: <a href="kompass_regionalliga_4x20_map.html">kompass_regionalliga_4x20_map.html</a>.</p>
+      <iframe class="map-frame" src="kompass_regionalliga_4x20_map.html" title="Kompass-Regionalliga Hauptkarte"></iframe>
+    </section>
+
+    <section>
+      <h2>Datenstand</h2>
+      <div class="meta">
+        <div><strong>Letzter Lauf</strong>2026-02-18 14:08:56</div>
+        <div><strong>Modus</strong>Reformregel 12+4+14+2</div>
+        <div><strong>Derby-Regel</strong>Deaktiviert (`ENFORCE_DERBY_SAME_LEAGUE = False`)</div>
+        <div><strong>Quellen-Priorität</strong>FuPa -> Wikipedia</div>
+      </div>
+    </section>
+
+    <section class="selection">
+      <h2>Wie die Auswahl erfolgt</h2>
+      <ul>
+        <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
+        <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
+        <li>Hinzu kommen 14 Oberliga-Meister.</li>
+        <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
+        <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Vereinsliste (Haupt-CSV)</h2>
+      <div class="clubs-grid">
+        <div class="card">
+          <h3>Nord</h3>
+          <table class="league-table">
+            <thead><tr><th>#</th><th>Verein</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1. FC Germania Egestorf/Langreder</td></tr>
+              <tr><td>2</td><td>1. FC Phoenix Lübeck</td></tr>
+              <tr><td>3</td><td>Bremer SV</td></tr>
+              <tr><td>4</td><td>ETSV Hamburg</td></tr>
+              <tr><td>5</td><td>FC Gütersloh</td></tr>
+              <tr><td>6</td><td>Hamburger SV</td></tr>
+              <tr><td>7</td><td>Hannover 96</td></tr>
+              <tr><td>8</td><td>HSC Hannover</td></tr>
+              <tr><td>9</td><td>Kickers Emden</td></tr>
+              <tr><td>10</td><td>SC Paderborn 07</td></tr>
+              <tr><td>11</td><td>SC Weiche Flensburg 08</td></tr>
+              <tr><td>12</td><td>Sportfreunde Lotte</td></tr>
+              <tr><td>13</td><td>SSV Jeddeloh</td></tr>
+              <tr><td>14</td><td>SV Drochtersen/Assel</td></tr>
+              <tr><td>15</td><td>SV Todesfelde</td></tr>
+              <tr><td>16</td><td>SV Werder Bremen</td></tr>
+              <tr><td>17</td><td>TSV Havelse</td></tr>
+              <tr><td>18</td><td>TV Eiche Horn</td></tr>
+              <tr><td>19</td><td>VfB Lübeck</td></tr>
+              <tr><td>20</td><td>VfB Oldenburg</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>West</h3>
+          <table class="league-table">
+            <thead><tr><th>#</th><th>Verein</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1. FC Bocholt</td></tr>
+              <tr><td>2</td><td>1. FC Köln</td></tr>
+              <tr><td>3</td><td>Bonner SC</td></tr>
+              <tr><td>4</td><td>Borussia Dortmund</td></tr>
+              <tr><td>5</td><td>Borussia Mönchengladbach</td></tr>
+              <tr><td>6</td><td>FC 08 Homburg</td></tr>
+              <tr><td>7</td><td>FC Eddersheim</td></tr>
+              <tr><td>8</td><td>FC Schalke 04</td></tr>
+              <tr><td>9</td><td>FK Pirmasens</td></tr>
+              <tr><td>10</td><td>Fortuna Düsseldorf</td></tr>
+              <tr><td>11</td><td>FSV Frankfurt</td></tr>
+              <tr><td>12</td><td>FSV Mainz 05</td></tr>
+              <tr><td>13</td><td>Kickers Offenbach</td></tr>
+              <tr><td>14</td><td>Ratingen 04/19</td></tr>
+              <tr><td>15</td><td>Rot-Weiss Oberhausen</td></tr>
+              <tr><td>16</td><td>SG Wattenscheid 09</td></tr>
+              <tr><td>17</td><td>Sportfreunde Siegen</td></tr>
+              <tr><td>18</td><td>SV Bergisch Gladbach 09</td></tr>
+              <tr><td>19</td><td>SV Eintracht Trier</td></tr>
+              <tr><td>20</td><td>TSV Steinbach Haiger</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Ost</h3>
+          <table class="league-table">
+            <thead><tr><th>#</th><th>Verein</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1. FC Magdeburg</td></tr>
+              <tr><td>2</td><td>1. FC Schweinfurt 05</td></tr>
+              <tr><td>3</td><td>BFC Preußen</td></tr>
+              <tr><td>4</td><td>BSV Eintracht Mahlsdorf</td></tr>
+              <tr><td>5</td><td>Chemnitzer FC</td></tr>
+              <tr><td>6</td><td>FC Carl Zeiss Jena</td></tr>
+              <tr><td>7</td><td>FC Erzgebirge Aue</td></tr>
+              <tr><td>8</td><td>FC Rot-Weiss Erfurt</td></tr>
+              <tr><td>9</td><td>FSV 63 Luckenwalde</td></tr>
+              <tr><td>10</td><td>FSV Zwickau</td></tr>
+              <tr><td>11</td><td>Greifswalder FC</td></tr>
+              <tr><td>12</td><td>Hallescher FC</td></tr>
+              <tr><td>13</td><td>Hertha BSC</td></tr>
+              <tr><td>14</td><td>KSV Hessen Kassel</td></tr>
+              <tr><td>15</td><td>SG Barockstadt Fulda-Lehnerz</td></tr>
+              <tr><td>16</td><td>SpVgg Bayreuth</td></tr>
+              <tr><td>17</td><td>SV Babelsberg 03</td></tr>
+              <tr><td>18</td><td>SV Tasmania Berlin</td></tr>
+              <tr><td>19</td><td>VSG Altglienicke</td></tr>
+              <tr><td>20</td><td>ZFC Meuselwitz</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Süd</h3>
+          <table class="league-table">
+            <thead><tr><th>#</th><th>Verein</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>ASV Neumarkt</td></tr>
+              <tr><td>2</td><td>DJK Vilzing</td></tr>
+              <tr><td>3</td><td>FC Bayern München</td></tr>
+              <tr><td>4</td><td>FC Memmingen</td></tr>
+              <tr><td>5</td><td>FC-Astoria Walldorf</td></tr>
+              <tr><td>6</td><td>FV Illertissen</td></tr>
+              <tr><td>7</td><td>SG Sonnenhof Großaspach</td></tr>
+              <tr><td>8</td><td>SpVgg Ansbach 09</td></tr>
+              <tr><td>9</td><td>SpVgg Greuther Fürth</td></tr>
+              <tr><td>10</td><td>SpVgg Unterhaching</td></tr>
+              <tr><td>11</td><td>SSV Ulm 1846</td></tr>
+              <tr><td>12</td><td>Stuttgarter Kickers</td></tr>
+              <tr><td>13</td><td>SV Sandhausen</td></tr>
+              <tr><td>14</td><td>TSV Aubstadt</td></tr>
+              <tr><td>15</td><td>TSV Buchbach</td></tr>
+              <tr><td>16</td><td>TSV Landsberg</td></tr>
+              <tr><td>17</td><td>VfB Eichstätt</td></tr>
+              <tr><td>18</td><td>VfR Mannheim</td></tr>
+              <tr><td>19</td><td>Wacker Burghausen</td></tr>
+              <tr><td>20</td><td>Würzburger Kickers</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
     <p class="note">
       Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
     </p>
   </main>
+
+  <script>
+    (function () {
+      var link = document.getElementById("repo-link");
+      var host = window.location.hostname;
+      if (!link || !host.endsWith("github.io")) return;
+      var user = host.replace(".github.io", "");
+      var repo = window.location.pathname.split("/").filter(Boolean)[0];
+      if (!user || !repo) return;
+      link.href = "https://github.com/" + user + "/" + repo;
+      link.hidden = false;
+    })();
+  </script>
 </body>
 </html>
