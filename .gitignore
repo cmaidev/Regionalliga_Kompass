@@ -48,6 +48,11 @@ stadium_coords_snapshot.json
 # Optional local/debug artifacts
 added_teams.log
 
+# GitHub Pages docs artifacts
+!/docs/
+!/docs/*.html
+!/docs/.nojekyll
+
 # Keep these tracked (do NOT ignore):
 # - kompass.py
 # - kompass_report.py
