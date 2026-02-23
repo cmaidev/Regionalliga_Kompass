@@ -146,6 +146,12 @@ python kompass_report.py
 ```
 
 ## GitHub Pages
+Die Ausgabe fuer GitHub Pages wird aus `docs/` bereitgestellt (Repository-Settings: Branch `main`, Folder `/docs`).
+
+`python kompass_report.py` erstellt weiter alle HTML-Dateien in `outputs/html/` und synchronisiert diese danach automatisch nach `docs/` (inkl. `.nojekyll`).
+
+Wichtig: Fuer eine aktuelle Pages-Seite nach jedem Lauf auch die geaenderten `docs/*.html` committen.
+
 https://cmaidev.github.io/Regionalliga_Kompass/
 
 ## Credits

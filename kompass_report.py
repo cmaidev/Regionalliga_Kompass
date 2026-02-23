@@ -3,6 +3,7 @@
 import json
 import math
 import re
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -24,6 +25,7 @@ OUTPUT_DIR = Path("outputs")
 OUTPUT_CSV_DIR = OUTPUT_DIR / "csv"
 OUTPUT_HTML_DIR = OUTPUT_DIR / "html"
 OUTPUT_JSON_DIR = OUTPUT_DIR / "json"
+PAGES_DOCS_DIR = Path("docs")
 INPUT_CSV = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20.csv")
 INPUT_CSV_INITIAL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_initial.csv")
 INPUT_CSV_INITIAL_AUTO = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_initial_auto.csv")
@@ -95,6 +97,22 @@ def ensure_parent_dir(path: str) -> None:
 
 def html_asset_name(path: str) -> str:
     return Path(path).name
+
+
+def sync_pages_docs(source_dir: Path, docs_dir: Path) -> int:
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    source_files = sorted(source_dir.glob("*.html"))
+    source_names = {p.name for p in source_files}
+
+    for docs_html in docs_dir.glob("*.html"):
+        if docs_html.name not in source_names:
+            docs_html.unlink()
+
+    for src in source_files:
+        shutil.copy2(src, docs_dir / src.name)
+
+    (docs_dir / ".nojekyll").write_text("", encoding="utf-8")
+    return len(source_files)
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -1795,6 +1813,7 @@ def main() -> None:
         "compare_links": compare_links,
     }
     create_index_html(page_data, INDEX_HTML)
+    docs_count = sync_pages_docs(OUTPUT_HTML_DIR, PAGES_DOCS_DIR)
 
     print()
     print(f"Karte: {MAP_HTML}")
@@ -1811,6 +1830,7 @@ def main() -> None:
     print(f"Pro Liga: {LEAGUE_METRICS_CSV}")
     print(f"Laengste Reisen (Top 100): {LONGEST_TRIPS_CSV}")
     print(f"Index: {INDEX_HTML}")
+    print(f"GitHub Pages (/docs): {PAGES_DOCS_DIR} ({docs_count} HTML-Dateien)")
 
 
 if __name__ == "__main__":
