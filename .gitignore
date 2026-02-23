@@ -27,8 +27,11 @@ club_coords_cache.json
 stadium_coords_cache.json
 
 # Generated outputs (rebuild with python kompass.py + python kompass_report.py)
-outputs/
-index.html
+/outputs/*
+!/outputs/html/
+/outputs/html/*
+!/outputs/html/index.html
+/index.html
 kompass_regionalliga_4x20*.csv
 kompass_regionalliga_4x20*.html
 kompass_regionalliga_compare*.html

@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kompass-Regionalliga 4x20</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1c2530;
+      --muted: #536375;
+      --accent: #005ecb;
+      --border: #d9e1eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: radial-gradient(circle at 10% 0%, #e9f2ff 0%, var(--bg) 38%);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 36px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+    h1 { font-size: clamp(1.7rem, 3.2vw, 2.2rem); }
+    h2 { margin-top: 22px; font-size: 1.25rem; }
+    p { margin: 0 0 14px; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .map-frame {
+      width: 100%;
+      min-height: 70vh;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+    .switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .switch button {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+    .switch button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .meta div {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--muted);
+    }
+    .meta strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .selection ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .selection li {
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .league-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    .league-table th,
+    .league-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 6px 4px;
+      text-align: left;
+      color: var(--muted);
+      vertical-align: top;
+    }
+    .league-table th {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .league-table td:first-child,
+    .league-table th:first-child {
+      width: 34px;
+    }
+    .repo-link { margin-top: 8px; font-size: 0.95rem; }
+    .compare-links a {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 6px;
+    }
+    .note {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kompass-Regionalliga 4x20</h1>
+    <p id="subtitle"></p>
+    <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
+
+    <section class="card">
+      <h2>Karte</h2>
+      <div class="switch" id="variant-switch"></div>
+      <p id="variant-note"></p>
+      <p>Direktlink: <a id="map-link" href="#">Karte öffnen</a></p>
+      <iframe id="map-frame" class="map-frame" src="" title="Kompass-Regionalliga Karte"></iframe>
+    </section>
+
+    <section>
+      <h2>Datenstand</h2>
+      <div class="meta" id="meta-grid"></div>
+    </section>
+
+    <section class="selection">
+      <h2>Wie die Auswahl erfolgt</h2>
+      <ul>
+        <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
+        <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
+        <li>Hinzu kommen 14 Oberliga-Meister.</li>
+        <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
+        <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Optimierung</h2>
+      <div class="meta" id="search-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Einfach Erklärt</h2>
+      <p id="simple-explanation"></p>
+    </section>
+
+    <section>
+      <h2>Statistiken</h2>
+      <div class="stats-grid">
+        <div class="card">
+          <h3>Gesamt</h3>
+          <table class="league-table" id="overall-table"></table>
+        </div>
+        <div class="card">
+          <h3>Pro Liga</h3>
+          <table class="league-table" id="league-table"></table>
+        </div>
+        <div class="card">
+          <h3>Top 5 längste Reisen (gesamt)</h3>
+          <table class="league-table" id="trip-table"></table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Vereinsliste</h2>
+      <div class="clubs-grid" id="clubs-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Vergleichsseiten</h2>
+      <div class="compare-links" id="compare-links"></div>
+    </section>
+
+    <p class="note">
+      Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
+    </p>
+  </main>
+
+  <script>
+    const PAGE_DATA = {"subtitle": "Interaktive Umschaltung zwischen Initialverteilung, Rank 1 und Worst found.", "simple_explanation": "Wir starten mit einer ersten sinnvollen Teamverteilung (Initialverteilung). Danach verbessert die Distanzmatrix-Optimierung diese Verteilung in vielen Schritten und sucht die beste gefundene Loesung (Rank 1). Zusätzlich zeigen wir die schlechteste gefundene Loesung (Worst found), damit der Unterschied sichtbar bleibt.", "meta_cards": [{"label": "Letzter Lauf", "value": "2026-02-20 22:42:48"}, {"label": "Modus", "value": "Reformregel 12+4+14+2"}, {"label": "Derby-Regel", "value": "Deaktiviert (ENFORCE_DERBY_SAME_LEAGUE = False)"}, {"label": "Quellen-Prioritaet", "value": "FuPa -> Wikipedia"}], "search_cards": [{"label": "Multi-Start Laeufe", "value": "5003"}, {"label": "Eindeutige Loesungen", "value": "1186"}, {"label": "Rank-1 Score", "value": "146.82 km"}, {"label": "Initial-Score", "value": "151.39 km"}, {"label": "Gap Rank2-Rank1", "value": "0.75 km"}, {"label": "Verfuegbare Ranks", "value": "1"}, {"label": "Worst found", "value": "Rank 1186 (162.44 km)"}, {"label": "Stadionkoordinaten", "value": "80/80 Stadion, 0 Club-Fallback"}], "variants": [{"id": "rank1", "title": "Rank 1 (Matrix)", "map_html": "kompass_regionalliga_4x20_map.html", "overall_avg_km": 146.82425, "leagues": [{"liga": "Nord", "avg_km": 134.52, "longest_route": "SC Paderborn 07 -> SC Weiche Flensburg 08", "longest_km": 339.99}, {"liga": "Ost", "avg_km": 180.27, "longest_route": "1. FC Schweinfurt 05 -> Greifswalder FC", "longest_km": 499.8}, {"liga": "Süd", "avg_km": 148.18, "longest_route": "VfR Mannheim -> Wacker Burghausen", "longest_km": 351.77}, {"liga": "West", "avg_km": 124.33, "longest_route": "1. FC Bocholt -> FK Pirmasens", "longest_km": 303.4}], "top_trips": [{"index": 1, "route": "1. FC Schweinfurt 05 -> Greifswalder FC", "km": 499.8}, {"index": 2, "route": "Greifswalder FC -> 1. FC Schweinfurt 05", "km": 499.8}, {"index": 3, "route": "SpVgg Bayreuth -> Greifswalder FC", "km": 479.52}, {"index": 4, "route": "Greifswalder FC -> SpVgg Bayreuth", "km": 479.52}, {"index": 5, "route": "SG Barockstadt Fulda-Lehnerz -> Greifswalder FC", "km": 467.7}], "clubs_by_league": {"Nord": ["1. FC Germania Egestorf/Langreder", "1. FC Phönix Lübeck", "Bremer SV", "ETSV Hamburg", "FC Gütersloh", "Hamburger SV", "Hannover 96", "HSC Hannover", "Kickers Emden", "SC Paderborn 07", "SC Weiche Flensburg 08", "SSV Jeddeloh", "SV Drochtersen/Assel", "SV Todesfelde", "SV Werder Bremen", "TSV Havelse", "TV Eiche Horn", "VfB Lübeck", "VfB Oldenburg", "VfL Sportfreunde Lotte"], "Ost": ["1. FC Magdeburg", "1. FC Schweinfurt 05", "BFC Preussen", "BSV Eintracht Mahlsdorf", "Chemnitzer FC", "FC Carl Zeiss Jena", "FC Erzgebirge Aue", "FC Rot-Weiß Erfurt", "FSV 63 Luckenwalde", "FSV Zwickau", "Greifswalder FC", "Hallescher FC", "Hertha BSC", "KSV Hessen Kassel", "SG Barockstadt Fulda-Lehnerz", "SpVgg Bayreuth", "SV Babelsberg 03", "SV Tasmania Berlin", "VSG Altglienicke", "ZFC Meuselwitz"], "Süd": ["ASV Neumarkt", "DJK Vilzing", "FC Bayern München", "FC Memmingen", "FC-Astoria Walldorf", "FV Illertissen", "SG Sonnenhof Großaspach", "SpVgg Ansbach 09", "SpVgg Greuther Fürth", "SpVgg Unterhaching", "SSV Ulm 1846", "Stuttgarter Kickers", "SV Sandhausen", "TSV Aubstadt", "TSV Buchbach", "TSV Landsberg", "VfB Eichstätt", "VfR Mannheim", "Wacker Burghausen", "Würzburger Kickers"], "West": ["1. FC Bocholt", "1. FC Köln", "Bonner SC", "Borussia Dortmund", "Borussia Mönchengladbach", "FC 08 Homburg", "FC Eddersheim", "FC Schalke 04", "FK Pirmasens", "Fortuna Düsseldorf", "FSV Frankfurt", "FSV Mainz 05", "Kickers Offenbach", "Ratingen 04/19", "Rot-Weiß Oberhausen", "SG Wattenscheid 09", "Sportfreunde Siegen", "SV Bergisch Gladbach 09", "SV Eintracht Trier", "TSV Steinbach Haiger"]}, "rank": 1, "rank_label": "Rank 1 (Distanzmatrix)", "score_avg_away_km": 146.8242, "gap_to_best_km": 0.0}, {"id": "initial", "title": "Initialverteilung", "map_html": "kompass_regionalliga_4x20_map_initial.html", "overall_avg_km": 151.3935, "leagues": [{"liga": "Nord", "avg_km": 134.52, "longest_route": "SC Paderborn 07 -> SC Weiche Flensburg 08", "longest_km": 339.99}, {"liga": "Ost", "avg_km": 194.61, "longest_route": "Greifswalder FC -> Kickers Offenbach", "longest_km": 545.18}, {"liga": "Süd", "avg_km": 144.38, "longest_route": "FC-Astoria Walldorf -> Wacker Burghausen", "longest_km": 333.0}, {"liga": "West", "avg_km": 132.06, "longest_route": "1. FC Bocholt -> SV Sandhausen", "longest_km": 315.24}], "top_trips": [{"index": 1, "route": "Greifswalder FC -> Kickers Offenbach", "km": 545.18}, {"index": 2, "route": "Kickers Offenbach -> Greifswalder FC", "km": 545.18}, {"index": 3, "route": "FSV Frankfurt -> Greifswalder FC", "km": 544.52}, {"index": 4, "route": "Greifswalder FC -> FSV Frankfurt", "km": 544.52}, {"index": 5, "route": "SG Barockstadt Fulda-Lehnerz -> Greifswalder FC", "km": 467.7}], "clubs_by_league": {"Nord": ["1. FC Germania Egestorf/Langreder", "1. FC Phönix Lübeck", "Bremer SV", "ETSV Hamburg", "FC Gütersloh", "Hamburger SV", "Hannover 96", "HSC Hannover", "Kickers Emden", "SC Paderborn 07", "SC Weiche Flensburg 08", "SSV Jeddeloh", "SV Drochtersen/Assel", "SV Todesfelde", "SV Werder Bremen", "TSV Havelse", "TV Eiche Horn", "VfB Lübeck", "VfB Oldenburg", "VfL Sportfreunde Lotte"], "Ost": ["1. FC Magdeburg", "BFC Preussen", "BSV Eintracht Mahlsdorf", "Chemnitzer FC", "FC Carl Zeiss Jena", "FC Erzgebirge Aue", "FC Rot-Weiß Erfurt", "FSV 63 Luckenwalde", "FSV Frankfurt", "FSV Zwickau", "Greifswalder FC", "Hallescher FC", "Hertha BSC", "Kickers Offenbach", "KSV Hessen Kassel", "SG Barockstadt Fulda-Lehnerz", "SV Babelsberg 03", "SV Tasmania Berlin", "VSG Altglienicke", "ZFC Meuselwitz"], "Süd": ["1. FC Schweinfurt 05", "ASV Neumarkt", "DJK Vilzing", "FC Bayern München", "FC Memmingen", "FC-Astoria Walldorf", "FV Illertissen", "SG Sonnenhof Großaspach", "SpVgg Ansbach 09", "SpVgg Bayreuth", "SpVgg Greuther Fürth", "SpVgg Unterhaching", "SSV Ulm 1846", "Stuttgarter Kickers", "TSV Aubstadt", "TSV Buchbach", "TSV Landsberg", "VfB Eichstätt", "Wacker Burghausen", "Würzburger Kickers"], "West": ["1. FC Bocholt", "1. FC Köln", "Bonner SC", "Borussia Dortmund", "Borussia Mönchengladbach", "FC 08 Homburg", "FC Eddersheim", "FC Schalke 04", "FK Pirmasens", "Fortuna Düsseldorf", "FSV Mainz 05", "Ratingen 04/19", "Rot-Weiß Oberhausen", "SG Wattenscheid 09", "Sportfreunde Siegen", "SV Bergisch Gladbach 09", "SV Eintracht Trier", "SV Sandhausen", "TSV Steinbach Haiger", "VfR Mannheim"]}, "rank": 0, "rank_label": "Initialverteilung", "score_avg_away_km": 151.3935, "gap_to_best_km": 4.569299999999998}, {"id": "worst", "title": "Worst found (Matrix)", "map_html": "kompass_regionalliga_4x20_map_worst.html", "overall_avg_km": 162.43475, "leagues": [{"liga": "Nord", "avg_km": 188.47, "longest_route": "FC Rot-Weiß Erfurt -> Greifswalder FC", "longest_km": 381.82}, {"liga": "Ost", "avg_km": 156.96, "longest_route": "Borussia Mönchengladbach -> SC Weiche Flensburg 08", "longest_km": 447.07}, {"liga": "Süd", "avg_km": 164.25, "longest_route": "Chemnitzer FC -> FC Memmingen", "longest_km": 371.48}, {"liga": "West", "avg_km": 140.06, "longest_route": "Rot-Weiß Oberhausen -> Stuttgarter Kickers", "longest_km": 347.7}], "top_trips": [{"index": 1, "route": "Borussia Mönchengladbach -> SC Weiche Flensburg 08", "km": 447.07}, {"index": 2, "route": "SC Weiche Flensburg 08 -> Borussia Mönchengladbach", "km": 447.07}, {"index": 3, "route": "Ratingen 04/19 -> SC Weiche Flensburg 08", "km": 421.02}, {"index": 4, "route": "SC Weiche Flensburg 08 -> Ratingen 04/19", "km": 421.02}, {"index": 5, "route": "SG Wattenscheid 09 -> SC Weiche Flensburg 08", "km": 392.59}], "clubs_by_league": {"Nord": ["1. FC Magdeburg", "1. FC Phönix Lübeck", "BFC Preussen", "BSV Eintracht Mahlsdorf", "ETSV Hamburg", "FC Carl Zeiss Jena", "FC Rot-Weiß Erfurt", "FSV 63 Luckenwalde", "Greifswalder FC", "Hallescher FC", "Hamburger SV", "Hertha BSC", "HSC Hannover", "SV Babelsberg 03", "SV Drochtersen/Assel", "SV Tasmania Berlin", "SV Todesfelde", "VfB Lübeck", "VSG Altglienicke", "ZFC Meuselwitz"], "Ost": ["1. FC Bocholt", "1. FC Germania Egestorf/Langreder", "Borussia Dortmund", "Borussia Mönchengladbach", "Bremer SV", "FC Gütersloh", "FC Schalke 04", "Hannover 96", "Kickers Emden", "KSV Hessen Kassel", "Ratingen 04/19", "SC Paderborn 07", "SC Weiche Flensburg 08", "SG Wattenscheid 09", "SSV Jeddeloh", "SV Werder Bremen", "TSV Havelse", "TV Eiche Horn", "VfB Oldenburg", "VfL Sportfreunde Lotte"], "Süd": ["1. FC Schweinfurt 05", "ASV Neumarkt", "Chemnitzer FC", "DJK Vilzing", "FC Bayern München", "FC Erzgebirge Aue", "FC Memmingen", "FSV Zwickau", "FV Illertissen", "SG Sonnenhof Großaspach", "SpVgg Ansbach 09", "SpVgg Bayreuth", "SpVgg Greuther Fürth", "SpVgg Unterhaching", "SSV Ulm 1846", "TSV Aubstadt", "TSV Buchbach", "TSV Landsberg", "VfB Eichstätt", "Wacker Burghausen"], "West": ["1. FC Köln", "Bonner SC", "FC 08 Homburg", "FC Eddersheim", "FC-Astoria Walldorf", "FK Pirmasens", "Fortuna Düsseldorf", "FSV Frankfurt", "FSV Mainz 05", "Kickers Offenbach", "Rot-Weiß Oberhausen", "SG Barockstadt Fulda-Lehnerz", "Sportfreunde Siegen", "Stuttgarter Kickers", "SV Bergisch Gladbach 09", "SV Eintracht Trier", "SV Sandhausen", "TSV Steinbach Haiger", "VfR Mannheim", "Würzburger Kickers"]}, "rank": 1186, "rank_label": "Worst found (Rank 1186)", "score_avg_away_km": 162.4351, "gap_to_best_km": 15.610900000000015}], "compare_links": [{"href": "kompass_regionalliga_compare_initial.html", "label": "Initial vs Rank 1"}, {"href": "kompass_regionalliga_compare_worst.html", "label": "Rank 1 vs Worst found"}]};
+
+    function esc(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function fmtKm(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "-";
+      return num.toFixed(2) + " km";
+    }
+
+    function renderCards(containerId, cards) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = (cards || [])
+        .map(card => `<div><strong>${esc(card.label)}</strong>${esc(card.value)}</div>`)
+        .join("");
+    }
+
+    function renderCompareLinks(links) {
+      const el = document.getElementById("compare-links");
+      if (!el) return;
+      if (!links || links.length === 0) {
+        el.textContent = "Keine Vergleichsseite verfügbar.";
+        return;
+      }
+      el.innerHTML = links
+        .map(link => `<a href="${esc(link.href)}">${esc(link.label)}</a>`)
+        .join("");
+    }
+
+    const variants = PAGE_DATA.variants || [];
+    let activeId = variants.length ? variants[0].id : "";
+
+    function findVariant(id) {
+      return variants.find(v => v.id === id) || variants[0];
+    }
+
+    function renderVariant(variant) {
+      if (!variant) return;
+      const mapFrame = document.getElementById("map-frame");
+      const mapLink = document.getElementById("map-link");
+      const note = document.getElementById("variant-note");
+      mapFrame.src = variant.map_html;
+      mapLink.href = variant.map_html;
+
+      const rankBits = [];
+      if (variant.rank_label) rankBits.push(variant.rank_label);
+      if (Number.isFinite(Number(variant.score_avg_away_km))) {
+        rankBits.push("Score: " + fmtKm(variant.score_avg_away_km));
+      }
+      if (Number.isFinite(Number(variant.gap_to_best_km))) {
+        rankBits.push("Gap zu Rank 1: " + fmtKm(variant.gap_to_best_km));
+      }
+      note.textContent = rankBits.join(" | ");
+
+      const overall = document.getElementById("overall-table");
+      overall.innerHTML = [
+        "<tbody>",
+        "<tr><th>Kennzahl</th><th>Wert</th></tr>",
+        `<tr><td>Durchschnitt pro Team</td><td>${esc(fmtKm(variant.overall_avg_km))}</td></tr>`,
+        "</tbody>"
+      ].join("");
+
+      const leagues = variant.leagues || [];
+      const leagueRows = leagues.map(l => (
+        `<tr><td>${esc(l.liga)}</td><td>${esc(fmtKm(l.avg_km))}</td>` +
+        `<td>${esc(l.longest_route)} (${esc(fmtKm(l.longest_km))})</td></tr>`
+      )).join("");
+      document.getElementById("league-table").innerHTML = [
+        "<thead><tr><th>Liga</th><th>Ø Distanz</th><th>Längste Reise</th></tr></thead>",
+        `<tbody>${leagueRows}</tbody>`
+      ].join("");
+
+      const trips = variant.top_trips || [];
+      const tripRows = trips.map(t => (
+        `<tr><td>${esc(t.index)}</td><td>${esc(t.route)}</td><td>${esc(fmtKm(t.km))}</td></tr>`
+      )).join("");
+      document.getElementById("trip-table").innerHTML = [
+        "<thead><tr><th>#</th><th>Route</th><th>Distanz</th></tr></thead>",
+        `<tbody>${tripRows}</tbody>`
+      ].join("");
+
+      const clubsByLeague = variant.clubs_by_league || {};
+      const leaguesOrdered = Object.keys(clubsByLeague).sort();
+      document.getElementById("clubs-grid").innerHTML = leaguesOrdered.map(liga => {
+        const clubs = clubsByLeague[liga] || [];
+        const rows = clubs.map((team, idx) => `<tr><td>${idx + 1}</td><td>${esc(team)}</td></tr>`).join("");
+        return [
+          '<div class="card">',
+          `<h3>${esc(liga)}</h3>`,
+          '<table class="league-table">',
+          '<thead><tr><th>#</th><th>Verein</th></tr></thead>',
+          `<tbody>${rows}</tbody>`,
+          '</table>',
+          '</div>',
+        ].join("");
+      }).join("");
+    }
+
+    function renderSwitch() {
+      const el = document.getElementById("variant-switch");
+      if (!el) return;
+      el.innerHTML = variants.map(v => (
+        `<button class="${v.id === activeId ? "active" : ""}" data-variant="${esc(v.id)}">${esc(v.title)}</button>`
+      )).join("");
+      el.querySelectorAll("button[data-variant]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          activeId = this.getAttribute("data-variant") || "";
+          renderSwitch();
+          renderVariant(findVariant(activeId));
+        });
+      });
+    }
+
+    (function bootstrap() {
+      const subtitle = document.getElementById("subtitle");
+      if (subtitle) subtitle.textContent = PAGE_DATA.subtitle || "";
+      const simpleExplanation = document.getElementById("simple-explanation");
+      if (simpleExplanation) simpleExplanation.textContent = PAGE_DATA.simple_explanation || "";
+      renderCards("meta-grid", PAGE_DATA.meta_cards || []);
+      renderCards("search-grid", PAGE_DATA.search_cards || []);
+      renderCompareLinks(PAGE_DATA.compare_links || []);
+      renderSwitch();
+      renderVariant(findVariant(activeId));
+
+      const link = document.getElementById("repo-link");
+      const host = window.location.hostname;
+      if (!link || !host.endsWith("github.io")) return;
+      const user = host.replace(".github.io", "");
+      const repo = window.location.pathname.split("/").filter(Boolean)[0];
+      if (!user || !repo) return;
+      link.href = "https://github.com/" + user + "/" + repo;
+      link.hidden = false;
+    })();
+  </script>
+</body>
+</html>
