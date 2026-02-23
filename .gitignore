@@ -27,9 +27,11 @@ club_coords_cache.json
 stadium_coords_cache.json
 
 # Generated outputs (rebuild with python kompass.py + python kompass_report.py)
-kompass_regionalliga_4x20_matrix.csv
-kompass_regionalliga_4x20_map_matrix.html
-kompass_regionalliga_compare.html
+outputs/
+index.html
+kompass_regionalliga_4x20*.csv
+kompass_regionalliga_4x20*.html
+kompass_regionalliga_compare*.html
 kompass_away_metrics_per_club.csv
 kompass_away_metrics_per_league.csv
 kompass_longest_trips.csv
@@ -37,6 +39,8 @@ kompass_all_pair_distances.csv
 kompass_solution_diff.csv
 kompass_map_coordinates.csv
 kompass_stadium_missing.csv
+kompass_solutions_ranked.json
+stadium_coords_snapshot.json
 
 # Optional local/debug artifacts
 added_teams.log

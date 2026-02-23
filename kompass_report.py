@@ -5,7 +5,7 @@ import math
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
 import pandas as pd
@@ -20,22 +20,50 @@ except Exception as exc:  # pragma: no cover
     ) from exc
 
 
-INPUT_CSV = "kompass_regionalliga_4x20.csv"
-INPUT_CSV_ALT = "kompass_regionalliga_4x20_centroid.csv"
-MAP_HTML = "kompass_regionalliga_4x20_map.html"
-MAP_HTML_ALT = "kompass_regionalliga_4x20_map_centroid.html"
-MAP_COMPARE_HTML = "kompass_regionalliga_compare.html"
-CLUB_METRICS_CSV = "kompass_away_metrics_per_club.csv"
-LEAGUE_METRICS_CSV = "kompass_away_metrics_per_league.csv"
-LONGEST_TRIPS_CSV = "kompass_longest_trips.csv"
-MAP_COORDS_CSV = "kompass_map_coordinates.csv"
-STADIUM_MISSING_CSV = "kompass_stadium_missing.csv"
+OUTPUT_DIR = Path("outputs")
+OUTPUT_CSV_DIR = OUTPUT_DIR / "csv"
+OUTPUT_HTML_DIR = OUTPUT_DIR / "html"
+OUTPUT_JSON_DIR = OUTPUT_DIR / "json"
+INPUT_CSV = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20.csv")
+INPUT_CSV_INITIAL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_initial.csv")
+INPUT_CSV_INITIAL_AUTO = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_initial_auto.csv")
+INPUT_CSV_INITIAL_MANUAL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_initial_manual.csv")
+INPUT_CSV_RANK2 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank2.csv")
+INPUT_CSV_RANK3 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank3.csv")
+INPUT_CSV_RANK5 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank5.csv")
+INPUT_CSV_RANK10 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank10.csv")
+INPUT_CSV_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_worst.csv")
+MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
+MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
+MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
+MAP_HTML_INITIAL_MANUAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_manual.html")
+MAP_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank2.html")
+MAP_HTML_RANK3 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank3.html")
+MAP_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank5.html")
+MAP_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank10.html")
+MAP_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_worst.html")
+MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
+MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
+MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial_auto_manual.html")
+MAP_COMPARE_HTML_RANK3 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank3.html")
+MAP_COMPARE_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank5.html")
+MAP_COMPARE_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank10.html")
+MAP_COMPARE_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_worst.html")
+INDEX_HTML = str(OUTPUT_HTML_DIR / "index.html")
+CLUB_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_club.csv")
+LEAGUE_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_league.csv")
+LONGEST_TRIPS_CSV = str(OUTPUT_CSV_DIR / "kompass_longest_trips.csv")
+MAP_COORDS_CSV = str(OUTPUT_CSV_DIR / "kompass_map_coordinates.csv")
+STADIUM_MISSING_CSV = str(OUTPUT_CSV_DIR / "kompass_stadium_missing.csv")
+STADIUM_SNAPSHOT_JSON = str(OUTPUT_JSON_DIR / "stadium_coords_snapshot.json")
+SOLUTIONS_RANKED_JSON = str(OUTPUT_JSON_DIR / "kompass_solutions_ranked.json")
 TRANSITIONS_JSON = "season_transitions.json"
 CACHE_FILE = "club_coords_cache.json"
 STADIUM_CACHE_FILE = "stadium_coords_cache.json"
 STADIUM_OVERRIDES_FILE = "stadium_overrides.json"
 USE_STADIUM_COORDS_FOR_MAP = True
 USE_EUROPLAN_STADIUM_SOURCE = False
+DISPLAY_MATRIX_RANKS = [1]
 
 EUROPLAN_LEAGUE_IDS = {
     "Regionalliga Nord": 2900,
@@ -57,6 +85,16 @@ def normalize_text(text: str) -> str:
             except Exception:
                 continue
     return " ".join(s.split())
+
+
+def ensure_parent_dir(path: str) -> None:
+    parent = Path(path).parent
+    if str(parent) and str(parent) != ".":
+        parent.mkdir(parents=True, exist_ok=True)
+
+
+def html_asset_name(path: str) -> str:
+    return Path(path).name
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -134,6 +172,7 @@ def save_stadium_cache(path: str, cache: Dict[str, Dict]) -> None:
             "source_url": v.get("source_url", ""),
             "updated_at": v.get("updated_at", ""),
         }
+    ensure_parent_dir(path)
     Path(path).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
@@ -546,6 +585,8 @@ def build_map(
     transitions: Dict,
     changed_teams: Optional[Dict[str, Tuple[str, str]]] = None,
     variant: str = "std",
+    changed_left_label: str = "STD",
+    changed_right_label: str = "MATRIX",
 ) -> List[str]:
     league_colors = {
         "Nord": "blue",
@@ -593,15 +634,21 @@ def build_map(
             if team not in changed_teams:
                 continue
             lat, lon = float(row["lat"]), float(row["lon"])
-            liga_std, liga_matrix = changed_teams[team]
+            liga_left, liga_right = changed_teams[team]
             folium.CircleMarker(
                 location=[lat, lon],
                 radius=12,
                 color="#111111",
                 weight=3,
                 fill=False,
-                tooltip=f"{team} | Unterschied STD:{liga_std} -> MATRIX:{liga_matrix}",
-                popup=f"{team} (STD: {liga_std} | MATRIX: {liga_matrix})",
+                tooltip=(
+                    f"{team} | Unterschied {changed_left_label}:{liga_left}"
+                    f" -> {changed_right_label}:{liga_right}"
+                ),
+                popup=(
+                    f"{team} ({changed_left_label}: {liga_left} | "
+                    f"{changed_right_label}: {liga_right})"
+                ),
             ).add_to(m)
 
     overlay_teams = sorted(
@@ -696,6 +743,7 @@ def build_map(
     </div>
     """
     m.get_root().html.add_child(folium.Element(legend_html))
+    ensure_parent_dir(out_html)
     m.save(out_html)
     return unresolved
 
@@ -806,6 +854,542 @@ def print_summary(club_df: pd.DataFrame, league_df: pd.DataFrame, trips_df: pd.D
         )
 
 
+def load_ranked_solutions(path: str) -> Dict[str, Any]:
+    p = Path(path)
+    if not p.exists():
+        return {}
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def rank_csv_path(rank: int) -> str:
+    mapping = {
+        1: INPUT_CSV,
+        2: INPUT_CSV_RANK2,
+        3: INPUT_CSV_RANK3,
+        5: INPUT_CSV_RANK5,
+        10: INPUT_CSV_RANK10,
+    }
+    return mapping.get(
+        int(rank),
+        str(OUTPUT_CSV_DIR / f"kompass_regionalliga_4x20_matrix_rank{int(rank)}.csv"),
+    )
+
+
+def rank_map_path(rank: int) -> str:
+    mapping = {
+        1: MAP_HTML,
+        2: MAP_HTML_RANK2,
+        3: MAP_HTML_RANK3,
+        5: MAP_HTML_RANK5,
+        10: MAP_HTML_RANK10,
+    }
+    return mapping.get(
+        int(rank),
+        str(OUTPUT_HTML_DIR / f"kompass_regionalliga_4x20_map_rank{int(rank)}.html"),
+    )
+
+
+def rank_compare_path(rank: int) -> str:
+    mapping = {
+        2: MAP_COMPARE_HTML_RANK2,
+        3: MAP_COMPARE_HTML_RANK3,
+        5: MAP_COMPARE_HTML_RANK5,
+        10: MAP_COMPARE_HTML_RANK10,
+    }
+    return mapping.get(
+        int(rank),
+        str(OUTPUT_HTML_DIR / f"kompass_regionalliga_compare_rank{int(rank)}.html"),
+    )
+
+
+def compute_changed_teams(df_left: pd.DataFrame, df_right: pd.DataFrame) -> Dict[str, Tuple[str, str]]:
+    left_map = {
+        normalize_text(r["Verein"]): normalize_text(r["Liga"])
+        for _, r in df_left.iterrows()
+    }
+    right_map = {
+        normalize_text(r["Verein"]): normalize_text(r["Liga"])
+        for _, r in df_right.iterrows()
+    }
+    changed: Dict[str, Tuple[str, str]] = {}
+    for team, liga_left in left_map.items():
+        liga_right = right_map.get(team)
+        if liga_right is not None and liga_right != liga_left:
+            changed[team] = (liga_left, liga_right)
+    return changed
+
+
+def write_stadium_snapshot(df_map: pd.DataFrame, out_json: str) -> None:
+    cache = load_stadium_cache(STADIUM_CACHE_FILE)
+    overrides = load_stadium_overrides(STADIUM_OVERRIDES_FILE)
+
+    teams: List[Dict[str, Any]] = []
+    for _, row in df_map.sort_values(["Liga", "Verein"]).iterrows():
+        team = normalize_text(row["Verein"])
+        source_from_row = normalize_text(row.get("coord_source", ""))
+        source_data = overrides.get(team) or cache.get(team) or {}
+        stadium = normalize_text(row.get("stadium", "")) or normalize_text(source_data.get("stadium", ""))
+        address = normalize_text(row.get("stadium_address", "")) or normalize_text(source_data.get("address", ""))
+        source = source_from_row or normalize_text(source_data.get("source", ""))
+        teams.append(
+            {
+                "liga": normalize_text(row.get("Liga", "")),
+                "verein": team,
+                "lat": float(row["lat"]),
+                "lon": float(row["lon"]),
+                "stadium": stadium,
+                "address": address,
+                "source": source,
+                "source_url": normalize_text(source_data.get("source_url", "")),
+                "updated_at": normalize_text(source_data.get("updated_at", "")),
+            }
+        )
+
+    fallback_count = sum(1 for t in teams if t["source"] == "club_fallback")
+    payload = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(teams),
+        "stadium_hits": len(teams) - fallback_count,
+        "fallback_club": fallback_count,
+        "teams": teams,
+    }
+    ensure_parent_dir(out_json)
+    Path(out_json).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def build_variant_payload(
+    variant_id: str,
+    title: str,
+    map_html: str,
+    df: pd.DataFrame,
+    club_df: pd.DataFrame,
+    league_df: pd.DataFrame,
+    trips_df: pd.DataFrame,
+    rank_info: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    clubs_by_league: Dict[str, List[str]] = {}
+    for liga, group in df.groupby("Liga", sort=True):
+        clubs_by_league[normalize_text(liga)] = sorted(
+            [normalize_text(v) for v in group["Verein"].tolist()],
+            key=lambda x: x.lower(),
+        )
+
+    leagues: List[Dict[str, Any]] = []
+    for _, row in league_df.iterrows():
+        leagues.append(
+            {
+                "liga": normalize_text(row["Liga"]),
+                "avg_km": float(row["Durchschnitt_Auswaertsreise_km"]),
+                "longest_route": (
+                    f"{normalize_text(row['Laengste_Reise_Von'])} -> "
+                    f"{normalize_text(row['Laengste_Reise_Nach'])}"
+                ),
+                "longest_km": float(row["Laengste_Reise_km"]),
+            }
+        )
+
+    top_trips: List[Dict[str, Any]] = []
+    for idx, (_, row) in enumerate(trips_df.head(5).iterrows(), start=1):
+        top_trips.append(
+            {
+                "index": idx,
+                "route": f"{normalize_text(row['Von'])} -> {normalize_text(row['Nach'])}",
+                "km": float(row["Distanz_km"]),
+            }
+        )
+
+    out: Dict[str, Any] = {
+        "id": variant_id,
+        "title": title,
+        "map_html": map_html,
+        "overall_avg_km": float(club_df["Durchschnitt_Auswaerts_km"].mean()),
+        "leagues": leagues,
+        "top_trips": top_trips,
+        "clubs_by_league": clubs_by_league,
+    }
+    if rank_info:
+        out["rank"] = int(rank_info.get("rank", 0))
+        out["rank_label"] = normalize_text(rank_info.get("rank_label", ""))
+        out["score_avg_away_km"] = float(rank_info.get("score_avg_away_km", 0.0))
+        out["gap_to_best_km"] = float(rank_info.get("gap_to_best_km", 0.0))
+    return out
+
+
+def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
+    payload = json.dumps(page_data, ensure_ascii=False)
+    html = """<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kompass-Regionalliga 4x20</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1c2530;
+      --muted: #536375;
+      --accent: #005ecb;
+      --border: #d9e1eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: radial-gradient(circle at 10% 0%, #e9f2ff 0%, var(--bg) 38%);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 36px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+    h1 { font-size: clamp(1.7rem, 3.2vw, 2.2rem); }
+    h2 { margin-top: 22px; font-size: 1.25rem; }
+    p { margin: 0 0 14px; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .map-frame {
+      width: 100%;
+      min-height: 70vh;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+    }
+    .switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .switch button {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+    .switch button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .meta div {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--muted);
+    }
+    .meta strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .selection ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .selection li {
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .league-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    .league-table th,
+    .league-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 6px 4px;
+      text-align: left;
+      color: var(--muted);
+      vertical-align: top;
+    }
+    .league-table th {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .league-table td:first-child,
+    .league-table th:first-child {
+      width: 34px;
+    }
+    .repo-link { margin-top: 8px; font-size: 0.95rem; }
+    .compare-links a {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 6px;
+    }
+    .note {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kompass-Regionalliga 4x20</h1>
+    <p id="subtitle"></p>
+    <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
+
+    <section class="card">
+      <h2>Karte</h2>
+      <div class="switch" id="variant-switch"></div>
+      <p id="variant-note"></p>
+      <p>Direktlink: <a id="map-link" href="#">Karte öffnen</a></p>
+      <iframe id="map-frame" class="map-frame" src="" title="Kompass-Regionalliga Karte"></iframe>
+    </section>
+
+    <section>
+      <h2>Datenstand</h2>
+      <div class="meta" id="meta-grid"></div>
+    </section>
+
+    <section class="selection">
+      <h2>Wie die Auswahl erfolgt</h2>
+      <ul>
+        <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
+        <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
+        <li>Hinzu kommen 14 Oberliga-Meister.</li>
+        <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
+        <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Optimierung</h2>
+      <div class="meta" id="search-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Einfach Erklärt</h2>
+      <p id="simple-explanation"></p>
+    </section>
+
+    <section>
+      <h2>Statistiken</h2>
+      <div class="stats-grid">
+        <div class="card">
+          <h3>Gesamt</h3>
+          <table class="league-table" id="overall-table"></table>
+        </div>
+        <div class="card">
+          <h3>Pro Liga</h3>
+          <table class="league-table" id="league-table"></table>
+        </div>
+        <div class="card">
+          <h3>Top 5 längste Reisen (gesamt)</h3>
+          <table class="league-table" id="trip-table"></table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Vereinsliste</h2>
+      <div class="clubs-grid" id="clubs-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Vergleichsseiten</h2>
+      <div class="compare-links" id="compare-links"></div>
+    </section>
+
+    <p class="note">
+      Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
+    </p>
+  </main>
+
+  <script>
+    const PAGE_DATA = __PAGE_DATA__;
+
+    function esc(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function fmtKm(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "-";
+      return num.toFixed(2) + " km";
+    }
+
+    function renderCards(containerId, cards) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = (cards || [])
+        .map(card => `<div><strong>${esc(card.label)}</strong>${esc(card.value)}</div>`)
+        .join("");
+    }
+
+    function renderCompareLinks(links) {
+      const el = document.getElementById("compare-links");
+      if (!el) return;
+      if (!links || links.length === 0) {
+        el.textContent = "Keine Vergleichsseite verfügbar.";
+        return;
+      }
+      el.innerHTML = links
+        .map(link => `<a href="${esc(link.href)}">${esc(link.label)}</a>`)
+        .join("");
+    }
+
+    const variants = PAGE_DATA.variants || [];
+    let activeId = variants.length ? variants[0].id : "";
+
+    function findVariant(id) {
+      return variants.find(v => v.id === id) || variants[0];
+    }
+
+    function renderVariant(variant) {
+      if (!variant) return;
+      const mapFrame = document.getElementById("map-frame");
+      const mapLink = document.getElementById("map-link");
+      const note = document.getElementById("variant-note");
+      mapFrame.src = variant.map_html;
+      mapLink.href = variant.map_html;
+
+      const rankBits = [];
+      if (variant.rank_label) rankBits.push(variant.rank_label);
+      if (Number.isFinite(Number(variant.score_avg_away_km))) {
+        rankBits.push("Score: " + fmtKm(variant.score_avg_away_km));
+      }
+      if (Number.isFinite(Number(variant.gap_to_best_km))) {
+        rankBits.push("Gap zu Rank 1: " + fmtKm(variant.gap_to_best_km));
+      }
+      note.textContent = rankBits.join(" | ");
+
+      const overall = document.getElementById("overall-table");
+      overall.innerHTML = [
+        "<tbody>",
+        "<tr><th>Kennzahl</th><th>Wert</th></tr>",
+        `<tr><td>Durchschnitt pro Team</td><td>${esc(fmtKm(variant.overall_avg_km))}</td></tr>`,
+        "</tbody>"
+      ].join("");
+
+      const leagues = variant.leagues || [];
+      const leagueRows = leagues.map(l => (
+        `<tr><td>${esc(l.liga)}</td><td>${esc(fmtKm(l.avg_km))}</td>` +
+        `<td>${esc(l.longest_route)} (${esc(fmtKm(l.longest_km))})</td></tr>`
+      )).join("");
+      document.getElementById("league-table").innerHTML = [
+        "<thead><tr><th>Liga</th><th>Ø Distanz</th><th>Längste Reise</th></tr></thead>",
+        `<tbody>${leagueRows}</tbody>`
+      ].join("");
+
+      const trips = variant.top_trips || [];
+      const tripRows = trips.map(t => (
+        `<tr><td>${esc(t.index)}</td><td>${esc(t.route)}</td><td>${esc(fmtKm(t.km))}</td></tr>`
+      )).join("");
+      document.getElementById("trip-table").innerHTML = [
+        "<thead><tr><th>#</th><th>Route</th><th>Distanz</th></tr></thead>",
+        `<tbody>${tripRows}</tbody>`
+      ].join("");
+
+      const clubsByLeague = variant.clubs_by_league || {};
+      const leaguesOrdered = Object.keys(clubsByLeague).sort();
+      document.getElementById("clubs-grid").innerHTML = leaguesOrdered.map(liga => {
+        const clubs = clubsByLeague[liga] || [];
+        const rows = clubs.map((team, idx) => `<tr><td>${idx + 1}</td><td>${esc(team)}</td></tr>`).join("");
+        return [
+          '<div class="card">',
+          `<h3>${esc(liga)}</h3>`,
+          '<table class="league-table">',
+          '<thead><tr><th>#</th><th>Verein</th></tr></thead>',
+          `<tbody>${rows}</tbody>`,
+          '</table>',
+          '</div>',
+        ].join("");
+      }).join("");
+    }
+
+    function renderSwitch() {
+      const el = document.getElementById("variant-switch");
+      if (!el) return;
+      el.innerHTML = variants.map(v => (
+        `<button class="${v.id === activeId ? "active" : ""}" data-variant="${esc(v.id)}">${esc(v.title)}</button>`
+      )).join("");
+      el.querySelectorAll("button[data-variant]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          activeId = this.getAttribute("data-variant") || "";
+          renderSwitch();
+          renderVariant(findVariant(activeId));
+        });
+      });
+    }
+
+    (function bootstrap() {
+      const subtitle = document.getElementById("subtitle");
+      if (subtitle) subtitle.textContent = PAGE_DATA.subtitle || "";
+      const simpleExplanation = document.getElementById("simple-explanation");
+      if (simpleExplanation) simpleExplanation.textContent = PAGE_DATA.simple_explanation || "";
+      renderCards("meta-grid", PAGE_DATA.meta_cards || []);
+      renderCards("search-grid", PAGE_DATA.search_cards || []);
+      renderCompareLinks(PAGE_DATA.compare_links || []);
+      renderSwitch();
+      renderVariant(findVariant(activeId));
+
+      const link = document.getElementById("repo-link");
+      const host = window.location.hostname;
+      if (!link || !host.endsWith("github.io")) return;
+      const user = host.replace(".github.io", "");
+      const repo = window.location.pathname.split("/").filter(Boolean)[0];
+      if (!user || !repo) return;
+      link.href = "https://github.com/" + user + "/" + repo;
+      link.hidden = false;
+    })();
+  </script>
+</body>
+</html>"""
+    ensure_parent_dir(out_html)
+    Path(out_html).write_text(html.replace("__PAGE_DATA__", payload), encoding="utf-8")
+
+
 def create_compare_html(
     left_map: str,
     right_map: str,
@@ -839,45 +1423,309 @@ def create_compare_html(
   </div>
 </body>
 </html>"""
+    ensure_parent_dir(out_html)
     Path(out_html).write_text(html, encoding="utf-8")
 
 
 def main() -> None:
+    OUTPUT_CSV_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_HTML_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_JSON_DIR.mkdir(parents=True, exist_ok=True)
+
+    def load_solution_csv(path: Path) -> pd.DataFrame:
+        data = pd.read_csv(path)
+        for col in ("Liga", "Verein"):
+            data[col] = data[col].map(normalize_text)
+        data["lat"] = pd.to_numeric(data["lat"], errors="raise")
+        data["lon"] = pd.to_numeric(data["lon"], errors="raise")
+        return data
+
     in_path = Path(INPUT_CSV)
     if not in_path.exists():
         raise FileNotFoundError(f"CSV not found: {INPUT_CSV}")
-
-    df = pd.read_csv(in_path)
-    for col in ("Liga", "Verein"):
-        df[col] = df[col].map(normalize_text)
-    df["lat"] = pd.to_numeric(df["lat"], errors="raise")
-    df["lon"] = pd.to_numeric(df["lon"], errors="raise")
+    df_rank1 = load_solution_csv(in_path)
 
     transitions = load_transitions(TRANSITIONS_JSON)
+    ranked_payload = load_ranked_solutions(SOLUTIONS_RANKED_JSON)
+    ranked_entries_raw = ranked_payload.get("solutions", [])
+    ranked_entries = ranked_entries_raw if isinstance(ranked_entries_raw, list) else []
+    rank_meta: Dict[int, Dict[str, Any]] = {}
+    for entry in ranked_entries:
+        if not isinstance(entry, dict):
+            continue
+        try:
+            rank_no = int(entry.get("rank", 0))
+        except Exception:
+            continue
+        if rank_no > 0:
+            rank_meta[rank_no] = entry
+    best_score = rank_meta.get(1, {}).get("score_avg_away_km")
 
-    changed: Dict[str, Tuple[str, str]] = {}
-    in_alt = Path(INPUT_CSV_ALT)
-    if in_alt.exists():
-        tmp_alt = pd.read_csv(in_alt)
-        for col in ("Liga", "Verein"):
-            tmp_alt[col] = tmp_alt[col].map(normalize_text)
-        std_map = {normalize_text(r["Verein"]): normalize_text(r["Liga"]) for _, r in df.iterrows()}
-        alt_map = {normalize_text(r["Verein"]): normalize_text(r["Liga"]) for _, r in tmp_alt.iterrows()}
-        for team, liga_std in std_map.items():
-            liga_alt = alt_map.get(team)
-            if liga_alt is not None and liga_alt != liga_std:
-                changed[team] = (liga_std, liga_alt)
+    rank_data: Dict[int, Dict[str, Any]] = {}
+    for rank in DISPLAY_MATRIX_RANKS:
+        csv_path = Path(rank_csv_path(rank))
+        if not csv_path.exists():
+            continue
+        df_rank = load_solution_csv(csv_path)
+        rank_data[rank] = {"df": df_rank, "csv": str(csv_path)}
 
-    df_map, map_coord_stats = resolve_map_coordinates(df)
-    unresolved_overlay = build_map(df_map, MAP_HTML, transitions, changed_teams=changed, variant="matrix")
-    df_map.to_csv(MAP_COORDS_CSV, index=False, encoding="utf-8")
-    missing_df = df_map[df_map["coord_source"] == "club_fallback"][["Liga", "Verein"]].copy()
+    if 1 not in rank_data:
+        rank_data[1] = {"df": df_rank1, "csv": INPUT_CSV}
+
+    worst_data: Optional[Dict[str, Any]] = None
+    worst_csv_path = Path(INPUT_CSV_WORST)
+    if worst_csv_path.exists():
+        try:
+            df_worst = load_solution_csv(worst_csv_path)
+            worst_data = {"df": df_worst, "csv": str(worst_csv_path)}
+        except Exception:
+            worst_data = None
+    initial_data: Optional[Dict[str, Any]] = None
+    initial_csv_path = Path(INPUT_CSV_INITIAL)
+    if initial_csv_path.exists():
+        try:
+            df_initial = load_solution_csv(initial_csv_path)
+            initial_data = {"df": df_initial, "csv": str(initial_csv_path)}
+        except Exception:
+            initial_data = None
+    initial_auto_data: Optional[Dict[str, Any]] = None
+    initial_auto_csv_path = Path(INPUT_CSV_INITIAL_AUTO)
+    if initial_auto_csv_path.exists():
+        try:
+            df_initial_auto = load_solution_csv(initial_auto_csv_path)
+            initial_auto_data = {"df": df_initial_auto, "csv": str(initial_auto_csv_path)}
+        except Exception:
+            initial_auto_data = None
+    initial_manual_data: Optional[Dict[str, Any]] = None
+    initial_manual_csv_path = Path(INPUT_CSV_INITIAL_MANUAL)
+    if initial_manual_csv_path.exists():
+        try:
+            df_initial_manual = load_solution_csv(initial_manual_csv_path)
+            initial_manual_data = {"df": df_initial_manual, "csv": str(initial_manual_csv_path)}
+        except Exception:
+            initial_manual_data = None
+
+    df_map_rank1, map_coord_stats = resolve_map_coordinates(rank_data[1]["df"])
+    changed_vs_rank2 = (
+        compute_changed_teams(rank_data[1]["df"], rank_data[2]["df"])
+        if 2 in rank_data
+        else {}
+    )
+    unresolved_overlay = build_map(
+        df_map_rank1,
+        MAP_HTML,
+        transitions,
+        changed_teams=changed_vs_rank2 if changed_vs_rank2 else None,
+        variant="matrix",
+        changed_left_label="RANK1",
+        changed_right_label="RANK2",
+    )
+    df_map_rank1.to_csv(MAP_COORDS_CSV, index=False, encoding="utf-8")
+    missing_df = df_map_rank1[df_map_rank1["coord_source"] == "club_fallback"][["Liga", "Verein"]].copy()
     missing_df.to_csv(STADIUM_MISSING_CSV, index=False, encoding="utf-8")
-    club_df, league_df, trips_df = compute_metrics(df)
+    write_stadium_snapshot(df_map_rank1, STADIUM_SNAPSHOT_JSON)
+
+    club_df, league_df, trips_df = compute_metrics(rank_data[1]["df"])
     club_df.to_csv(CLUB_METRICS_CSV, index=False, encoding="utf-8")
     league_df.to_csv(LEAGUE_METRICS_CSV, index=False, encoding="utf-8")
     trips_df.head(100).to_csv(LONGEST_TRIPS_CSV, index=False, encoding="utf-8")
     print_summary(club_df, league_df, trips_df)
+
+    variants: List[Dict[str, Any]] = []
+    compare_links: List[Dict[str, str]] = []
+    initial_score: Optional[float] = None
+
+    for rank in DISPLAY_MATRIX_RANKS:
+        if rank not in rank_data:
+            continue
+        df_rank = rank_data[rank]["df"]
+        map_path = rank_map_path(rank)
+        if rank == 1:
+            df_rank_map = df_map_rank1
+        else:
+            df_rank_map, _ = resolve_map_coordinates(df_rank)
+            changed_vs_rank1 = compute_changed_teams(rank_data[1]["df"], df_rank)
+            build_map(
+                df_rank_map,
+                map_path,
+                transitions,
+                changed_teams=changed_vs_rank1 if changed_vs_rank1 else None,
+                variant=f"matrix_rank{rank}",
+                changed_left_label="RANK1",
+                changed_right_label=f"RANK{rank}",
+            )
+            compare_path = rank_compare_path(rank)
+            create_compare_html(
+                html_asset_name(MAP_HTML),
+                html_asset_name(map_path),
+                compare_path,
+                left_title="Distanzmatrix-Optimierung (Rank 1)",
+                right_title=f"Distanzmatrix-Optimierung (Rank {rank})",
+            )
+            compare_links.append({"href": html_asset_name(compare_path), "label": f"Rank 1 vs Rank {rank}"})
+            print(f"Karte (Rank-{rank}-Vergleich): {map_path}")
+            print(f"Kartenvergleich: {compare_path}")
+            print(f"Sichtbare Unterschiede Rank1/Rank{rank}: {len(changed_vs_rank1)}")
+
+        club_df_rank, league_df_rank, trips_df_rank = compute_metrics(df_rank)
+        meta = rank_meta.get(rank, {})
+        variants.append(
+            build_variant_payload(
+                f"rank{rank}",
+                f"Rank {rank} (Matrix)",
+                html_asset_name(map_path),
+                df_rank,
+                club_df_rank,
+                league_df_rank,
+                trips_df_rank,
+                rank_info={
+                    "rank": rank,
+                    "rank_label": f"Rank {rank} (Distanzmatrix)",
+                    "score_avg_away_km": meta.get("score_avg_away_km", club_df_rank["Durchschnitt_Auswaerts_km"].mean()),
+                    "gap_to_best_km": meta.get("gap_to_best_km", 0.0),
+                },
+            )
+        )
+
+    if initial_data is not None:
+        changed_initial_vs_rank1 = compute_changed_teams(initial_data["df"], rank_data[1]["df"])
+        df_initial_map, _ = resolve_map_coordinates(initial_data["df"])
+        build_map(
+            df_initial_map,
+            MAP_HTML_INITIAL,
+            transitions,
+            changed_teams=changed_initial_vs_rank1 if changed_initial_vs_rank1 else None,
+            variant="initial",
+            changed_left_label="INITIAL",
+            changed_right_label="RANK1",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML_INITIAL),
+            html_asset_name(MAP_HTML),
+            MAP_COMPARE_HTML_INITIAL,
+            left_title="Initialverteilung",
+            right_title="Distanzmatrix-Optimierung (Rank 1)",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_INITIAL), "label": "Initial vs Rank 1"})
+        print(f"Karte (Initial): {MAP_HTML_INITIAL}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL}")
+        print(f"Sichtbare Unterschiede Initial/Rank1: {len(changed_initial_vs_rank1)}")
+
+        club_df_initial, league_df_initial, trips_df_initial = compute_metrics(initial_data["df"])
+        initial_score = float(club_df_initial["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "initial",
+                "Initialverteilung",
+                html_asset_name(MAP_HTML_INITIAL),
+                initial_data["df"],
+                club_df_initial,
+                league_df_initial,
+                trips_df_initial,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Initialverteilung",
+                    "score_avg_away_km": initial_score,
+                    "gap_to_best_km": (
+                        float(initial_score) - float(best_score)
+                        if best_score is not None
+                        else 0.0
+                    ),
+                },
+            )
+        )
+
+    if initial_auto_data is not None and initial_manual_data is not None:
+        changed_auto_manual = compute_changed_teams(initial_auto_data["df"], initial_manual_data["df"])
+        df_initial_auto_map, _ = resolve_map_coordinates(initial_auto_data["df"])
+        build_map(
+            df_initial_auto_map,
+            MAP_HTML_INITIAL_AUTO,
+            transitions,
+            changed_teams=None,
+            variant="initial_auto",
+        )
+        df_initial_manual_map, _ = resolve_map_coordinates(initial_manual_data["df"])
+        build_map(
+            df_initial_manual_map,
+            MAP_HTML_INITIAL_MANUAL,
+            transitions,
+            changed_teams=changed_auto_manual if changed_auto_manual else None,
+            variant="initial_manual",
+            changed_left_label="INITIAL_AUTO",
+            changed_right_label="INITIAL_MANUAL",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML_INITIAL_AUTO),
+            html_asset_name(MAP_HTML_INITIAL_MANUAL),
+            MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL,
+            left_title="Initialverteilung (Auto)",
+            right_title="Initialverteilung (Manuell)",
+        )
+        compare_links.append(
+            {
+                "href": html_asset_name(MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL),
+                "label": "Initial Auto vs Initial Manuell",
+            }
+        )
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL}")
+        print(f"Sichtbare Unterschiede Initial-Auto/Initial-Manuell: {len(changed_auto_manual)}")
+
+    if worst_data is not None:
+        changed_vs_rank1 = compute_changed_teams(rank_data[1]["df"], worst_data["df"])
+        df_worst_map, _ = resolve_map_coordinates(worst_data["df"])
+        build_map(
+            df_worst_map,
+            MAP_HTML_WORST,
+            transitions,
+            changed_teams=changed_vs_rank1 if changed_vs_rank1 else None,
+            variant="matrix_worst",
+            changed_left_label="RANK1",
+            changed_right_label="WORST",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML),
+            html_asset_name(MAP_HTML_WORST),
+            MAP_COMPARE_HTML_WORST,
+            left_title="Distanzmatrix-Optimierung (Rank 1)",
+            right_title="Distanzmatrix-Optimierung (Worst found)",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_WORST), "label": "Rank 1 vs Worst found"})
+        print(f"Karte (Worst-Vergleich): {MAP_HTML_WORST}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_WORST}")
+        print(f"Sichtbare Unterschiede Rank1/Worst: {len(changed_vs_rank1)}")
+
+        club_df_worst, league_df_worst, trips_df_worst = compute_metrics(worst_data["df"])
+        worst_meta = ranked_payload.get("worst_found", {})
+        variants.append(
+            build_variant_payload(
+                "worst",
+                "Worst found (Matrix)",
+                html_asset_name(MAP_HTML_WORST),
+                worst_data["df"],
+                club_df_worst,
+                league_df_worst,
+                trips_df_worst,
+                rank_info={
+                    "rank": int(worst_meta.get("rank", 0)) if worst_meta else 0,
+                    "rank_label": (
+                        f"Worst found (Rank {int(worst_meta.get('rank', 0))})"
+                        if worst_meta and worst_meta.get("rank") is not None
+                        else "Worst found"
+                    ),
+                    "score_avg_away_km": worst_meta.get(
+                        "score_avg_away_km",
+                        club_df_worst["Durchschnitt_Auswaerts_km"].mean(),
+                    ),
+                    "gap_to_best_km": (
+                        float(worst_meta.get("score_avg_away_km", 0.0)) - float(best_score)
+                        if (worst_meta and worst_meta.get("score_avg_away_km") is not None and best_score is not None)
+                        else 0.0
+                    ),
+                },
+            )
+        )
+
     if transitions:
         print()
         print(
@@ -888,6 +1736,66 @@ def main() -> None:
         )
     if unresolved_overlay:
         print(f"Ohne Koordinate (Overlay ausgelassen): {sorted(set(unresolved_overlay))}")
+
+    requested_runs = ranked_payload.get("requested_runs")
+    unique_solutions = ranked_payload.get("unique_solutions")
+    second_score = rank_meta.get(2, {}).get("score_avg_away_km")
+    worst_score = None
+    if isinstance(ranked_payload.get("worst_found"), dict):
+        worst_score = ranked_payload["worst_found"].get("score_avg_away_km")
+    worst_rank = None
+    if isinstance(ranked_payload.get("worst_found"), dict):
+        worst_rank = ranked_payload["worst_found"].get("rank")
+    gap_text = "-"
+    try:
+        if best_score is not None and second_score is not None:
+            gap_text = f"{float(second_score) - float(best_score):.2f} km"
+    except Exception:
+        gap_text = "-"
+
+    page_data = {
+        "subtitle": "Interaktive Umschaltung zwischen Initialverteilung, Rank 1 und Worst found.",
+        "simple_explanation": (
+            "Wir starten mit einer ersten sinnvollen Teamverteilung (Initialverteilung). "
+            "Danach verbessert die Distanzmatrix-Optimierung diese Verteilung in vielen Schritten "
+            "und sucht die beste gefundene Loesung (Rank 1). "
+            "Zusätzlich zeigen wir die schlechteste gefundene Loesung (Worst found), "
+            "damit der Unterschied sichtbar bleibt."
+        ),
+        "meta_cards": [
+            {"label": "Letzter Lauf", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
+            {"label": "Modus", "value": "Reformregel 12+4+14+2"},
+            {"label": "Derby-Regel", "value": "Deaktiviert (ENFORCE_DERBY_SAME_LEAGUE = False)"},
+            {"label": "Quellen-Prioritaet", "value": "FuPa -> Wikipedia"},
+        ],
+        "search_cards": [
+            {"label": "Multi-Start Laeufe", "value": str(requested_runs) if requested_runs is not None else "-"},
+            {"label": "Eindeutige Loesungen", "value": str(unique_solutions) if unique_solutions is not None else "-"},
+            {"label": "Rank-1 Score", "value": f"{float(best_score):.2f} km" if best_score is not None else "-"},
+            {"label": "Initial-Score", "value": f"{float(initial_score):.2f} km" if initial_score is not None else "-"},
+            {"label": "Gap Rank2-Rank1", "value": gap_text},
+            {"label": "Verfuegbare Ranks", "value": ", ".join(str(r) for r in sorted(rank_data.keys()))},
+            {
+                "label": "Worst found",
+                "value": (
+                    f"Rank {int(worst_rank)} ({float(worst_score):.2f} km)"
+                    if worst_rank is not None and worst_score is not None
+                    else "-"
+                ),
+            },
+            {
+                "label": "Stadionkoordinaten",
+                "value": (
+                    f"{map_coord_stats['stadium']}/{map_coord_stats['total']} Stadion, "
+                    f"{map_coord_stats['fallback_club']} Club-Fallback"
+                ),
+            },
+        ],
+        "variants": variants,
+        "compare_links": compare_links,
+    }
+    create_index_html(page_data, INDEX_HTML)
+
     print()
     print(f"Karte: {MAP_HTML}")
     print(
@@ -897,30 +1805,12 @@ def main() -> None:
         f"Europlan-Index={map_coord_stats.get('europlan_index_size', 0)}"
     )
     print(f"Map-Koordinaten (Debug): {MAP_COORDS_CSV}")
+    print(f"Stadion-Snapshot: {STADIUM_SNAPSHOT_JSON}")
     print(f"Fehlende Stadiondaten: {STADIUM_MISSING_CSV}")
     print(f"Pro Verein: {CLUB_METRICS_CSV}")
     print(f"Pro Liga: {LEAGUE_METRICS_CSV}")
     print(f"Laengste Reisen (Top 100): {LONGEST_TRIPS_CSV}")
-
-    # Optionale zweite Karte aus Vergleichs-CSV + Vergleichs-HTML
-    if in_alt.exists():
-        df_alt = pd.read_csv(in_alt)
-        for col in ("Liga", "Verein"):
-            df_alt[col] = df_alt[col].map(normalize_text)
-        df_alt["lat"] = pd.to_numeric(df_alt["lat"], errors="raise")
-        df_alt["lon"] = pd.to_numeric(df_alt["lon"], errors="raise")
-        df_alt_map, _ = resolve_map_coordinates(df_alt)
-        build_map(df_alt_map, MAP_HTML_ALT, transitions, changed_teams=changed, variant="centroid")
-        create_compare_html(
-            MAP_HTML,
-            MAP_HTML_ALT,
-            MAP_COMPARE_HTML,
-            left_title="Distanzmatrix-Optimierung (Hauptkarte)",
-            right_title="Centroid-Optimierung (Vergleich)",
-        )
-        print(f"Karte (Centroid-Vergleich): {MAP_HTML_ALT}")
-        print(f"Kartenvergleich: {MAP_COMPARE_HTML}")
-        print(f"Sichtbare Unterschiede markiert: {len(changed)}")
+    print(f"Index: {INDEX_HTML}")
 
 
 if __name__ == "__main__":
