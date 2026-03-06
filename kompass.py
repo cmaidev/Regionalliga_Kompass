@@ -27,11 +27,9 @@ from __future__ import annotations
 
 import json
 import itertools
-import math
 import os
 import re
 import time
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
@@ -42,10 +40,17 @@ import pandas as pd
 import requests
 from sklearn.cluster import KMeans
 
+from kompass_utils import Club, ensure_parent_dir, haversine_km, normalize_text
+
 
 # -------------------------
 # Konfiguration
 # -------------------------
+
+# Saison (Format "JJJJ/JJ") – einzige Stelle, die bei Saisonwechsel angepasst werden muss.
+SEASON: str = os.getenv("KOMPASS_SEASON", "2025/26")
+SEASON_SLUG: str = SEASON.replace("/", "_")  # "2025_26" (fuer Dateinamen)
+
 N_LEAGUES = 4
 TEAMS_PER_LEAGUE = 20
 TARGET_TEAM_COUNT = N_LEAGUES * TEAMS_PER_LEAGUE
@@ -56,21 +61,21 @@ EXCLUDE_U23_TEAMS = False
 USE_RULE_BASED_SEASON_LOGIC = True
 USE_REFORM_12_4_14_RULE = True
 
-# Wenn nach Ausschluss der U23/II-Teams weniger als 80 Teams Ã¼brig sind:
+# Wenn nach Ausschluss der U23/II-Teams weniger als 80 Teams übrig sind:
 FILL_UP_WITH_TIER5_FROM_WIKIPEDIA = True
-# Wenn du ausschlieÃŸlich mit Regionalliga-Teams arbeiten willst, setze:
+# Wenn du ausschließlich mit Regionalliga-Teams arbeiten willst, setze:
 # FILL_UP_WITH_TIER5_FROM_WIKIPEDIA = False
 #
-# Wenn dann <80 Teams Ã¼brig sind, bricht das Script mit Fehlermeldung ab.
+# Wenn dann <80 Teams übrig sind, bricht das Script mit Fehlermeldung ab.
 
-# Koordinaten: primÃ¤r Wikipedia, optional Fallback Nominatim
+# Koordinaten: primär Wikipedia, optional Fallback Nominatim
 # auf False setzen, wenn du nur Wikipedia-Koordinaten willst
 USE_NOMINATIM_FALLBACK = True
 NOMINATIM_MIN_SECONDS = 1.1     # Rate limit (freundlich bleiben)
 
 # Wikipedia-Seitentitel, falls Vereinsname nicht exakt passt
 WIKI_TITLE_OVERRIDES = {
-    # FuÃŸball-Seite (nicht die Turn-Seite)
+    # Fußball-Seite (nicht die Turn-Seite)
     "TSG Balingen": "TSG Balingen",
     "SV Atlas Delmenhorst": "SV Atlas Delmenhorst (2012)",
 }
@@ -81,9 +86,9 @@ GEOCODE_QUERY_OVERRIDES = {
     "TSV Steinbach Haiger": "Haiger, Germany",
     "SGV Freiberg": "Freiberg am Neckar, Germany",
     "SSVg Velbert": "Velbert, Germany",
-    "FSV SchÃ¶ningen": "SchÃ¶ningen, Germany",
-    "1. FC PhÃ¶nix LÃ¼beck": "LÃ¼beck, Germany",
-    "SC Fortuna KÃ¶ln": "KÃ¶ln, Germany",
+    "FSV Schöningen": "Schöningen, Germany",
+    "1. FC Phönix Lübeck": "Lübeck, Germany",
+    "SC Fortuna Köln": "Köln, Germany",
 }
 
 TEAM_NAME_NORMALIZATION_OVERRIDES = {
@@ -105,7 +110,6 @@ CLUB_COORD_OVERRIDES: Dict[str, Tuple[float, float]] = {
     "FC 08 Homburg": (49.316666666667, 7.3333333333333),
     # SC Fortuna Köln (Köln-Südstadion)
     "SC Fortuna Köln": (50.92245, 6.97423),
-    "SC Fortuna KÃ¶ln": (50.92245, 6.97423),
     "SG Barockstadt Fulda Lehnerz": (50.555809, 9.680845),
     "SG Barockstadt Fulda-Lehnerz": (50.555809, 9.680845),
 }
@@ -226,16 +230,11 @@ EXPORT_INITIAL_ONLY = os.getenv("KOMPASS_EXPORT_INITIAL_ONLY", "0").lower() in {
 INITIAL_CSV_OVERRIDE = os.getenv("KOMPASS_INITIAL_CSV_OVERRIDE", "").strip()
 
 
-def ensure_parent_dir(path: str) -> None:
-    parent = Path(path).parent
-    if str(parent) and str(parent) != ".":
-        parent.mkdir(parents=True, exist_ok=True)
-
 
 # -------------------------
 # Daten: Regionalligen 2025/26 (aus den Wikipedia-Saisonartikeln)
 # -------------------------
-REGIONALLIGA_DATA_FILE = Path("data/regionalliga_2025_26.json")
+REGIONALLIGA_DATA_FILE = Path(f"data/regionalliga_{SEASON_SLUG}.json")
 
 
 def load_regionalliga_teams(path: Path) -> Dict[str, List[str]]:
@@ -264,24 +263,24 @@ def load_regionalliga_teams(path: Path) -> Dict[str, List[str]]:
     return out
 
 
-REGIONALLIGA_2025_26: Dict[str, List[str]
+REGIONALLIGA_TEAMS: Dict[str, List[str]
                            ] = load_regionalliga_teams(REGIONALLIGA_DATA_FILE)
 
-# Oberliga-/5.-Liga-Seiten (Wikipedia), um nach Ausschluss von U23/II-Teams auf 80 Teams aufzufÃ¼llen
-# (Es werden Tabellen gelesen und in Tabellenreihenfolge â€žoben nach untenâ€œ Kandidaten entnommen.)
+# Oberliga-/5.-Liga-Seiten (Wikipedia), um nach Ausschluss von U23/II-Teams auf 80 Teams aufzufüllen
+# (Es werden Tabellen gelesen und in Tabellenreihenfolge "oben nach unten" Kandidaten entnommen.)
 TIER5_WIKI_URLS: List[str] = [
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_2025/26",
-    "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_{SEASON}",
+    f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_{SEASON}",
 ]
 
 TABLE_SOURCE_PRIORITY: List[str] = ["fupa", "wikipedia"]
@@ -289,29 +288,29 @@ TABLE_SOURCE_PRIORITY: List[str] = ["fupa", "wikipedia"]
 REGIONALLIGA_TABLE_URLS: Dict[str, Dict[str, str]] = {
     "Nord": {
         "fupa": "https://www.fupa.net/league/regionalliga-nord/standing",
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nord_2025/26",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nord_{SEASON}",
     },
     "Nordost": {
         "fupa": "https://www.fupa.net/league/regionalliga-nordost/standing",
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nordost_2025/26",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nordost_{SEASON}",
     },
     "West": {
         "fupa": "https://www.fupa.net/league/regionalliga-west/standing",
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_West_2025/26",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_West_{SEASON}",
     },
     "Bayern": {
         "fupa": "https://www.fupa.net/league/regionalliga-bayern/standing",
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Bayern_2025/26",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Bayern_{SEASON}",
     },
     "Südwest": {
         "fupa": "https://www.fupa.net/league/regionalliga-suedwest/standing",
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2025/26",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_{SEASON}",
     },
 }
 
 THIRD_LIGA_TABLE_URLS: Dict[str, str] = {
     "fupa": "https://www.fupa.net/league/3-liga/standing",
-    "wikipedia": "https://de.wikipedia.org/wiki/3._Fu%C3%9Fball-Liga_2025/26",
+    "wikipedia": f"https://de.wikipedia.org/wiki/3._Fu%C3%9Fball-Liga_{SEASON}",
 }
 
 TIER5_TABLE_URLS: Dict[str, List[str]] = {
@@ -335,33 +334,35 @@ TIER5_TABLE_URLS: Dict[str, List[str]] = {
 
 OBERLIGA_MASTER_COMPETITIONS: List[Dict] = [
     {"name": "Niedersachsen", "sources": {"fupa": "https://www.fupa.net/league/oberliga-niedersachsen/standing",
-                                          "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_2025/26"}},
+                                          "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_2025/26"}},
     {"name": "Schleswig-Holstein", "sources": {"fupa": "https://www.fupa.net/league/oberliga-schleswig-holstein/standing",
-                                               "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_2025/26"}},
+                                               "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_2025/26"}},
     {"name": "Hamburg", "sources": {"fupa": "https://www.fupa.net/league/oberliga-hamburg/standing",
-                                    "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_2025/26"}},
+                                    "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_2025/26"}},
     {"name": "Bremen", "sources": {"fupa": "https://www.fupa.net/league/bremen-liga/standing",
-                                   "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_2025/26"}},
+                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_2025/26"}},
     {"name": "Westfalen", "sources": {"fupa": "https://www.fupa.net/league/oberliga-westfalen/standing",
-                                      "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_2025/26"}},
+                                      "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_2025/26"}},
     {"name": "Niederrhein", "sources": {"fupa": "https://www.fupa.net/league/oberliga-niederrhein/standing",
-                                        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_2025/26"}},
+                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_2025/26"}},
     {"name": "Mittelrhein", "sources": {"fupa": "https://www.fupa.net/league/mittelrheinliga/standing",
-                                        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_2025/26"}},
+                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_2025/26"}},
     {"name": "NOFV Nord", "sources": {
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 0},
+        "fupa": "https://www.fupa.net/league/nofv-oberliga-nord/standing",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 0},
     {"name": "NOFV Süd", "sources": {
-        "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 1},
+        "fupa": "https://www.fupa.net/league/nofv-oberliga-sued/standing",
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 1},
     {"name": "Baden-Württemberg", "sources": {"fupa": "https://www.fupa.net/league/oberliga-baden-wuerttemberg/standing",
-                                              "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_2025/26"}},
+                                              "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_2025/26"}},
     {"name": "Hessen", "sources": {"fupa": "https://www.fupa.net/league/hessenliga/standing",
-                                   "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_2025/26"}},
+                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_2025/26"}},
     {"name": "Rheinland-Pfalz/Saar", "sources": {"fupa": "https://www.fupa.net/league/oberliga-rheinland-pfalz-saar/standing",
-                                                 "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_2025/26"}},
+                                                 "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_2025/26"}},
     {"name": "Bayernliga Nord", "sources": {"fupa": "https://www.fupa.net/league/bayernliga-nord/standing",
-                                            "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 0},
+                                            "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 0},
     {"name": "Bayernliga Süd", "sources": {"fupa": "https://www.fupa.net/league/bayernliga-sued/standing",
-                                           "wikipedia": "https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 1},
+                                           "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 1},
 ]
 
 # Modellannahmen fuer die Saisonlogik
@@ -393,7 +394,7 @@ def is_u23_or_reserve(team_name: str) -> bool:
 
 def build_static_regionalliga_base_pool() -> List[str]:
     all_rl_teams = [clean_team_name(
-        t) for league in REGIONALLIGA_2025_26.values() for t in league]
+        t) for league in REGIONALLIGA_TEAMS.values() for t in league]
     if EXCLUDE_U23_TEAMS:
         excluded = [t for t in all_rl_teams if is_u23_or_reserve(t)]
         base = [t for t in all_rl_teams if not is_u23_or_reserve(t)]
@@ -405,23 +406,6 @@ def build_static_regionalliga_base_pool() -> List[str]:
     else:
         base = all_rl_teams
     return sorted(set(base))
-
-
-def normalize_text(text: str) -> str:
-    s = str(text).strip()
-    s = s.replace("\xa0", " ")
-    # Repariert haeufige UTF-8/Latin1-Mojibake wie "MÃ¶nchengladbach" -> "Mönchengladbach".
-    if any(x in s for x in ("Ã", "Â", "â", "€", "™", "Ÿ")):
-        for enc in ("cp1252", "latin1"):
-            try:
-                repaired = s.encode(enc).decode("utf-8")
-                if repaired:
-                    s = repaired
-                    break
-            except Exception:
-                continue
-    s = re.sub(r"\s{2,}", " ", s).strip()
-    return s
 
 
 def get_override(mapping: Dict[str, str], name: str) -> Optional[str]:
@@ -455,12 +439,12 @@ def is_plausible_germany_coord(lat: float, lon: float) -> bool:
 
 def clean_team_name(name: str) -> str:
     """
-    Entfernt typische Wikipedia-Tabellen-Anmerkungen wie (A), (N), (M), FuÃŸnoten etc.
+    Entfernt typische Wikipedia-Tabellen-Anmerkungen wie (A), (N), (M), Fußnoten etc.
     """
     s = normalize_text(name)
-    # entferne KlammerzusÃ¤tze am Ende: "(A)", "(N)" usw.
+    # entferne Klammerzusätze am Ende: "(A)", "(N)" usw.
     s = re.sub(r"\s*\([^)]*\)\s*$", "", s).strip()
-    # entferne Hochstellungen/Footnote-Ã¤hnliche Marker
+    # entferne Hochstellungen/Footnote-ähnliche Marker
     s = re.sub(r"\[[0-9]+\]", "", s).strip()
     # entferne Tabellenstatus-Suffixe wie "L" am Ende
     s = re.sub(r"\s+[A-ZÄÖÜ]$", "", s).strip()
@@ -469,25 +453,6 @@ def clean_team_name(name: str) -> str:
     s = get_override(TEAM_NAME_NORMALIZATION_OVERRIDES, s) or s
     return s
 
-
-def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """
-    Great-circle distance between two points.
-    """
-    R = 6371.0088
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-    a = math.sin(dphi/2)**2 + math.cos(phi1) * \
-        math.cos(phi2)*math.sin(dlambda/2)**2
-    return 2 * R * math.asin(math.sqrt(a))
-
-
-@dataclass(frozen=True)
-class Club:
-    name: str
-    lat: float
-    lon: float
 
 
 # -------------------------
@@ -688,8 +653,8 @@ def wiki_get_coords(session: requests.Session, title: str) -> Optional[Tuple[flo
 
 def nominatim_fallback_geocode(name: str) -> Optional[Tuple[float, float]]:
     """
-    Optionaler Geocoder-Fallback. BenÃ¶tigt geopy.
-    Nutzt GEOCODE_QUERY_OVERRIDES fÃ¼r schwierige FÃ¤lle.
+    Optionaler Geocoder-Fallback. Benötigt geopy.
+    Nutzt GEOCODE_QUERY_OVERRIDES für schwierige Fälle.
     """
     try:
         from geopy.geocoders import Nominatim
@@ -807,7 +772,7 @@ def build_clubs(team_names: List[str]) -> List[Club]:
 def extract_table_teams_from_wikipedia(url: str) -> List[str]:
     """
     Liest Wikipedia-HTML-Tabellen und extrahiert Teamnamen aus Spalten 'Verein' oder 'Mannschaft'.
-    Gibt die Teams in Tabellenreihenfolge zurÃ¼ck.
+    Gibt die Teams in Tabellenreihenfolge zurück.
     """
     resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
     resp.raise_for_status()
@@ -838,7 +803,7 @@ def extract_table_teams_from_wikipedia(url: str) -> List[str]:
                 continue
             teams.append(name)
 
-        # In vielen Wikipedia-Artikeln ist die erste passende Tabelle die gewÃ¼nschte "Tabelle".
+        # In vielen Wikipedia-Artikeln ist die erste passende Tabelle die gewünschte "Tabelle".
         # Wir nehmen sie und brechen ab.
         if teams:
             break
@@ -1483,14 +1448,14 @@ def build_rule_based_team_pool(target: int) -> List[str]:
 
 def fill_up_to_target(base: List[str], target: int) -> List[str]:
     """
-    FÃ¼llt base bis target auf, mit Kandidaten aus Oberliga-Seiten (Wikipedia Tabellen).
+    Füllt base bis target auf, mit Kandidaten aus Oberliga-Ligen (FuPa bevorzugt, Wikipedia als Fallback).
     """
     if len(base) >= target:
         return base[:target]
 
     if not FILL_UP_WITH_TIER5_FROM_WIKIPEDIA:
         raise RuntimeError(
-            f"Nach Filterung sind nur {len(base)} Teams vorhanden, benÃ¶tigt werden {target}. "
+            f"Nach Filterung sind nur {len(base)} Teams vorhanden, benötigt werden {target}. "
             f"Aktiviere FILL_UP_WITH_TIER5_FROM_WIKIPEDIA oder passe Parameter an."
         )
 
@@ -1498,35 +1463,46 @@ def fill_up_to_target(base: List[str], target: int) -> List[str]:
     added: List[str] = []
     added_with_source: List[Tuple[str, str]] = []
 
-    for url in TIER5_WIKI_URLS:
+    for comp in OBERLIGA_MASTER_COMPETITIONS:
         if len(base) + len(added) >= target:
             break
+        table_pick = comp.get("wikipedia_table_pick", 0)
         try:
-            cand = extract_table_teams_from_wikipedia(url)
+            rows, src, url = extract_standings_rows_with_fallback(
+                comp["sources"], table_pick=table_pick
+            )
         except Exception:
             continue
 
-        for t in cand:
-            t = clean_team_name(t)
+        if not rows:
+            continue
+
+        if src == "wikipedia":
+            print(
+                f"  [Warnung] {comp['name']}: FuPa nicht verfügbar – "
+                f"nutze Wikipedia als Fallback ({url})"
+            )
+
+        for row in rows:
+            t = clean_team_name(str(row.get("team", "")))
             if not t or t in have:
                 continue
             if EXCLUDE_U23_TEAMS and is_u23_or_reserve(t):
                 continue
             have.add(t)
             added.append(t)
-            added_with_source.append((t, url))
+            added_with_source.append((t, f"{src}:{url}"))
             if len(base) + len(added) >= target:
                 break
 
     out = base + added
     if len(out) < target:
         raise RuntimeError(
-            f"Konnte nur auf {len(out)} Teams auffÃ¼llen (Ziel: {target}). "
-            "FÃ¼ge weitere TIER5_WIKI_URLS hinzu oder lockere Filter."
+            f"Konnte nur auf {len(out)} Teams auffüllen (Ziel: {target}). "
+            "Füge weitere Ligen zu OBERLIGA_MASTER_COMPETITIONS hinzu oder lockere Filter."
         )
     if added_with_source:
-        lines = [f"{team} | {source_url}" for team,
-                 source_url in added_with_source]
+        lines = [f"{team} | {source_url}" for team, source_url in added_with_source]
         print("\nHinzugefuegte Oberliga-Teams (inkl. Quelle):")
         for line in lines:
             print(f"  - {line}")
@@ -1536,7 +1512,7 @@ def fill_up_to_target(base: List[str], target: int) -> List[str]:
 
 
 # -------------------------
-# Clustering + KapazitÃ¤ten erzwingen
+# Clustering + Kapazitäten erzwingen
 # -------------------------
 def compute_centroids(clubs: List[Club], labels: np.ndarray, k: int) -> np.ndarray:
     centroids = np.zeros((k, 2), dtype=float)
@@ -1571,7 +1547,7 @@ def balance_clusters(clubs: List[Club], labels: np.ndarray, k: int, cap: int, ma
 
         centroids = compute_centroids(clubs, labels, k)
 
-        # WÃ¤hle einen Move aus einem Ã¼bervollen Cluster in einen untervollen Cluster
+        # Wähle einen Move aus einem übervollen Cluster in einen untervollen Cluster
         best_move = None  # (delta_cost, idx, from_k, to_k)
         for from_k in over:
             idxs = np.where(labels == from_k)[0]
@@ -1591,12 +1567,12 @@ def balance_clusters(clubs: List[Club], labels: np.ndarray, k: int, cap: int, ma
         labels[idx] = to_k
 
     raise RuntimeError(
-        "Balance der Cluster nicht konvergiert. ErhÃ¶he max_iter oder prÃ¼fe Daten.")
+        "Balance der Cluster nicht konvergiert. Erhöhe max_iter oder prüfe Daten.")
 
 
 def improve_by_swaps(clubs: List[Club], labels: np.ndarray, k: int, iters: int = 30000, seed: int = 42) -> np.ndarray:
     """
-    Lokale Verbesserung: zufÃ¤llige Swaps zwischen Clustern, wenn Objective sinkt.
+    Lokale Verbesserung: zufällige Swaps zwischen Clustern, wenn Objective sinkt.
     Objective: Summe Distanz(Club -> Cluster-Centroid).
     """
     rng = np.random.default_rng(seed)
@@ -2009,7 +1985,7 @@ def improve_component_swaps_distance_matrix(
 
 def label_compass_names(clubs: List[Club], labels: np.ndarray, k: int) -> Dict[int, str]:
     """
-    Benennt Cluster als Nord/SÃ¼d/West/Ost anhand der Centroids.
+    Benennt Cluster als Nord/Süd/West/Ost anhand der Centroids.
     """
     centroids = compute_centroids(clubs, labels, k)
     idxs = list(range(k))
@@ -2021,18 +1997,18 @@ def label_compass_names(clubs: List[Club], labels: np.ndarray, k: int) -> Dict[i
     if len(remaining) != 2:
         # Fallback: sortiere nach lon
         order = sorted(idxs, key=lambda x: centroids[x, 1])
-        return {order[0]: "West", order[1]: "SÃ¼d", order[2]: "Nord", order[3]: "Ost"}
+        return {order[0]: "West", order[1]: "Süd", order[2]: "Nord", order[3]: "Ost"}
 
     west = remaining[0] if centroids[remaining[0],
                                      1] < centroids[remaining[1], 1] else remaining[1]
     east = remaining[1] if west == remaining[0] else remaining[0]
 
-    return {north: "Nord", south: "SÃ¼d", west: "West", east: "Ost"}
+    return {north: "Nord", south: "Süd", west: "West", east: "Ost"}
 
 
 def league_metrics(clubs: List[Club]) -> Dict[str, float]:
     """
-    Einfache Metriken: Ã˜ Paar-Distanz innerhalb der Liga und Max-Paar-Distanz.
+    Einfache Metriken: Ø Paar-Distanz innerhalb der Liga und Max-Paar-Distanz.
     """
     dists = []
     max_d = 0.0
@@ -2223,6 +2199,46 @@ def build_extreme_initial_labels(
     return labels
 
 
+def build_random_balanced_labels(
+    n: int, k: int = N_LEAGUES, cap: int = TEAMS_PER_LEAGUE, seed: int = 0
+) -> np.ndarray:
+    """Erzeugt eine komplett zufaellige, aber balancierte Partition (k Gruppen a cap)."""
+    rng = np.random.default_rng(seed)
+    indices = rng.permutation(n)
+    labels = np.empty(n, dtype=int)
+    for j in range(k):
+        labels[indices[j * cap:(j + 1) * cap]] = j
+    return labels
+
+
+def build_geographic_stripe_labels(
+    clubs: List[Club], mode: str, k: int = N_LEAGUES, cap: int = TEAMS_PER_LEAGUE
+) -> np.ndarray:
+    """
+    Teilt Teams in k gleich grosse Streifen entlang einer geographischen Achse.
+    mode: 'lat' (horizontale Streifen N->S), 'lon' (vertikale Streifen W->O),
+          'diag_nw_se' (Diagonale NW->SO), 'diag_ne_sw' (Diagonale NO->SW)
+    """
+    n = len(clubs)
+    if mode == "lat":
+        keys = [c.lat for c in clubs]
+    elif mode == "lon":
+        keys = [c.lon for c in clubs]
+    elif mode == "diag_nw_se":
+        keys = [c.lat + c.lon for c in clubs]
+    elif mode == "diag_ne_sw":
+        keys = [c.lat - c.lon for c in clubs]
+    else:
+        raise ValueError(f"Unbekannter Stripe-Modus: {mode}")
+
+    sorted_indices = sorted(range(n), key=lambda i: keys[i])
+    labels = np.empty(n, dtype=int)
+    for j in range(k):
+        for i in sorted_indices[j * cap:(j + 1) * cap]:
+            labels[i] = j
+    return labels
+
+
 def optimize_candidate_from_seed(
     clubs: List[Club],
     dist_matrix: np.ndarray,
@@ -2377,6 +2393,226 @@ def partition_distance_with_best_relabel(
         if s > best_overlap:
             best_overlap = s
     return int(len(labels_a) - best_overlap)
+
+
+def solve_milp(
+    clubs: List["Club"],
+    dist_matrix: np.ndarray,
+    k: int = N_LEAGUES,
+    cap: int = TEAMS_PER_LEAGUE,
+    time_limit_s: int = int(os.getenv("KOMPASS_MILP_TIME_LIMIT", "600")),
+    mip_gap: float = float(os.getenv("KOMPASS_MILP_GAP", "0.005")),
+) -> Optional[np.ndarray]:
+    """
+    Exakter MILP-Solver fuer die balancierte Ligaeinteilung (optional).
+
+    Minimiert die Summe aller Intra-Liga-Paardistanzen (identisch zur
+    Heuristik-Objective).  Benoetigt PuLP + CBC-Solver; wenn nicht
+    installiert, wird None zurueckgegeben.
+
+    EINSCHRAENKUNGEN (CBC mit n=80):
+    - LP-Relaxation hat Lower Bound = 0 (schwache Schranke), daher kann CBC
+      die Optimalitaet praktisch nie beweisen.
+    - Die Root-Node-Cut-Generierung kann das Zeitlimit blockieren – CBC kann
+      fuer n=80 Minuten bis Stunden benoetigen.
+    - Empfehlung: Nur fuer kleine Teilmengen (n<=32) oder mit Gurobi/CPLEX
+      als Solver verwenden.  Fuer n=80 liefert die Heuristik bessere
+      Ergebnisse in deutlich kuerzerer Zeit.
+
+    Aufruf (mit explizitem Zeitlimit):
+        from kompass import *
+        teams = select_teams_for_season(80)
+        clubs = build_clubs(teams); dm = compute_distance_matrix_km(clubs)
+        labels = solve_milp(clubs, dm, time_limit_s=120, mip_gap=0.05)
+        if labels is not None: export_solution(clubs, labels, 'milp_result.csv', 'MILP')
+
+    Umgebungsvariablen (werden nur ausgewertet wenn kein Argument uebergeben):
+        KOMPASS_MILP_TIME_LIMIT  Zeitlimit in Sekunden (Default 600)
+        KOMPASS_MILP_GAP         Optimality-Gap-Toleranz (Default 0.005 = 0.5%)
+    """
+    try:
+        import pulp
+    except ImportError:
+        print("PuLP nicht installiert – MILP-Solver uebersprungen. "
+              "Installieren mit: pip install pulp")
+        return None
+
+    n = len(clubs)
+    if n != k * cap:
+        raise ValueError(f"solve_milp: n={n} != k*cap={k*cap}")
+
+    prob = pulp.LpProblem("Kompass_MILP", pulp.LpMinimize)
+
+    # x[i][j] = 1 wenn Team i in Liga j
+    x = [[pulp.LpVariable(f"x_{i}_{j}", cat="Binary") for j in range(k)] for i in range(n)]
+
+    # Linearisierungsvariablen y[i][l][j] = x[i][j] * x[l][j]  (i < l)
+    # Statt alle O(n^2*k) Vars zu erzeugen, nutzen wir nur die obere Dreiecksmatrix
+    y: dict = {}
+    for i in range(n):
+        for l in range(i + 1, n):
+            for j in range(k):
+                y[(i, l, j)] = pulp.LpVariable(f"y_{i}_{l}_{j}", lowBound=0, upBound=1)
+
+    # Objective: minimiere Summe aller Intra-Liga-Paardistanzen
+    prob += pulp.lpSum(
+        dist_matrix[i, l] * y[(i, l, j)]
+        for i in range(n) for l in range(i + 1, n) for j in range(k)
+    )
+
+    # Jedes Team in genau einer Liga
+    for i in range(n):
+        prob += pulp.lpSum(x[i][j] for j in range(k)) == 1
+
+    # Jede Liga hat genau `cap` Teams
+    for j in range(k):
+        prob += pulp.lpSum(x[i][j] for i in range(n)) == cap
+
+    # McCormick-Linearisierung: y[i,l,j] <= x[i][j], y[i,l,j] <= x[l][j],
+    # y[i,l,j] >= x[i][j] + x[l][j] - 1
+    for i in range(n):
+        for l in range(i + 1, n):
+            for j in range(k):
+                yvar = y[(i, l, j)]
+                prob += yvar <= x[i][j]
+                prob += yvar <= x[l][j]
+                prob += yvar >= x[i][j] + x[l][j] - 1
+
+    # threads=1 ensures CBC respects the wall-clock time limit reliably.
+    # Multi-threaded CBC may not honour timeLimit correctly on some platforms.
+    solver = pulp.PULP_CBC_CMD(
+        timeLimit=time_limit_s,
+        gapRel=mip_gap,
+        msg=1,
+        threads=1,
+    )
+    prob.solve(solver)
+    print(f"MILP Status: {pulp.LpStatus[prob.status]} | "
+          f"Objective: {pulp.value(prob.objective):.2f} km")
+
+    if prob.status not in (pulp.LpStatusNotSolved, -1):
+        labels = np.zeros(n, dtype=int)
+        for i in range(n):
+            for j in range(k):
+                if pulp.value(x[i][j]) is not None and pulp.value(x[i][j]) > 0.5:
+                    labels[i] = j
+                    break
+        return labels
+    return None
+
+
+def solve_cpsat(
+    clubs: List["Club"],
+    dist_matrix: np.ndarray,
+    k: int = N_LEAGUES,
+    cap: int = TEAMS_PER_LEAGUE,
+    time_limit_s: int = 120,
+    warm_start: Optional[np.ndarray] = None,
+) -> Optional[np.ndarray]:
+    """
+    CP-SAT Solver fuer die balancierte Ligaeinteilung (Google OR-Tools).
+
+    Deutlich schneller als CBC-MILP fuer dieses Problem, da CP-SAT intern
+    einen Portfolio-Ansatz nutzt (SAT, LP, LNS gleichzeitig).
+
+    Args:
+        clubs: Liste der Clubs
+        dist_matrix: n x n Distanzmatrix in km
+        k: Anzahl Ligen
+        cap: Teams pro Liga
+        time_limit_s: Zeitlimit in Sekunden
+        warm_start: Optionale Startloesung (Label-Array) als Hint
+
+    Returns:
+        Label-Array oder None wenn keine Loesung gefunden
+    """
+    try:
+        from ortools.sat.python import cp_model
+    except ImportError:
+        print("OR-Tools nicht installiert – CP-SAT-Solver uebersprungen. "
+              "Installieren mit: pip install ortools")
+        return None
+
+    n = len(clubs)
+    if n != k * cap:
+        raise ValueError(f"solve_cpsat: n={n} != k*cap={k*cap}")
+
+    model = cp_model.CpModel()
+
+    # x[i][j] = 1 wenn Team i in Liga j
+    x = [[model.new_bool_var(f"x_{i}_{j}") for j in range(k)] for i in range(n)]
+
+    # Jedes Team in genau einer Liga
+    for i in range(n):
+        model.add_exactly_one(x[i][j] for j in range(k))
+
+    # Jede Liga hat genau cap Teams
+    for j in range(k):
+        model.add(sum(x[i][j] for i in range(n)) == cap)
+
+    # Objective: minimiere Summe aller Intra-Liga-Paardistanzen
+    # CP-SAT arbeitet mit Ganzzahlen -> Distanzen in Metern (int) skalieren
+    SCALE = 100  # 2 Nachkommastellen der km-Distanz
+    obj_terms = []
+    b_vars: List[tuple] = []  # (i, l, j, b_var) fuer Warm-Start
+    for i in range(n):
+        for l in range(i + 1, n):
+            d_scaled = int(round(dist_matrix[i, l] * SCALE))
+            if d_scaled == 0:
+                continue
+            for j in range(k):
+                # b = x[i][j] AND x[l][j]  (beide Teams in derselben Liga)
+                b = model.new_bool_var(f"b_{i}_{l}_{j}")
+                model.add_implication(b, x[i][j])
+                model.add_implication(b, x[l][j])
+                model.add_bool_or([b, x[i][j].negated(), x[l][j].negated()])
+                obj_terms.append(d_scaled * b)
+                b_vars.append((i, l, j, b))
+
+    model.minimize(sum(obj_terms))
+
+    # Warm-Start Hint (falls vorhanden)
+    if warm_start is not None and len(warm_start) == n:
+        for i in range(n):
+            for j in range(k):
+                model.add_hint(x[i][j], 1 if warm_start[i] == j else 0)
+        for i, l, j, bv in b_vars:
+            model.add_hint(bv, 1 if (warm_start[i] == j and warm_start[l] == j) else 0)
+
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = time_limit_s
+    solver.parameters.num_workers = max(1, os.cpu_count() or 1)
+    solver.parameters.log_search_progress = True
+
+    print(f"CP-SAT: n={n}, k={k}, cap={cap}, time_limit={time_limit_s}s, "
+          f"workers={solver.parameters.num_workers}", flush=True)
+
+    status = solver.solve(model)
+
+    status_name = {
+        cp_model.OPTIMAL: "OPTIMAL",
+        cp_model.FEASIBLE: "FEASIBLE",
+        cp_model.INFEASIBLE: "INFEASIBLE",
+        cp_model.MODEL_INVALID: "MODEL_INVALID",
+        cp_model.UNKNOWN: "UNKNOWN",
+    }.get(status, f"STATUS_{status}")
+
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        obj_km = solver.objective_value / SCALE
+        print(f"CP-SAT Status: {status_name} | "
+              f"Objective: {obj_km:.2f} km | "
+              f"Bound: {solver.best_objective_bound / SCALE:.2f} km | "
+              f"Gap: {(obj_km - solver.best_objective_bound / SCALE) / max(obj_km, 1) * 100:.1f}%")
+        labels = np.zeros(n, dtype=int)
+        for i in range(n):
+            for j in range(k):
+                if solver.value(x[i][j]):
+                    labels[i] = j
+                    break
+        return labels
+
+    print(f"CP-SAT Status: {status_name} – keine Loesung gefunden")
+    return None
 
 
 def select_phase2_elites(
@@ -2663,6 +2899,143 @@ def run_multi_start_search(
     return ranked
 
 
+# -------------------------
+# Phase 3: Large Neighborhood Search (Ruin & Recreate)
+# -------------------------
+LNS_ITERATIONS: int = int(os.getenv("KOMPASS_LNS_ITERATIONS", "200"))
+LNS_DESTROY_FRACTION: float = float(os.getenv("KOMPASS_LNS_DESTROY_FRACTION", "0.35"))
+LNS_ENABLED: bool = os.getenv("KOMPASS_LNS_ENABLED", "1") == "1"
+
+# -------------------------
+# Phase 4: CP-SAT (optional, benoetigt ortools)
+# -------------------------
+CPSAT_ENABLED: bool = os.getenv("KOMPASS_CPSAT_ENABLED", "0") == "1"
+CPSAT_TIME_LIMIT: int = int(os.getenv("KOMPASS_CPSAT_TIME_LIMIT", "120"))
+
+
+def _lns_ruin_and_recreate(
+    clubs: List[Club],
+    dist_matrix: np.ndarray,
+    labels: np.ndarray,
+    destroy_fraction: float,
+    rng: np.random.Generator,
+    k: int = N_LEAGUES,
+    cap: int = TEAMS_PER_LEAGUE,
+) -> np.ndarray:
+    """
+    Ruin & Recreate: Entferne einen Anteil der Teams aus ihren Ligen,
+    dann ordne sie gierig der nächsten Liga zu (Distanz zum Liga-Schwerpunkt),
+    wobei die Liga-Kapazitaet eingehalten wird.
+    """
+    n = len(clubs)
+    n_destroy = max(2, int(round(n * destroy_fraction)))
+    destroyed_indices = set(rng.choice(n, size=n_destroy, replace=False).tolist())
+
+    new_labels = labels.copy()
+    for i in destroyed_indices:
+        new_labels[i] = -1
+
+    # Liga-Schwerpunkte aus den noch zugewiesenen Teams berechnen
+    centroids = np.zeros((k, 2))
+    counts = np.zeros(k)
+    for i in range(n):
+        if new_labels[i] >= 0:
+            centroids[new_labels[i]] += [clubs[i].lat, clubs[i].lon]
+            counts[new_labels[i]] += 1
+    for j in range(k):
+        if counts[j] > 0:
+            centroids[j] /= counts[j]
+
+    # Gierig: zerstoerte Teams in zufaelliger Reihenfolge einsetzen
+    remaining = list(destroyed_indices)
+    rng.shuffle(remaining)
+    for i in remaining:
+        best_j = -1
+        best_cost = float("inf")
+        for j in range(k):
+            if counts[j] >= cap:
+                continue
+            cost = haversine_km(clubs[i].lat, clubs[i].lon,
+                                centroids[j][0], centroids[j][1])
+            if cost < best_cost:
+                best_cost = cost
+                best_j = j
+        if best_j < 0:
+            # Alle Ligen voll -> in die naechstbeste zuweisen (sollte nicht passieren)
+            best_j = int(rng.integers(0, k))
+        new_labels[i] = best_j
+        # Schwerpunkt aktualisieren
+        old_count = counts[best_j]
+        centroids[best_j] = (centroids[best_j] * old_count +
+                              [clubs[i].lat, clubs[i].lon]) / (old_count + 1)
+        counts[best_j] += 1
+
+    return new_labels
+
+
+def _compute_intra_pair_sum(dist_matrix: np.ndarray, labels: np.ndarray) -> float:
+    """Summe aller Paar-Distanzen innerhalb derselben Liga."""
+    total = 0.0
+    n = len(labels)
+    for i in range(n):
+        for l in range(i + 1, n):
+            if labels[i] == labels[l]:
+                total += dist_matrix[i, l]
+    return total
+
+
+def run_lns_phase(
+    clubs: List[Club],
+    dist_matrix: np.ndarray,
+    best_labels: np.ndarray,
+    iterations: int = LNS_ITERATIONS,
+    destroy_fraction: float = LNS_DESTROY_FRACTION,
+    seed: int = 54321,
+) -> np.ndarray:
+    """
+    Large Neighborhood Search: iterativ die beste Loesung durch Ruin & Recreate
+    verbessern.  Akzeptiert nur strikt bessere Loesungen (greedy descent).
+    """
+    rng = np.random.default_rng(seed)
+    current = best_labels.copy()
+    current_score = _compute_intra_pair_sum(dist_matrix, current)
+    best_score = current_score
+    best_result = current.copy()
+    improved_count = 0
+
+    print(
+        f"[LNS] Start: score={current_score:.2f} km, "
+        f"iters={iterations}, destroy={destroy_fraction:.0%}",
+        flush=True,
+    )
+
+    progress_step = max(1, iterations // 10)
+    for it in range(1, iterations + 1):
+        candidate = _lns_ruin_and_recreate(
+            clubs, dist_matrix, current, destroy_fraction, rng
+        )
+        candidate_score = _compute_intra_pair_sum(dist_matrix, candidate)
+        if candidate_score < current_score:
+            current = candidate
+            current_score = candidate_score
+            if current_score < best_score:
+                best_score = current_score
+                best_result = current.copy()
+                improved_count += 1
+        if it % progress_step == 0 or it == iterations:
+            print(
+                f"[LNS] iter {it}/{iterations} | "
+                f"current={current_score:.2f} km | best={best_score:.2f} km | "
+                f"improvements={improved_count}",
+                flush=True,
+            )
+
+    print(
+        f"[LNS] Fertig: score {_compute_intra_pair_sum(dist_matrix, best_labels):.2f}"
+        f" -> {best_score:.2f} km ({improved_count} Verbesserungen)",
+        flush=True,
+    )
+    return best_result
 
 
 def build_ranked_solutions_payload(
@@ -3063,6 +3436,13 @@ def main() -> None:
         ("initial_auto", auto_initial_labels),
         ("initial_north_south_extreme", north_south_initial_labels),
         ("initial_west_east_extreme", west_east_initial_labels),
+        ("initial_lat_stripes", build_geographic_stripe_labels(clubs, "lat")),
+        ("initial_lon_stripes", build_geographic_stripe_labels(clubs, "lon")),
+        ("initial_diag_nw_se", build_geographic_stripe_labels(clubs, "diag_nw_se")),
+        ("initial_diag_ne_sw", build_geographic_stripe_labels(clubs, "diag_ne_sw")),
+        ("initial_random_1", build_random_balanced_labels(len(clubs), seed=7777)),
+        ("initial_random_2", build_random_balanced_labels(len(clubs), seed=31415)),
+        ("initial_random_3", build_random_balanced_labels(len(clubs), seed=27182)),
     ]
 
     if ENABLE_MULTI_START_SEARCH:
@@ -3119,6 +3499,99 @@ def main() -> None:
             "derby_rule_enabled": ENFORCE_DERBY_SAME_LEAGUE,
             "derby_max_distance_km": DERBY_MAX_DISTANCE_KM,
         }
+        # Phase 3: LNS (Ruin & Recreate) auf der besten Loesung
+        if LNS_ENABLED and ranked:
+            best_entry = ranked[0]
+            lns_labels = run_lns_phase(
+                clubs, dist_matrix,
+                best_labels=best_entry["labels_matrix"],
+                iterations=LNS_ITERATIONS,
+                destroy_fraction=LNS_DESTROY_FRACTION,
+            )
+            lns_score = _compute_intra_pair_sum(dist_matrix, lns_labels)
+            old_score = best_entry["matrix_intra_km"]
+            if lns_score < old_score:
+                print(
+                    f"[LNS] Verbesserung gefunden: {old_score:.2f} -> {lns_score:.2f} km "
+                    f"({(old_score - lns_score) / old_score * 100:.2f}%)"
+                )
+                # LNS-Loesung als neuen Kandidaten einfuegen
+                lns_entry = optimize_candidate_from_seed(
+                    clubs=clubs,
+                    dist_matrix=dist_matrix,
+                    labels_start=lns_labels,
+                    run_no=len(ranked) + 1,
+                    base_seed=99999,
+                    origin="lns_phase3",
+                    centroid_iters=0,
+                    matrix_iters=PHASE2_MATRIX_SWAP_ITERS,
+                    component_iters=PHASE2_COMPONENT_SWAP_ITERS,
+                    shake_fraction=0.0,
+                    accept_equal_prob=PHASE2_MATRIX_ACCEPT_EQUAL_PROB,
+                    anneal_start_temp_km=PHASE2_MATRIX_ANNEAL_START_TEMP_KM,
+                    anneal_end_temp_km=PHASE2_MATRIX_ANNEAL_END_TEMP_KM,
+                    move_2_prob=PHASE2_MATRIX_MOVE_2_PROB,
+                    move_3_prob=PHASE2_MATRIX_MOVE_3_PROB,
+                    move_4_prob=PHASE2_MATRIX_MOVE_4_PROB,
+                    stagnation_shake_iters=PHASE2_MATRIX_STAGNATION_SHAKE_ITERS,
+                    stagnation_shake_fraction=PHASE2_MATRIX_STAGNATION_SHAKE_FRACTION,
+                )
+                ranked.append(lns_entry)
+                ranked.sort(key=lambda x: (x["matrix_avg_away_km"],
+                                           x["matrix_intra_km"], x["run"]))
+                for idx, entry in enumerate(ranked, start=1):
+                    entry["rank"] = idx
+                search_config_override["lns_iterations"] = LNS_ITERATIONS
+                search_config_override["lns_destroy_fraction"] = LNS_DESTROY_FRACTION
+            else:
+                print(f"[LNS] Keine Verbesserung (best bleibt {old_score:.2f} km)")
+
+        # Phase 4: CP-SAT (optional)
+        if CPSAT_ENABLED and ranked:
+            best_entry = ranked[0]
+            print(f"\n=== Phase 4: CP-SAT Solver (time_limit={CPSAT_TIME_LIMIT}s) ===")
+            cpsat_labels = solve_cpsat(
+                clubs, dist_matrix,
+                time_limit_s=CPSAT_TIME_LIMIT,
+                warm_start=best_entry["labels_matrix"],
+            )
+            if cpsat_labels is not None:
+                cpsat_score = _compute_intra_pair_sum(dist_matrix, cpsat_labels)
+                old_score = best_entry["matrix_intra_km"]
+                if cpsat_score < old_score:
+                    print(
+                        f"[CP-SAT] Verbesserung: {old_score:.2f} -> {cpsat_score:.2f} km "
+                        f"({(old_score - cpsat_score) / old_score * 100:.2f}%)"
+                    )
+                    cpsat_entry = optimize_candidate_from_seed(
+                        clubs=clubs,
+                        dist_matrix=dist_matrix,
+                        labels_start=cpsat_labels,
+                        run_no=len(ranked) + 1,
+                        base_seed=88888,
+                        origin="cpsat_phase4",
+                        centroid_iters=0,
+                        matrix_iters=PHASE2_MATRIX_SWAP_ITERS,
+                        component_iters=PHASE2_COMPONENT_SWAP_ITERS,
+                        shake_fraction=0.0,
+                        accept_equal_prob=PHASE2_MATRIX_ACCEPT_EQUAL_PROB,
+                        anneal_start_temp_km=PHASE2_MATRIX_ANNEAL_START_TEMP_KM,
+                        anneal_end_temp_km=PHASE2_MATRIX_ANNEAL_END_TEMP_KM,
+                        move_2_prob=PHASE2_MATRIX_MOVE_2_PROB,
+                        move_3_prob=PHASE2_MATRIX_MOVE_3_PROB,
+                        move_4_prob=PHASE2_MATRIX_MOVE_4_PROB,
+                        stagnation_shake_iters=PHASE2_MATRIX_STAGNATION_SHAKE_ITERS,
+                        stagnation_shake_fraction=PHASE2_MATRIX_STAGNATION_SHAKE_FRACTION,
+                    )
+                    ranked.append(cpsat_entry)
+                    ranked.sort(key=lambda x: (x["matrix_avg_away_km"],
+                                               x["matrix_intra_km"], x["run"]))
+                    for idx, entry in enumerate(ranked, start=1):
+                        entry["rank"] = idx
+                else:
+                    print(f"[CP-SAT] Keine Verbesserung (best bleibt {old_score:.2f} km)")
+                search_config_override["cpsat_time_limit_s"] = CPSAT_TIME_LIMIT
+
         export_ranked_matrix_outputs(
             clubs,
             ranked,

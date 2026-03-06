@@ -4,7 +4,7 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 
 ## Projektziel
 - 80 Vereine in vier Regionalligen mit je 20 Teams zusammenstellen
-- Distanzen zwischen Vereinen auswerten
+- Auswaertsdistanzen zwischen Vereinen minimieren
 - Saisonuebergaenge (Auf-/Abstieg) nachvollziehbar markieren
 
 ## Kernlogik
@@ -17,124 +17,71 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
 - Quellenprioritaet: `FuPa -> Wikipedia`
 
-## Optimierungsmodus (aktuell)
-- Hauptausgabe ist die **Distanzmatrix-Optimierung (Rank 1)**.
-- Die Suche nutzt eine **2-Phasen-Heuristik**:
-  - Phase 1: Multi-Start (standardmaessig `2000` Runs)
-  - Phase 2: Elite-Restarts auf den besten bzw. diversen Phase-1-Loesungen
-- Es werden mehrere Initial-Seeds verwendet:
-  - `initial_auto` (urspruenglicher KMeans-Start)
-  - `initial_north_south_extreme` (20 noerdlichste + 20 suedlichste fix)
-  - `initial_west_east_extreme` (20 westlichste + 20 oestlichste fix)
-  - optional `initial_manual` via CSV-Override
-- Zielmetrik fuer Ranking: durchschnittliche Auswaertsdistanz pro Verein.
-- Fokus ist jetzt ausschliesslich Distanzmatrix (keine Centroid-Vergleichsausgabe mehr).
-- Ausgabe-Ordner:
-  - CSV: `outputs/csv/`
-  - HTML: `outputs/html/`
-  - JSON: `outputs/json/`
-- Wichtige Ausgaben:
-  - `outputs/csv/kompass_regionalliga_4x20.csv` (Rank 1, Hauptausgabe)
-  - `outputs/csv/kompass_regionalliga_4x20_initial.csv` (Initialverteilung vor Optimierung)
-  - `outputs/csv/kompass_regionalliga_4x20_initial_auto.csv` (automatisch erzeugte Initialverteilung)
-  - `outputs/csv/kompass_regionalliga_4x20_initial_north_south.csv` (Initialverteilung Nord/Sued-Extrem)
-  - `outputs/csv/kompass_regionalliga_4x20_initial_west_east.csv` (Initialverteilung West/Ost-Extrem)
-  - `outputs/csv/kompass_regionalliga_4x20_initial_manual.csv` (manuell geladene Initialverteilung, falls gesetzt)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix.csv` (Rank 1, kompatibel)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix_rank2.csv` (Rank 2)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix_rank3.csv` (Rank 3)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix_rank5.csv` (Rank 5)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix_rank10.csv` (Rank 10)
-  - `outputs/csv/kompass_regionalliga_4x20_matrix_worst.csv` (schlechteste gefundene Loesung)
-  - `outputs/json/kompass_solutions_ranked.json` (Top-Loesungen inkl. Score/Gap)
-  - `outputs/csv/kompass_solution_diff.csv` (Vereine mit unterschiedlicher Liga in Rank1/Rank2)
+## Optimierung
 
-## Karten und Koordinaten
-- `kompass_report.py` erstellt:
-  - `outputs/html/kompass_regionalliga_4x20_map.html` (Rank 1)
-  - `outputs/html/kompass_regionalliga_4x20_map_initial.html` (Initialverteilung, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_compare_initial_auto_manual.html` (Vergleich Auto-Initial vs Manuell-Initial, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_4x20_map_rank2.html` (Rank 2, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_4x20_map_rank3.html` (Rank 3, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_4x20_map_rank5.html` (Rank 5, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_4x20_map_rank10.html` (Rank 10, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_4x20_map_worst.html` (Worst found, falls vorhanden)
-  - `outputs/html/kompass_regionalliga_compare_worst.html` (Vergleich Rank 1 vs Worst found)
-  - `outputs/html/kompass_regionalliga_compare_initial.html` (Vergleich Initial vs Rank 1)
-  - `outputs/html/index.html` mit Schaltern fuer Initial / Rank 1 / Worst found
-  - `outputs/json/stadium_coords_snapshot.json` als Stadion-Koordinaten-Snapshot
+### Metriken
+- **Durchschnittliche Auswaertsreise (km)**: Fuer jeden Club der Durchschnitt der Entfernungen zu allen 19 Ligagegnern, dann Mittelwert ueber alle 80 Clubs. Die intuitive Kennzahl — z.B. "ein Club faehrt im Schnitt 141 km pro Auswaertsfahrt".
+- **Intra-Pair-Summe (km)**: Summe aller paarweisen Distanzen innerhalb jeder Liga (4 x 190 = 760 Paare). Das ist die Zielfunktion, die der Optimierer minimiert. Zusammenhang: `Oe Auswaertsreise = Intra-Pair-Summe / 760`.
 
-## Wichtige Dateien
-- `kompass.py`: Datenbeschaffung, Saisonlogik, Optimierung, CSV/JSON-Export
-- `kompass_report.py`: Karten, Distanzmetriken, `outputs/html/index.html`, Stadion-Snapshot
-- `data/regionalliga_2025_26.json`: statische RL-Teilnehmerliste 2025/26 (Basisdaten)
-- `season_transitions.json`: Marker- und Uebergabedaten
+### 3-Phasen-Heuristik
 
-## Konfigurierbare Optimierungsparameter (optional)
-- `KOMPASS_MULTI_START_RUNS` (Default `2000`)
-- `KOMPASS_MULTI_START_KMEANS_N_INIT` (Default `5`)
-- `KOMPASS_MULTI_START_CENTROID_ITERS` (Default `2000`)
-- `KOMPASS_MULTI_START_MATRIX_ITERS` (Default `9000`)
-- `KOMPASS_MULTI_START_COMPONENT_ITERS` (Default `7000`, nur mit Derby-Regel)
-- `KOMPASS_MULTI_START_BASE_SEED` (Default `1000`)
-- `KOMPASS_MULTI_START_SHAKE_SWAP_FRACTION` (Default `0.02`)
-- `KOMPASS_MATRIX_ACCEPT_EQUAL_PROB` (Default `0.02`)
-- `KOMPASS_MATRIX_ANNEAL_START_TEMP_KM` (Default `60.0`)
-- `KOMPASS_MATRIX_ANNEAL_END_TEMP_KM` (Default `1.0`)
-- `KOMPASS_MATRIX_MOVE_2_PROB` (Default `0.80`, Gewicht fuer 2er-Tausch)
-- `KOMPASS_MATRIX_MOVE_3_PROB` (Default `0.15`, Gewicht fuer 3er-Tausch)
-- `KOMPASS_MATRIX_MOVE_4_PROB` (Default `0.05`, Gewicht fuer 4er-Tausch)
-- `KOMPASS_MATRIX_STAGNATION_SHAKE_ITERS` (Default `2500`, danach Diversifikations-Shake)
-- `KOMPASS_MATRIX_STAGNATION_SHAKE_FRACTION` (Default `0.02`, Anteil Teams pro Shake)
-- `KOMPASS_PHASE2_ELITE_COUNT` (Default `8`)
-- `KOMPASS_PHASE2_ELITE_SELECTION_MODE` (Default `diverse`; `diverse` oder `score`)
-- `KOMPASS_PHASE2_DIVERSE_POOL_MULTIPLIER` (Default `6`, Poolgroesse fuer diverse Elite-Auswahl)
-- `KOMPASS_PHASE2_DIVERSE_MAX_SCORE_GAP_KM` (Default `4.0`, max. Score-Abstand zum Besten im diversen Pool)
-- `KOMPASS_PHASE2_RESTARTS_PER_ELITE` (Default `5`)
-- `KOMPASS_PHASE2_BASE_SEED` (Default `100000`)
-- `KOMPASS_PHASE2_CENTROID_ITERS` (Default `1500`)
-- `KOMPASS_PHASE2_MATRIX_ITERS` (Default `15000`)
-- `KOMPASS_PHASE2_COMPONENT_ITERS` (Default `12000`, nur mit Derby-Regel)
-- `KOMPASS_PHASE2_SHAKE_SWAP_FRACTION` (Default `0.08`)
-- `KOMPASS_PHASE2_ACCEPT_EQUAL_PROB` (Default `0.05`)
-- `KOMPASS_PHASE2_ANNEAL_START_TEMP_KM` (Default `120.0`)
-- `KOMPASS_PHASE2_ANNEAL_END_TEMP_KM` (Default `2.0`)
-- `KOMPASS_PHASE2_MOVE_2_PROB` (Default wie Phase 1)
-- `KOMPASS_PHASE2_MOVE_3_PROB` (Default wie Phase 1)
-- `KOMPASS_PHASE2_MOVE_4_PROB` (Default wie Phase 1)
-- `KOMPASS_PHASE2_STAGNATION_SHAKE_ITERS` (Default halb so hoch wie Phase 1)
-- `KOMPASS_PHASE2_STAGNATION_SHAKE_FRACTION` (Default hoeher als Phase 1)
-- `KOMPASS_INITIAL_CSV_OVERRIDE` (optionaler Pfad zu einer manuellen Initial-CSV mit Spalten `Liga`,`Verein`)
+**Phase 1 — Multi-Start-Suche** (Standard: 2000 Runs)
+- KMeans-Initialisierung + Simulated Annealing mit 2er/3er/4er-Tausch
+- Stagnation-Shake zur Diversifikation
 
-## Empfohlener Heuristik-Workflow
-```powershell
-$env:KOMPASS_MULTI_START_RUNS="2000"
-$env:KOMPASS_PHASE2_ELITE_COUNT="8"
-$env:KOMPASS_PHASE2_RESTARTS_PER_ELITE="5"
-python kompass.py
-python kompass_report.py
-```
+**Phase 2 — Elite-Restarts**
+- Die besten/diversesten Phase-1-Loesungen werden intensiv nachoptimiert
+- Hoehere Anneal-Temperatur und mehr Iterationen
 
-## Breite Suche (aggressiv)
-```powershell
-$env:KOMPASS_MULTI_START_RUNS="10000"
-$env:KOMPASS_PHASE2_ELITE_COUNT="16"
-$env:KOMPASS_PHASE2_RESTARTS_PER_ELITE="12"
-$env:KOMPASS_MULTI_START_SHAKE_SWAP_FRACTION="0.05"
-$env:KOMPASS_PHASE2_SHAKE_SWAP_FRACTION="0.12"
-$env:KOMPASS_MATRIX_MOVE_2_PROB="0.65"
-$env:KOMPASS_MATRIX_MOVE_3_PROB="0.25"
-$env:KOMPASS_MATRIX_MOVE_4_PROB="0.10"
-$env:KOMPASS_MATRIX_STAGNATION_SHAKE_ITERS="1800"
-$env:KOMPASS_MATRIX_STAGNATION_SHAKE_FRACTION="0.04"
-$env:KOMPASS_PHASE2_MOVE_2_PROB="0.55"
-$env:KOMPASS_PHASE2_MOVE_3_PROB="0.30"
-$env:KOMPASS_PHASE2_MOVE_4_PROB="0.15"
-$env:KOMPASS_PHASE2_STAGNATION_SHAKE_ITERS="1200"
-$env:KOMPASS_PHASE2_STAGNATION_SHAKE_FRACTION="0.08"
-python kompass.py
-python kompass_report.py
-```
+**Phase 3 — LNS (Large Neighborhood Search)**
+- Ruin & Recreate: 35% der Zuordnungen zerstoeren, greedy via Centroid-Distanz reparieren
+- Greedy Descent ueber 200 Iterationen
+- Konfigurierbar via `KOMPASS_LNS_ITERATIONS`, `KOMPASS_LNS_DESTROY_FRACTION`
+- Deaktivierbar: `KOMPASS_LNS_ENABLED=0`
+
+### Diverse Initialisierungen
+Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu vermeiden:
+- `initial_auto` — KMeans-Start
+- `initial_north_south_extreme` / `initial_west_east_extreme` — extreme geografische Splits
+- `initial_lat_stripes` / `initial_lon_stripes` — Streifen nach Breiten-/Laengengrad
+- `initial_diag_nw_se` / `initial_diag_ne_sw` — diagonale Streifen
+- `initial_random_1..3` — zufaellige balancierte Partitionen
+
+**Phase 4 — CP-SAT Solver** (optional, `KOMPASS_CPSAT_ENABLED=1`)
+- Exakter Solver via Google OR-Tools (`pip install ortools`)
+- Nutzt die beste Heuristik-Loesung als Warm-Start
+- CP-SAT setzt intern SAT, LP und LNS parallel ein
+- Fuer n=80 in 120s: Ergebnis ~0.3% ueber Heuristik
+- Zeitlimit konfigurierbar via `KOMPASS_CPSAT_TIME_LIMIT` (Default 120s)
+
+## Dateistruktur
+- `kompass.py` — Datenbeschaffung, Saisonlogik, Optimierung, CSV/JSON-Export
+- `kompass_report.py` — Karten (Folium), Distanzmetriken, `index.html`, GitHub-Pages-Sync
+- `kompass_utils.py` — Shared Utilities (normalize_text, haversine_km, Club-Klasse)
+- `data/regionalliga_2025_26.json` — statische RL-Teilnehmerliste 2025/26
+- `season_transitions.json` — Auf-/Abstiegsmarker
+- `tests/test_utils.py` — 42 Offline-Tests
+
+## Ausgaben
+### CSV (`outputs/csv/`)
+- `kompass_regionalliga_4x20.csv` — Rank 1 (Hauptausgabe)
+- `kompass_regionalliga_4x20_matrix_rank2.csv` bis `_rank10.csv` — weitere Top-Loesungen
+- `kompass_regionalliga_4x20_matrix_worst.csv` — schlechteste Loesung
+- `kompass_regionalliga_4x20_initial*.csv` — verschiedene Initialverteilungen
+- `kompass_solution_diff.csv` — Unterschiede zwischen Rank 1 und Rank 2
+- `kompass_away_metrics_per_club.csv` / `_per_league.csv` — Distanzmetriken
+- `kompass_longest_trips.csv` — laengste Einzelreisen
+
+### JSON (`outputs/json/`)
+- `kompass_solutions_ranked.json` — Top-Loesungen mit Score, Gap und Teamlisten
+- `stadium_coords_snapshot.json` — Stadion-Koordinaten-Snapshot
+
+### HTML (`outputs/html/`)
+- `index.html` — Uebersichtsseite mit Kartenschalten
+- `kompass_regionalliga_4x20_map.html` — Rank 1 Karte
+- `kompass_regionalliga_4x20_map_initial.html` — Initialverteilung
+- `kompass_regionalliga_4x20_map_worst.html` — schlechteste Loesung
+- Vergleichskarten (Initial vs Rank 1, Rank 1 vs Worst)
 
 ## Schnellstart
 ```powershell
@@ -145,14 +92,68 @@ python kompass.py
 python kompass_report.py
 ```
 
+## Tests
+```bash
+python -m pytest tests/ -v
+```
+
+## Konfiguration (Umgebungsvariablen)
+
+### Saison
+- `KOMPASS_SEASON` (Default `2025/26`)
+
+### Phase 1
+- `KOMPASS_MULTI_START_RUNS` (Default `2000`)
+- `KOMPASS_MULTI_START_KMEANS_N_INIT` (Default `5`)
+- `KOMPASS_MULTI_START_CENTROID_ITERS` (Default `2000`)
+- `KOMPASS_MULTI_START_MATRIX_ITERS` (Default `9000`)
+- `KOMPASS_MULTI_START_COMPONENT_ITERS` (Default `7000`)
+- `KOMPASS_MULTI_START_BASE_SEED` (Default `1000`)
+- `KOMPASS_MULTI_START_SHAKE_SWAP_FRACTION` (Default `0.02`)
+- `KOMPASS_MATRIX_ANNEAL_START_TEMP_KM` (Default `60.0`)
+- `KOMPASS_MATRIX_ANNEAL_END_TEMP_KM` (Default `1.0`)
+- `KOMPASS_MATRIX_MOVE_2_PROB` / `_3_PROB` / `_4_PROB` (Default `0.80` / `0.15` / `0.05`)
+- `KOMPASS_MATRIX_STAGNATION_SHAKE_ITERS` (Default `2500`)
+
+### Phase 2
+- `KOMPASS_PHASE2_ELITE_COUNT` (Default `8`)
+- `KOMPASS_PHASE2_ELITE_SELECTION_MODE` (Default `diverse`)
+- `KOMPASS_PHASE2_RESTARTS_PER_ELITE` (Default `5`)
+- `KOMPASS_PHASE2_BASE_SEED` (Default `100000`)
+- `KOMPASS_PHASE2_MATRIX_ITERS` (Default `15000`)
+- `KOMPASS_PHASE2_ANNEAL_START_TEMP_KM` (Default `120.0`)
+
+### Phase 3 (LNS)
+- `KOMPASS_LNS_ENABLED` (Default `1`, deaktivieren mit `0`)
+- `KOMPASS_LNS_ITERATIONS` (Default `200`)
+- `KOMPASS_LNS_DESTROY_FRACTION` (Default `0.35`)
+
+### Phase 4 (CP-SAT, optional)
+- `KOMPASS_CPSAT_ENABLED` (Default `0`, aktivieren mit `1`)
+- `KOMPASS_CPSAT_TIME_LIMIT` (Default `120`, in Sekunden)
+
+### Sonstiges
+- `KOMPASS_INITIAL_CSV_OVERRIDE` — Pfad zu manueller Initial-CSV
+
+## Empfohlener Workflow
+```powershell
+# Standard (ca. 10-15 Min)
+python kompass.py
+python kompass_report.py
+
+# Breite Suche (aggressiv)
+$env:KOMPASS_MULTI_START_RUNS="10000"
+$env:KOMPASS_PHASE2_ELITE_COUNT="16"
+$env:KOMPASS_PHASE2_RESTARTS_PER_ELITE="12"
+python kompass.py
+python kompass_report.py
+```
+
 ## GitHub Pages
-Die Ausgabe fuer GitHub Pages wird aus `docs/` bereitgestellt (Repository-Settings: Branch `main`, Folder `/docs`).
+Die Ausgabe wird aus `docs/` bereitgestellt (Repository-Settings: Branch `main`, Folder `/docs`).
 
-`python kompass_report.py` erstellt weiter alle HTML-Dateien in `outputs/html/` und synchronisiert diese danach automatisch nach `docs/` (inkl. `.nojekyll`).
+`python kompass_report.py` synchronisiert automatisch `outputs/html/` nach `docs/` (inkl. `.nojekyll`).
 
-Wichtig: Fuer eine aktuelle Pages-Seite nach jedem Lauf auch die geaenderten `docs/*.html` committen.
+Nach jedem Lauf die geaenderten `docs/*.html` committen.
 
 https://cmaidev.github.io/Regionalliga_Kompass/
-
-## Credits
-Dieses Projekt wurde mit Hilfe von **GPT-5.3-Codex** erstellt und weiterentwickelt.

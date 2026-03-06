@@ -1,7 +1,6 @@
 ﻿from __future__ import annotations
 
 import json
-import math
 import re
 import shutil
 from datetime import datetime, timezone
@@ -12,6 +11,8 @@ from urllib.parse import urljoin
 import pandas as pd
 import requests
 from lxml import html
+
+from kompass_utils import ensure_parent_dir, haversine_km, normalize_text
 
 try:
     import folium
@@ -77,24 +78,6 @@ EUROPLAN_LEAGUE_IDS = {
 EUROPLAN_BASE = "https://www.europlan-online.de/"
 
 
-def normalize_text(text: str) -> str:
-    s = str(text).strip()
-    if any(x in s for x in ("Ã", "Â", "â", "€", "™", "Ÿ")):
-        for enc in ("cp1252", "latin1"):
-            try:
-                s = s.encode(enc).decode("utf-8")
-                break
-            except Exception:
-                continue
-    return " ".join(s.split())
-
-
-def ensure_parent_dir(path: str) -> None:
-    parent = Path(path).parent
-    if str(parent) and str(parent) != ".":
-        parent.mkdir(parents=True, exist_ok=True)
-
-
 def html_asset_name(path: str) -> str:
     return Path(path).name
 
@@ -114,15 +97,6 @@ def sync_pages_docs(source_dir: Path, docs_dir: Path) -> int:
     (docs_dir / ".nojekyll").write_text("", encoding="utf-8")
     return len(source_files)
 
-
-def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    r = 6371.0088
-    p1 = math.radians(lat1)
-    p2 = math.radians(lat2)
-    dp = math.radians(lat2 - lat1)
-    dl = math.radians(lon2 - lon1)
-    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
-    return 2 * r * math.asin(math.sqrt(a))
 
 
 def load_transitions(path: str) -> Dict:

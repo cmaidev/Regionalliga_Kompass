@@ -8,6 +8,8 @@ __pycache__/
 venv/
 env/
 
+.claude/
+
 # Tool caches
 .pytest_cache/
 .mypy_cache/

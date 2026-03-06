@@ -4,6 +4,7 @@ numpy
 scikit-learn
 lxml
 folium
-pulp
 # Optional fallback geocoding:
 # geopy
+# Optional exakter Solver (MILP):
+# pulp
