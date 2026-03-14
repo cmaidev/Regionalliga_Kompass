@@ -619,7 +619,7 @@ def build_map(
             tooltip=f"{row['Verein']} | {liga}",
         ).add_to(m)
 
-    # Unterschiede zwischen Standard- und Matrix-Loesung sichtbar markieren.
+    # Unterschiede zwischen Standard- und Matrix-Lösung sichtbar markieren.
     if changed_teams:
         for _, row in df.iterrows():
             team = normalize_text(row["Verein"])
@@ -1750,23 +1750,23 @@ def main() -> None:
         "simple_explanation": (
             "Wir starten mit einer ersten sinnvollen Teamverteilung (Initialverteilung). "
             "Danach verbessert die Distanzmatrix-Optimierung diese Verteilung in vielen Schritten "
-            "und sucht die beste gefundene Loesung (Rank 1). "
-            "Zusätzlich zeigen wir die schlechteste gefundene Loesung (Worst found), "
+            "und sucht die beste gefundene Lösung (Rank 1). "
+            "Zusätzlich zeigen wir die schlechteste gefundene Lösung (Worst found), "
             "damit der Unterschied sichtbar bleibt."
         ),
         "meta_cards": [
             {"label": "Letzter Lauf", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
             {"label": "Modus", "value": "Reformregel 12+4+14+2"},
             {"label": "Derby-Regel", "value": "Deaktiviert (ENFORCE_DERBY_SAME_LEAGUE = False)"},
-            {"label": "Quellen-Prioritaet", "value": "FuPa -> Wikipedia"},
+            {"label": "Quellen-Priorität", "value": "FuPa -> Wikipedia"},
         ],
         "search_cards": [
-            {"label": "Multi-Start Laeufe", "value": str(requested_runs) if requested_runs is not None else "-"},
-            {"label": "Eindeutige Loesungen", "value": str(unique_solutions) if unique_solutions is not None else "-"},
+            {"label": "Multi-Start Läufe", "value": str(requested_runs) if requested_runs is not None else "-"},
+            {"label": "Eindeutige Lösungen", "value": str(unique_solutions) if unique_solutions is not None else "-"},
             {"label": "Rank-1 Score", "value": f"{float(best_score):.2f} km" if best_score is not None else "-"},
             {"label": "Initial-Score", "value": f"{float(initial_score):.2f} km" if initial_score is not None else "-"},
             {"label": "Gap Rank2-Rank1", "value": gap_text},
-            {"label": "Verfuegbare Ranks", "value": ", ".join(str(r) for r in sorted(rank_data.keys()))},
+            {"label": "Verfügbare Ranks", "value": ", ".join(str(r) for r in sorted(rank_data.keys()))},
             {
                 "label": "Worst found",
                 "value": (

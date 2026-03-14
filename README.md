@@ -4,8 +4,8 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 
 ## Projektziel
 - 80 Vereine in vier Regionalligen mit je 20 Teams zusammenstellen
-- Auswaertsdistanzen zwischen Vereinen minimieren
-- Saisonuebergaenge (Auf-/Abstieg) nachvollziehbar markieren
+- Auswärtsdistanzen zwischen Vereinen minimieren
+- Saisonübergänge (Auf-/Abstieg) nachvollziehbar markieren
 
 ## Kernlogik
 - Standardmodus: `12+4+14+2`
@@ -13,15 +13,15 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
   - je Regionalliga Platz `2-13`
   - 4 Absteiger aus der 3. Liga
   - 14 Oberliga-Meister
-  - 2 Zusatzplaetze (aktuell Bayern + Nordost)
+  - 2 Zusatzplätze (aktuell Bayern + Nordost)
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
-- Quellenprioritaet: `FuPa -> Wikipedia`
+- Quellenpriorität: `FuPa -> Wikipedia`
 
 ## Optimierung
 
 ### Metriken
-- **Durchschnittliche Auswaertsreise (km)**: Fuer jeden Club der Durchschnitt der Entfernungen zu allen 19 Ligagegnern, dann Mittelwert ueber alle 80 Clubs. Die intuitive Kennzahl — z.B. "ein Club faehrt im Schnitt 141 km pro Auswaertsfahrt".
-- **Intra-Pair-Summe (km)**: Summe aller paarweisen Distanzen innerhalb jeder Liga (4 x 190 = 760 Paare). Das ist die Zielfunktion, die der Optimierer minimiert. Zusammenhang: `Oe Auswaertsreise = Intra-Pair-Summe / 760`.
+- **Durchschnittliche Auswärtsreise (km)**: Für jeden Club der Durchschnitt der Entfernungen zu allen 19 Ligagegnern, dann Mittelwert über alle 80 Clubs. Die intuitive Kennzahl — z.B. "ein Club fährt im Schnitt 141 km pro Auswärtsfahrt".
+- **Intra-Pair-Summe (km)**: Summe aller paarweisen Distanzen innerhalb jeder Liga (4 x 190 = 760 Paare). Das ist die Zielfunktion, die der Optimierer minimiert. Zusammenhang: `Ø Auswärtsreise = Intra-Pair-Summe / 760`.
 
 ### 3-Phasen-Heuristik
 
@@ -30,12 +30,12 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 - Stagnation-Shake zur Diversifikation
 
 **Phase 2 — Elite-Restarts**
-- Die besten/diversesten Phase-1-Loesungen werden intensiv nachoptimiert
-- Hoehere Anneal-Temperatur und mehr Iterationen
+- Die besten/diversesten Phase-1-Lösungen werden intensiv nachoptimiert
+- Höhere Anneal-Temperatur und mehr Iterationen
 
 **Phase 3 — LNS (Large Neighborhood Search)**
-- Ruin & Recreate: 35% der Zuordnungen zerstoeren, greedy via Centroid-Distanz reparieren
-- Greedy Descent ueber 200 Iterationen
+- Ruin & Recreate: 35% der Zuordnungen zerstören, greedy via Centroid-Distanz reparieren
+- Greedy Descent über 200 Iterationen
 - Konfigurierbar via `KOMPASS_LNS_ITERATIONS`, `KOMPASS_LNS_DESTROY_FRACTION`
 - Deaktivierbar: `KOMPASS_LNS_ENABLED=0`
 
@@ -43,15 +43,15 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu vermeiden:
 - `initial_auto` — KMeans-Start
 - `initial_north_south_extreme` / `initial_west_east_extreme` — extreme geografische Splits
-- `initial_lat_stripes` / `initial_lon_stripes` — Streifen nach Breiten-/Laengengrad
+- `initial_lat_stripes` / `initial_lon_stripes` — Streifen nach Breiten-/Längengrad
 - `initial_diag_nw_se` / `initial_diag_ne_sw` — diagonale Streifen
-- `initial_random_1..3` — zufaellige balancierte Partitionen
+- `initial_random_1..3` — zufällige balancierte Partitionen
 
 **Phase 4 — CP-SAT Solver** (optional, `KOMPASS_CPSAT_ENABLED=1`)
 - Exakter Solver via Google OR-Tools (`pip install ortools`)
-- Nutzt die beste Heuristik-Loesung als Warm-Start
+- Nutzt die beste Heuristik-Lösung als Warm-Start
 - CP-SAT setzt intern SAT, LP und LNS parallel ein
-- Fuer n=80 in 120s: Ergebnis ~0.3% ueber Heuristik
+- Für n=80 in 120s: Ergebnis ~0.3% über Heuristik
 - Zeitlimit konfigurierbar via `KOMPASS_CPSAT_TIME_LIMIT` (Default 120s)
 
 ## Dateistruktur
@@ -65,22 +65,22 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 ## Ausgaben
 ### CSV (`outputs/csv/`)
 - `kompass_regionalliga_4x20.csv` — Rank 1 (Hauptausgabe)
-- `kompass_regionalliga_4x20_matrix_rank2.csv` bis `_rank10.csv` — weitere Top-Loesungen
-- `kompass_regionalliga_4x20_matrix_worst.csv` — schlechteste Loesung
+- `kompass_regionalliga_4x20_matrix_rank2.csv` bis `_rank10.csv` — weitere Top-Lösungen
+- `kompass_regionalliga_4x20_matrix_worst.csv` — schlechteste Lösung
 - `kompass_regionalliga_4x20_initial*.csv` — verschiedene Initialverteilungen
 - `kompass_solution_diff.csv` — Unterschiede zwischen Rank 1 und Rank 2
 - `kompass_away_metrics_per_club.csv` / `_per_league.csv` — Distanzmetriken
-- `kompass_longest_trips.csv` — laengste Einzelreisen
+- `kompass_longest_trips.csv` — längste Einzelreisen
 
 ### JSON (`outputs/json/`)
-- `kompass_solutions_ranked.json` — Top-Loesungen mit Score, Gap und Teamlisten
+- `kompass_solutions_ranked.json` — Top-Lösungen mit Score, Gap und Teamlisten
 - `stadium_coords_snapshot.json` — Stadion-Koordinaten-Snapshot
 
 ### HTML (`outputs/html/`)
-- `index.html` — Uebersichtsseite mit Kartenschalten
+- `index.html` — Übersichtsseite mit Kartenschalten
 - `kompass_regionalliga_4x20_map.html` — Rank 1 Karte
 - `kompass_regionalliga_4x20_map_initial.html` — Initialverteilung
-- `kompass_regionalliga_4x20_map_worst.html` — schlechteste Loesung
+- `kompass_regionalliga_4x20_map_worst.html` — schlechteste Lösung
 - Vergleichskarten (Initial vs Rank 1, Rank 1 vs Worst)
 
 ## Schnellstart
@@ -154,6 +154,6 @@ Die Ausgabe wird aus `docs/` bereitgestellt (Repository-Settings: Branch `main`,
 
 `python kompass_report.py` synchronisiert automatisch `outputs/html/` nach `docs/` (inkl. `.nojekyll`).
 
-Nach jedem Lauf die geaenderten `docs/*.html` committen.
+Nach jedem Lauf die geänderten `docs/*.html` committen.
 
 https://cmaidev.github.io/Regionalliga_Kompass/
