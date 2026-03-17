@@ -82,5 +82,94 @@
     "lon": 8.2129059,
     "stadium": "SIBRE-Sportzentrum Haarwasen",
     "source_url": "https://de.wikipedia.org/wiki/TSV_Steinbach_Haiger"
+  },
+  "FC-Astoria Walldorf": {
+    "lat": 49.30467,
+    "lon": 8.64085,
+    "stadium": "Stadion im Dietmar-Hopp-Sportpark",
+    "source_url": "https://de.wikipedia.org/wiki/Stadion_im_Dietmar-Hopp-Sportpark"
+  },
+  "1. FC Germania Egestorf/Langreder": {
+    "lat": 52.303055555556,
+    "lon": 9.4605555555556,
+    "stadium": "Stadion an der Ammerke",
+    "source_url": "https://de.wikipedia.org/wiki/1._FC_Germania_Egestorf/Langreder"
+  },
+  "ETSV Hamburg": {
+    "lat": 53.5011,
+    "lon": 10.1528,
+    "stadium": "Sportanlage Mittlerer Landweg",
+    "address": "Mittlerer Landweg 40, 21033 Hamburg",
+    "source_url": "https://de.wikipedia.org/wiki/ETSV_Hamburg"
+  },
+  "HSC Hannover": {
+    "lat": 52.3896,
+    "lon": 9.7662,
+    "stadium": "HSC-Stadion an der Constantinstraße",
+    "address": "Constantinstraße 86, 30177 Hannover",
+    "source_url": "https://de.wikipedia.org/wiki/HSC_Hannover"
+  },
+  "SSV Jeddeloh": {
+    "lat": 53.125833333333,
+    "lon": 7.9825,
+    "stadium": "HASKAMP-Arena",
+    "source_url": "https://de.wikipedia.org/wiki/SSV_Jeddeloh"
+  },
+  "SV Drochtersen/Assel": {
+    "lat": 53.70383,
+    "lon": 9.38048,
+    "stadium": "Kehdinger Stadion",
+    "address": "Am Sportplatz, 21706 Drochtersen",
+    "source_url": "https://de.wikipedia.org/wiki/SV_Drochtersen/Assel"
+  },
+  "VSG Altglienicke": {
+    "lat": 52.3607,
+    "lon": 14.0544,
+    "stadium": "Spree-Arena",
+    "address": "Hangelsberger Chaussee 1, 15517 Fürstenwalde/Spree",
+    "source_url": "https://de.wikipedia.org/wiki/VSG_Altglienicke"
+  },
+  "ASV Neumarkt": {
+    "lat": 49.283333333333,
+    "lon": 11.466666666667,
+    "stadium": "Sportpark Neumarkt",
+    "source_url": "https://de.wikipedia.org/wiki/ASV_Neumarkt"
+  },
+  "DJK Vilzing": {
+    "lat": 49.218333333333334,
+    "lon": 12.665833333333333,
+    "stadium": "Sportplatz DJK Vilzing",
+    "source_url": "https://de.wikipedia.org/wiki/DJK_Vilzing"
+  },
+  "TSV Landsberg": {
+    "lat": 48.05276944444444,
+    "lon": 10.868930555555556,
+    "stadium": "Sportpark TSV Landsberg",
+    "source_url": "https://de.wikipedia.org/wiki/TSV_Landsberg"
+  },
+  "FC Eddersheim": {
+    "lat": 50.07222222222222,
+    "lon": 8.48638888888889,
+    "stadium": "Sportanlage Eddersheim",
+    "source_url": "https://de.wikipedia.org/wiki/FC_Eddersheim"
+  },
+  "SC Freital": {
+    "lat": 51.0166014,
+    "lon": 13.6596537,
+    "stadium": "Stadion Wurgwitzer Straße",
+    "source_url": "https://de.wikipedia.org/wiki/SC_Freital"
+  },
+  "Eimsbütteler TV": {
+    "lat": 53.5956,
+    "lon": 9.9656,
+    "stadium": "ETV-Sportzentrum Hoheluft",
+    "address": "Lokstedter Steindamm 77, 22529 Hamburg",
+    "source_url": "https://de.wikipedia.org/wiki/Eimsbütteler_TV"
+  },
+  "FSV Schöningen": {
+    "lat": 52.13802,
+    "lon": 10.96745,
+    "stadium": "Sportplatz FSV Schöningen",
+    "source_url": "https://de.wikipedia.org/wiki/FSV_Schöningen"
   }
 }

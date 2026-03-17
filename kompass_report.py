@@ -740,7 +740,7 @@ def build_map(
     return unresolved
 
 
-def compute_metrics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def compute_metrics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     clubs_rows: List[Dict] = []
     league_rows: List[Dict] = []
     trips_rows: List[Dict] = []
@@ -749,7 +749,7 @@ def compute_metrics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Da
         records = g.to_dict("records")
         n = len(records)
         all_away_distances: List[float] = []
-        undirected_pairs: List[Tuple[str, str, float]] = []
+        longest_von, longest_nach, longest_d = "", "", 0.0
 
         for i in range(n):
             club_i = records[i]
@@ -766,14 +766,17 @@ def compute_metrics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 )
                 dists_i.append(d)
                 all_away_distances.append(d)
-                trips_rows.append(
-                    {
-                        "Liga": liga,
-                        "Von": club_i["Verein"],
-                        "Nach": club_j["Verein"],
-                        "Distanz_km": round(d, 2),
-                    }
-                )
+                if i < j:
+                    trips_rows.append(
+                        {
+                            "Liga": liga,
+                            "Von": club_i["Verein"],
+                            "Nach": club_j["Verein"],
+                            "Distanz_km": round(d, 2),
+                        }
+                    )
+                    if d > longest_d:
+                        longest_von, longest_nach, longest_d = club_i["Verein"], club_j["Verein"], d
 
             clubs_rows.append(
                 {
@@ -786,33 +789,48 @@ def compute_metrics(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 }
             )
 
-        for i in range(n):
-            for j in range(i + 1, n):
-                d = haversine_km(
-                    float(records[i]["lat"]),
-                    float(records[i]["lon"]),
-                    float(records[j]["lat"]),
-                    float(records[j]["lon"]),
-                )
-                undirected_pairs.append((records[i]["Verein"], records[j]["Verein"], d))
-
         league_avg = sum(all_away_distances) / len(all_away_distances) if all_away_distances else 0.0
-        longest = max(undirected_pairs, key=lambda x: x[2]) if undirected_pairs else ("", "", 0.0)
         league_rows.append(
             {
                 "Liga": liga,
                 "Teams": n,
                 "Durchschnitt_Auswaertsreise_km": round(league_avg, 2),
-                "Laengste_Reise_Von": longest[0],
-                "Laengste_Reise_Nach": longest[1],
-                "Laengste_Reise_km": round(longest[2], 2),
+                "Laengste_Reise_Von": longest_von,
+                "Laengste_Reise_Nach": longest_nach,
+                "Laengste_Reise_km": round(longest_d, 2),
             }
         )
 
     club_df = pd.DataFrame(clubs_rows).sort_values(["Liga", "Verein"])
     league_df = pd.DataFrame(league_rows).sort_values("Liga")
     trips_df = pd.DataFrame(trips_rows).sort_values("Distanz_km", ascending=False)
-    return club_df, league_df, trips_df
+
+    # Cross-Liga: kürzeste Paare aus verschiedenen Ligen
+    all_records = df.to_dict("records")
+    m = len(all_records)
+    cross_rows: List[Dict] = []
+    for i in range(m):
+        for j in range(i + 1, m):
+            if all_records[i]["Liga"] == all_records[j]["Liga"]:
+                continue
+            d = haversine_km(
+                float(all_records[i]["lat"]),
+                float(all_records[i]["lon"]),
+                float(all_records[j]["lat"]),
+                float(all_records[j]["lon"]),
+            )
+            cross_rows.append(
+                {
+                    "Liga_A": all_records[i]["Liga"],
+                    "Liga_B": all_records[j]["Liga"],
+                    "Von": all_records[i]["Verein"],
+                    "Nach": all_records[j]["Verein"],
+                    "Distanz_km": round(d, 2),
+                }
+            )
+    cross_trips_df = pd.DataFrame(cross_rows).sort_values("Distanz_km", ascending=True) if cross_rows else pd.DataFrame(columns=["Liga_A", "Liga_B", "Von", "Nach", "Distanz_km"])
+
+    return club_df, league_df, trips_df, cross_trips_df
 
 
 def print_summary(club_df: pd.DataFrame, league_df: pd.DataFrame, trips_df: pd.DataFrame) -> None:
@@ -961,6 +979,7 @@ def build_variant_payload(
     club_df: pd.DataFrame,
     league_df: pd.DataFrame,
     trips_df: pd.DataFrame,
+    cross_trips_df: pd.DataFrame,
     rank_info: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     clubs_by_league: Dict[str, List[str]] = {}
@@ -989,7 +1008,19 @@ def build_variant_payload(
         top_trips.append(
             {
                 "index": idx,
-                "route": f"{normalize_text(row['Von'])} -> {normalize_text(row['Nach'])}",
+                "route": f"{normalize_text(row['Von'])} \u2194 {normalize_text(row['Nach'])}",
+                "km": float(row["Distanz_km"]),
+            }
+        )
+
+    top_close_cross_trips: List[Dict[str, Any]] = []
+    for idx, (_, row) in enumerate(cross_trips_df.head(5).iterrows(), start=1):
+        top_close_cross_trips.append(
+            {
+                "index": idx,
+                "route": f"{normalize_text(row['Von'])} \u2194 {normalize_text(row['Nach'])}",
+                "liga_a": normalize_text(row["Liga_A"]),
+                "liga_b": normalize_text(row["Liga_B"]),
                 "km": float(row["Distanz_km"]),
             }
         )
@@ -1001,6 +1032,7 @@ def build_variant_payload(
         "overall_avg_km": float(club_df["Durchschnitt_Auswaerts_km"].mean()),
         "leagues": leagues,
         "top_trips": top_trips,
+        "top_close_cross_trips": top_close_cross_trips,
         "clubs_by_league": clubs_by_league,
     }
     if rank_info:
@@ -1215,6 +1247,10 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
           <h3>Top 5 längste Reisen (gesamt)</h3>
           <table class="league-table" id="trip-table"></table>
         </div>
+        <div class="card">
+          <h3>Top 5 kürzeste verpasste Duelle (verschiedene Ligen)</h3>
+          <table class="league-table" id="cross-trip-table"></table>
+        </div>
       </div>
     </section>
 
@@ -1319,8 +1355,18 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
         `<tr><td>${esc(t.index)}</td><td>${esc(t.route)}</td><td>${esc(fmtKm(t.km))}</td></tr>`
       )).join("");
       document.getElementById("trip-table").innerHTML = [
-        "<thead><tr><th>#</th><th>Route</th><th>Distanz</th></tr></thead>",
+        "<thead><tr><th>#</th><th>Begegnung</th><th>Distanz</th></tr></thead>",
         `<tbody>${tripRows}</tbody>`
+      ].join("");
+
+      const crossTrips = variant.top_close_cross_trips || [];
+      const crossTripRows = crossTrips.map(t => (
+        `<tr><td>${esc(t.index)}</td><td>${esc(t.route)}</td>` +
+        `<td>${esc(t.liga_a)} / ${esc(t.liga_b)}</td><td>${esc(fmtKm(t.km))}</td></tr>`
+      )).join("");
+      document.getElementById("cross-trip-table").innerHTML = [
+        "<thead><tr><th>#</th><th>Begegnung</th><th>Ligen</th><th>Distanz</th></tr></thead>",
+        `<tbody>${crossTripRows}</tbody>`
       ].join("");
 
       const clubsByLeague = variant.clubs_by_league || {};
@@ -1517,7 +1563,7 @@ def main() -> None:
     missing_df.to_csv(STADIUM_MISSING_CSV, index=False, encoding="utf-8")
     write_stadium_snapshot(df_map_rank1, STADIUM_SNAPSHOT_JSON)
 
-    club_df, league_df, trips_df = compute_metrics(rank_data[1]["df"])
+    club_df, league_df, trips_df, cross_trips_df = compute_metrics(rank_data[1]["df"])
     club_df.to_csv(CLUB_METRICS_CSV, index=False, encoding="utf-8")
     league_df.to_csv(LEAGUE_METRICS_CSV, index=False, encoding="utf-8")
     trips_df.head(100).to_csv(LONGEST_TRIPS_CSV, index=False, encoding="utf-8")
@@ -1559,7 +1605,7 @@ def main() -> None:
             print(f"Kartenvergleich: {compare_path}")
             print(f"Sichtbare Unterschiede Rank1/Rank{rank}: {len(changed_vs_rank1)}")
 
-        club_df_rank, league_df_rank, trips_df_rank = compute_metrics(df_rank)
+        club_df_rank, league_df_rank, trips_df_rank, cross_trips_df_rank = compute_metrics(df_rank)
         meta = rank_meta.get(rank, {})
         variants.append(
             build_variant_payload(
@@ -1570,6 +1616,7 @@ def main() -> None:
                 club_df_rank,
                 league_df_rank,
                 trips_df_rank,
+                cross_trips_df_rank,
                 rank_info={
                     "rank": rank,
                     "rank_label": f"Rank {rank} (Distanzmatrix)",
@@ -1603,7 +1650,7 @@ def main() -> None:
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL}")
         print(f"Sichtbare Unterschiede Initial/Rank1: {len(changed_initial_vs_rank1)}")
 
-        club_df_initial, league_df_initial, trips_df_initial = compute_metrics(initial_data["df"])
+        club_df_initial, league_df_initial, trips_df_initial, cross_trips_df_initial = compute_metrics(initial_data["df"])
         initial_score = float(club_df_initial["Durchschnitt_Auswaerts_km"].mean())
         variants.append(
             build_variant_payload(
@@ -1614,6 +1661,7 @@ def main() -> None:
                 club_df_initial,
                 league_df_initial,
                 trips_df_initial,
+                cross_trips_df_initial,
                 rank_info={
                     "rank": 0,
                     "rank_label": "Initialverteilung",
@@ -1687,7 +1735,7 @@ def main() -> None:
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_WORST}")
         print(f"Sichtbare Unterschiede Rank1/Worst: {len(changed_vs_rank1)}")
 
-        club_df_worst, league_df_worst, trips_df_worst = compute_metrics(worst_data["df"])
+        club_df_worst, league_df_worst, trips_df_worst, cross_trips_df_worst = compute_metrics(worst_data["df"])
         worst_meta = ranked_payload.get("worst_found", {})
         variants.append(
             build_variant_payload(
@@ -1698,6 +1746,7 @@ def main() -> None:
                 club_df_worst,
                 league_df_worst,
                 trips_df_worst,
+                cross_trips_df_worst,
                 rank_info={
                     "rank": int(worst_meta.get("rank", 0)) if worst_meta else 0,
                     "rank_label": (
