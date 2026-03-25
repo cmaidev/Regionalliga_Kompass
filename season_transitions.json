@@ -1,16 +1,16 @@
 {
   "promoted_to_3liga": [
     "1. FC Lokomotive Leipzig",
-    "1. FC Nürnberg",
     "SC Fortuna Köln",
     "SGV Freiberg",
-    "SV Meppen"
+    "SV Meppen",
+    "SpVgg Unterhaching"
   ],
   "promoted_to_3liga_league": {
     "SV Meppen": "Nord",
     "1. FC Lokomotive Leipzig": "Nordost",
     "SC Fortuna Köln": "West",
-    "1. FC Nürnberg": "Bayern",
+    "SpVgg Unterhaching": "Bayern",
     "SGV Freiberg": "Südwest"
   },
   "relegated_from_regionalliga": [
@@ -47,11 +47,11 @@
     "TSV Havelse"
   ],
   "promoted_from_oberliga": [
-    "1. FC Germania Egestorf/Langreder",
+    "SV Atlas Delmenhorst",
     "SV Todesfelde",
     "Eimsbütteler TV",
     "Blumenthaler SV",
-    "SG Wattenscheid 09",
+    "ASC 09 Dortmund",
     "Ratingen 04/19",
     "SV Bergisch Gladbach 09",
     "SV Tasmania Berlin",

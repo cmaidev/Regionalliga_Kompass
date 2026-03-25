@@ -36,6 +36,8 @@ INPUT_CSV_RANK3 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank3.c
 INPUT_CSV_RANK5 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank5.csv")
 INPUT_CSV_RANK10 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank10.csv")
 INPUT_CSV_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_worst.csv")
+INPUT_CSV_WISH_BEST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_best.csv")
+INPUT_CSV_WISH_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_worst.csv")
 MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
 MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
 MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
@@ -45,6 +47,8 @@ MAP_HTML_RANK3 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank3.html
 MAP_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank5.html")
 MAP_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank10.html")
 MAP_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_worst.html")
+MAP_HTML_WISH_BEST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_best.html")
+MAP_COMPARE_HTML_WISH = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_wish.html")
 MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
 MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
 MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial_auto_manual.html")
@@ -595,11 +599,6 @@ def build_map(
         attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         name="OpenStreetMap DE",
     ).add_to(m)
-    by_csv_liga = {
-        normalize_text(row["Verein"]): normalize_text(row["Liga"])
-        for _, row in df.iterrows()
-    }
-
     for _, row in df.iterrows():
         liga = normalize_text(row["Liga"])
         color = league_colors.get(liga, "gray")
@@ -1511,13 +1510,21 @@ def main() -> None:
         rank_data[1] = {"df": df_rank1, "csv": INPUT_CSV}
 
     worst_data: Optional[Dict[str, Any]] = None
-    worst_csv_path = Path(INPUT_CSV_WORST)
+    worst_csv_path = Path(INPUT_CSV_WISH_WORST)
     if worst_csv_path.exists():
         try:
             df_worst = load_solution_csv(worst_csv_path)
             worst_data = {"df": df_worst, "csv": str(worst_csv_path)}
         except Exception:
             worst_data = None
+    wish_best_data: Optional[Dict[str, Any]] = None
+    wish_best_csv_path = Path(INPUT_CSV_WISH_BEST)
+    if wish_best_csv_path.exists():
+        try:
+            df_wish_best = load_solution_csv(wish_best_csv_path)
+            wish_best_data = {"df": df_wish_best, "csv": str(wish_best_csv_path)}
+        except Exception:
+            wish_best_data = None
     initial_data: Optional[Dict[str, Any]] = None
     initial_csv_path = Path(INPUT_CSV_INITIAL)
     if initial_csv_path.exists():
@@ -1563,7 +1570,7 @@ def main() -> None:
     missing_df.to_csv(STADIUM_MISSING_CSV, index=False, encoding="utf-8")
     write_stadium_snapshot(df_map_rank1, STADIUM_SNAPSHOT_JSON)
 
-    club_df, league_df, trips_df, cross_trips_df = compute_metrics(rank_data[1]["df"])
+    club_df, league_df, trips_df, _ = compute_metrics(rank_data[1]["df"])
     club_df.to_csv(CLUB_METRICS_CSV, index=False, encoding="utf-8")
     league_df.to_csv(LEAGUE_METRICS_CSV, index=False, encoding="utf-8")
     trips_df.head(100).to_csv(LONGEST_TRIPS_CSV, index=False, encoding="utf-8")
@@ -1571,7 +1578,6 @@ def main() -> None:
 
     variants: List[Dict[str, Any]] = []
     compare_links: List[Dict[str, str]] = []
-    initial_score: Optional[float] = None
 
     for rank in DISPLAY_MATRIX_RANKS:
         if rank not in rank_data:
@@ -1645,35 +1651,9 @@ def main() -> None:
             left_title="Initialverteilung",
             right_title="Distanzmatrix-Optimierung (Rank 1)",
         )
-        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_INITIAL), "label": "Initial vs Rank 1"})
         print(f"Karte (Initial): {MAP_HTML_INITIAL}")
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL}")
         print(f"Sichtbare Unterschiede Initial/Rank1: {len(changed_initial_vs_rank1)}")
-
-        club_df_initial, league_df_initial, trips_df_initial, cross_trips_df_initial = compute_metrics(initial_data["df"])
-        initial_score = float(club_df_initial["Durchschnitt_Auswaerts_km"].mean())
-        variants.append(
-            build_variant_payload(
-                "initial",
-                "Initialverteilung",
-                html_asset_name(MAP_HTML_INITIAL),
-                initial_data["df"],
-                club_df_initial,
-                league_df_initial,
-                trips_df_initial,
-                cross_trips_df_initial,
-                rank_info={
-                    "rank": 0,
-                    "rank_label": "Initialverteilung",
-                    "score_avg_away_km": initial_score,
-                    "gap_to_best_km": (
-                        float(initial_score) - float(best_score)
-                        if best_score is not None
-                        else 0.0
-                    ),
-                },
-            )
-        )
 
     if initial_auto_data is not None and initial_manual_data is not None:
         changed_auto_manual = compute_changed_teams(initial_auto_data["df"], initial_manual_data["df"])
@@ -1702,14 +1682,52 @@ def main() -> None:
             left_title="Initialverteilung (Auto)",
             right_title="Initialverteilung (Manuell)",
         )
-        compare_links.append(
-            {
-                "href": html_asset_name(MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL),
-                "label": "Initial Auto vs Initial Manuell",
-            }
-        )
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL}")
         print(f"Sichtbare Unterschiede Initial-Auto/Initial-Manuell: {len(changed_auto_manual)}")
+
+    if wish_best_data is not None:
+        changed_wish_best = compute_changed_teams(rank_data[1]["df"], wish_best_data["df"])
+        df_wish_best_map, _ = resolve_map_coordinates(wish_best_data["df"])
+        build_map(
+            df_wish_best_map,
+            MAP_HTML_WISH_BEST,
+            transitions,
+            changed_teams=changed_wish_best if changed_wish_best else None,
+            variant="wish_best",
+            changed_left_label="RANK1",
+            changed_right_label="WISH-BEST",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML),
+            html_asset_name(MAP_HTML_WISH_BEST),
+            MAP_COMPARE_HTML_WISH,
+            left_title="Distanzmatrix-Optimierung (Rank 1)",
+            right_title="Wunschlisten-Optimierung (Beste Coverage)",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_WISH), "label": "Rank 1 vs Wunschlisten-Best"})
+        club_df_wb, league_df_wb, trips_df_wb, cross_trips_df_wb = compute_metrics(wish_best_data["df"])
+        wish_best_score_computed = float(club_df_wb["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "wish_best",
+                "Wunschlisten-Optimierung (Beste Coverage)",
+                html_asset_name(MAP_HTML_WISH_BEST),
+                wish_best_data["df"],
+                club_df_wb,
+                league_df_wb,
+                trips_df_wb,
+                cross_trips_df_wb,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Wunschlisten-Best",
+                    "score_avg_away_km": wish_best_score_computed,
+                    "gap_to_best_km": wish_best_score_computed - float(best_score) if best_score is not None else 0.0,
+                },
+            )
+        )
+        print(f"Karte (Wunschlisten-Beste): {MAP_HTML_WISH_BEST}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_WISH}")
+        print(f"Sichtbare Unterschiede Rank1/Wish-Best: {len(changed_wish_best)}")
 
     if worst_data is not None:
         changed_vs_rank1 = compute_changed_teams(rank_data[1]["df"], worst_data["df"])
@@ -1728,19 +1746,19 @@ def main() -> None:
             html_asset_name(MAP_HTML_WORST),
             MAP_COMPARE_HTML_WORST,
             left_title="Distanzmatrix-Optimierung (Rank 1)",
-            right_title="Distanzmatrix-Optimierung (Worst found)",
+            right_title="Worst-Case-Optimierung (Maximale Distanz)",
         )
-        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_WORST), "label": "Rank 1 vs Worst found"})
-        print(f"Karte (Worst-Vergleich): {MAP_HTML_WORST}")
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_WORST), "label": "Rank 1 vs Worst-Case"})
+        print(f"Karte (Worst-Case): {MAP_HTML_WORST}")
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_WORST}")
         print(f"Sichtbare Unterschiede Rank1/Worst: {len(changed_vs_rank1)}")
 
         club_df_worst, league_df_worst, trips_df_worst, cross_trips_df_worst = compute_metrics(worst_data["df"])
-        worst_meta = ranked_payload.get("worst_found", {})
+        worst_score_computed = float(club_df_worst["Durchschnitt_Auswaerts_km"].mean())
         variants.append(
             build_variant_payload(
                 "worst",
-                "Worst found (Matrix)",
+                "Worst-Case-Optimierung (Maximale Distanz)",
                 html_asset_name(MAP_HTML_WORST),
                 worst_data["df"],
                 club_df_worst,
@@ -1748,19 +1766,12 @@ def main() -> None:
                 trips_df_worst,
                 cross_trips_df_worst,
                 rank_info={
-                    "rank": int(worst_meta.get("rank", 0)) if worst_meta else 0,
-                    "rank_label": (
-                        f"Worst found (Rank {int(worst_meta.get('rank', 0))})"
-                        if worst_meta and worst_meta.get("rank") is not None
-                        else "Worst found"
-                    ),
-                    "score_avg_away_km": worst_meta.get(
-                        "score_avg_away_km",
-                        club_df_worst["Durchschnitt_Auswaerts_km"].mean(),
-                    ),
+                    "rank": 0,
+                    "rank_label": "Worst-Case",
+                    "score_avg_away_km": worst_score_computed,
                     "gap_to_best_km": (
-                        float(worst_meta.get("score_avg_away_km", 0.0)) - float(best_score)
-                        if (worst_meta and worst_meta.get("score_avg_away_km") is not None and best_score is not None)
+                        worst_score_computed - float(best_score)
+                        if best_score is not None
                         else 0.0
                     ),
                 },
@@ -1781,12 +1792,9 @@ def main() -> None:
     requested_runs = ranked_payload.get("requested_runs")
     unique_solutions = ranked_payload.get("unique_solutions")
     second_score = rank_meta.get(2, {}).get("score_avg_away_km")
-    worst_score = None
-    if isinstance(ranked_payload.get("worst_found"), dict):
-        worst_score = ranked_payload["worst_found"].get("score_avg_away_km")
-    worst_rank = None
-    if isinstance(ranked_payload.get("worst_found"), dict):
-        worst_rank = ranked_payload["worst_found"].get("rank")
+    worst_score = worst_score_computed if worst_data is not None else None
+    if wish_best_data is None:
+        wish_best_score_computed = None
     gap_text = "-"
     try:
         if best_score is not None and second_score is not None:
@@ -1795,13 +1803,12 @@ def main() -> None:
         gap_text = "-"
 
     page_data = {
-        "subtitle": "Interaktive Umschaltung zwischen Initialverteilung, Rank 1 und Worst found.",
+        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Wunschlisten-Optimierung und Worst-Case.",
         "simple_explanation": (
-            "Wir starten mit einer ersten sinnvollen Teamverteilung (Initialverteilung). "
-            "Danach verbessert die Distanzmatrix-Optimierung diese Verteilung in vielen Schritten "
-            "und sucht die beste gefundene Lösung (Rank 1). "
-            "Zusätzlich zeigen wir die schlechteste gefundene Lösung (Worst found), "
-            "damit der Unterschied sichtbar bleibt."
+            "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
+            "Die Wunschlisten-Optimierung maximiert stattdessen, wie viele der 19 geografisch nächsten "
+            "Nachbarn eines Vereins tatsächlich in derselben Liga landen. "
+            "Der Worst-Case zeigt die schlechtestmögliche Aufteilung mit maximalen Reisedistanzen."
         ),
         "meta_cards": [
             {"label": "Letzter Lauf", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
@@ -1813,16 +1820,15 @@ def main() -> None:
             {"label": "Multi-Start Läufe", "value": str(requested_runs) if requested_runs is not None else "-"},
             {"label": "Eindeutige Lösungen", "value": str(unique_solutions) if unique_solutions is not None else "-"},
             {"label": "Rank-1 Score", "value": f"{float(best_score):.2f} km" if best_score is not None else "-"},
-            {"label": "Initial-Score", "value": f"{float(initial_score):.2f} km" if initial_score is not None else "-"},
             {"label": "Gap Rank2-Rank1", "value": gap_text},
             {"label": "Verfügbare Ranks", "value": ", ".join(str(r) for r in sorted(rank_data.keys()))},
             {
-                "label": "Worst found",
-                "value": (
-                    f"Rank {int(worst_rank)} ({float(worst_score):.2f} km)"
-                    if worst_rank is not None and worst_score is not None
-                    else "-"
-                ),
+                "label": "Wunschlisten-Best",
+                "value": f"{wish_best_score_computed:.2f} km" if wish_best_score_computed is not None else "-",
+            },
+            {
+                "label": "Worst-Case",
+                "value": f"{float(worst_score):.2f} km" if worst_score is not None else "-",
             },
             {
                 "label": "Stadionkoordinaten",

@@ -144,6 +144,10 @@ OUT_CSV_MATRIX_RANK10 = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_matrix_rank10.csv")
 OUT_CSV_MATRIX_WORST = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_matrix_worst.csv")
+OUT_CSV_WISH_BEST = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_wish_best.csv")
+OUT_CSV_WISH_WORST = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_wish_worst.csv")
 OUT_SOLUTIONS_RANKED_JSON = os.path.join(
     OUTPUT_JSON_DIR, "kompass_solutions_ranked.json")
 OUT_SOLUTION_DIFF_CSV = os.path.join(
@@ -154,7 +158,7 @@ USER_AGENT = "CompassRegionalligaBot/1.0 (your_email_or_github_here)"
 
 # Multi-Start: viele eingeschraenkte lokale Durchlaeufe fuer robustere "best-of"-Suche.
 ENABLE_MULTI_START_SEARCH = True
-MULTI_START_RUNS = int(os.getenv("KOMPASS_MULTI_START_RUNS", "2000"))
+MULTI_START_RUNS = int(os.getenv("KOMPASS_MULTI_START_RUNS", "500"))
 MULTI_START_BASE_SEED = int(os.getenv("KOMPASS_MULTI_START_BASE_SEED", "1000"))
 MULTI_START_KMEANS_N_INIT = int(
     os.getenv("KOMPASS_MULTI_START_KMEANS_N_INIT", "5"))
@@ -2909,8 +2913,29 @@ LNS_ENABLED: bool = os.getenv("KOMPASS_LNS_ENABLED", "1") == "1"
 # -------------------------
 # Phase 4: CP-SAT (optional, benoetigt ortools)
 # -------------------------
-CPSAT_ENABLED: bool = os.getenv("KOMPASS_CPSAT_ENABLED", "0") == "1"
+CPSAT_ENABLED: bool = os.getenv("KOMPASS_CPSAT_ENABLED", "1") == "1"
 CPSAT_TIME_LIMIT: int = int(os.getenv("KOMPASS_CPSAT_TIME_LIMIT", "120"))
+
+# -------------------------
+# Wunschlisten-Optimierung (Wish Coverage SA)
+# -------------------------
+WISH_SA_ENABLED: bool = os.getenv("KOMPASS_WISH_SA_ENABLED", "1") == "1"
+WISH_SA_PHASE1_ITERS: int = int(os.getenv("KOMPASS_WISH_SA_PHASE1_ITERS", "50000"))
+WISH_SA_ITERS: int = int(os.getenv("KOMPASS_WISH_SA_ITERS", "300000"))
+WISH_SA_ANNEAL_START: float = float(os.getenv("KOMPASS_WISH_SA_ANNEAL_START", "8.0"))
+WISH_SA_ANNEAL_END: float = float(os.getenv("KOMPASS_WISH_SA_ANNEAL_END", "0.05"))
+WISH_SA_MOVE_3_PROB: float = float(os.getenv("KOMPASS_WISH_SA_MOVE_3_PROB", "0.25"))
+WISH_LNS_ENABLED: bool = os.getenv("KOMPASS_WISH_LNS_ENABLED", "1") == "1"
+WISH_LNS_ITERATIONS: int = int(os.getenv("KOMPASS_WISH_LNS_ITERATIONS", "150"))
+WISH_LNS_DESTROY_FRACTION: float = float(os.getenv("KOMPASS_WISH_LNS_DESTROY_FRACTION", "0.35"))
+
+# -------------------------
+# Worst-Case-Optimierung (maximiert Intra-Liga-Distanz)
+# -------------------------
+WORST_SA_ENABLED: bool = os.getenv("KOMPASS_WORST_SA_ENABLED", "1") == "1"
+WORST_SA_ITERS: int = int(os.getenv("KOMPASS_WORST_SA_ITERS", "300000"))
+WORST_SA_ANNEAL_START_KM: float = float(os.getenv("KOMPASS_WORST_SA_ANNEAL_START_KM", "800.0"))
+WORST_SA_ANNEAL_END_KM: float = float(os.getenv("KOMPASS_WORST_SA_ANNEAL_END_KM", "10.0"))
 
 
 def _lns_ruin_and_recreate(
@@ -3036,6 +3061,412 @@ def run_lns_phase(
         flush=True,
     )
     return best_result
+
+
+def build_wish_table(
+    dist_matrix: np.ndarray,
+    n_neighbors: int = TEAMS_PER_LEAGUE - 1,
+) -> List[List[int]]:
+    """
+    Fuer jeden Verein die n_neighbors naechsten Nachbarn sortiert nach Distanz.
+    Ergebnis: Liste von Listen mit Nachbar-Indices (ohne den Verein selbst).
+    n_neighbors = 19 entspricht den 19 Gegnern in einer 20er-Liga.
+    """
+    n = dist_matrix.shape[0]
+    wish_table: List[List[int]] = []
+    for i in range(n):
+        row = sorted((float(dist_matrix[i, j]), j) for j in range(n) if j != i)
+        wish_table.append([j for _, j in row[:n_neighbors]])
+    return wish_table
+
+
+def build_wish_greedy_labels(
+    wish_table: List[List[int]],
+    k: int = N_LEAGUES,
+    cap: int = TEAMS_PER_LEAGUE,
+    seed: int = 0,
+) -> np.ndarray:
+    """
+    Greedy-Initialisierung auf Basis des Wish-Tables (Community-Ansatz).
+    Baut Ligen auf, indem jeweils der Verein hinzugefuegt wird, der die
+    meisten gegenseitigen Wuensche mit den bereits zugewiesenen Vereinen hat.
+    Ohne externe Bibliotheken.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(wish_table)
+    wish_sets = [set(neighbors) for neighbors in wish_table]
+    labels = np.full(n, -1, dtype=int)
+    unassigned = set(range(n))
+
+    for league_idx in range(k):
+        remaining_cap = cap
+        # Startseed: Verein mit den meisten gegenseitigen Wuenschen zu anderen freien Vereinen
+        mutual = {
+            i: sum(1 for j in wish_sets[i] if j in unassigned and i in wish_sets[j])
+            for i in unassigned
+        }
+        seed_club = int(max(unassigned, key=lambda x: (mutual[x], rng.random())))
+        labels[seed_club] = league_idx
+        unassigned.discard(seed_club)
+        league_set = {seed_club}
+        remaining_cap -= 1
+
+        while remaining_cap > 0 and unassigned:
+            best_club = -1
+            best_gain = -1
+            for candidate in unassigned:
+                gain = sum(1 for nb in wish_sets[candidate] if nb in league_set)
+                gain += sum(1 for m in league_set if candidate in wish_sets[m])
+                if gain > best_gain or (gain == best_gain and rng.random() < 0.3):
+                    best_gain = gain
+                    best_club = candidate
+            labels[best_club] = league_idx
+            unassigned.discard(best_club)
+            league_set.add(best_club)
+            remaining_cap -= 1
+
+    # Restliche (sollte nur passieren wenn n != k*cap)
+    for i in list(unassigned):
+        for j in range(k):
+            if int(np.sum(labels == j)) < cap:
+                labels[i] = j
+                break
+
+    return labels
+
+
+def wish_coverage_score(labels: np.ndarray, wish_table: List[List[int]]) -> int:
+    """
+    Anzahl erfuellter Wuensche: wie viele der Top-19-Nachbarn landen in derselben Liga?
+    Maximum: n * n_neighbors (alle Wuensche erfuellt).
+    """
+    total = 0
+    for i, neighbors in enumerate(wish_table):
+        li = int(labels[i])
+        for j in neighbors:
+            if int(labels[j]) == li:
+                total += 1
+    return total
+
+
+def run_wish_coverage_sa(
+    labels: np.ndarray,
+    wish_table: List[List[int]],
+    k: int = N_LEAGUES,
+    iters: int = 300000,
+    seed: int = 42,
+    maximize: bool = True,
+    anneal_start_temp: float = 8.0,
+    anneal_end_temp: float = 0.05,
+    move_3_prob: float = 0.25,
+    verbose: bool = True,
+) -> np.ndarray:
+    """
+    Simulated Annealing auf Basis der Wunsch-Coverage.
+    Unterstuetzt 2-Wege- und 3-Wege-Zyklen.
+
+    maximize=True:  Beste Aufteilung – jeder Verein spielt moeglichst gegen seine
+                    naechsten 19 Nachbarn.
+    maximize=False: Schlechteste Aufteilung – Wunsch-Coverage wird minimiert.
+    move_3_prob:    Anteil 3-Wege-Zyklen (der Rest sind 2-Wege-Swaps).
+    """
+    rng = np.random.default_rng(seed)
+    labels = labels.copy()
+    n = len(labels)
+
+    # Reverse-Wunschliste: wer wuenscht sich Club i?
+    reverse_wish: List[List[int]] = [[] for _ in range(n)]
+    for i, neighbors in enumerate(wish_table):
+        for j in neighbors:
+            reverse_wish[j].append(i)
+
+    wish_sets = [set(neighbors) for neighbors in wish_table]
+
+    def _cycle_delta(nodes: List[int], new_leagues: Dict[int, int]) -> int:
+        """
+        Allgemeines inkrementelles Delta fuer einen n-Wege-Zyklus.
+        nodes:       Liste der bewegten Clubs
+        new_leagues: {club_idx: neue_liga}
+        """
+        moving = set(nodes)
+        delta = 0
+        for m in nodes:
+            old_l = int(labels[m])
+            new_l = new_leagues[m]
+            # Fixe Nachbarn (nicht im Zug)
+            for nb in wish_table[m]:
+                if nb in moving:
+                    continue
+                l_nb = int(labels[nb])
+                delta += int(l_nb == new_l) - int(l_nb == old_l)
+            for x in reverse_wish[m]:
+                if x in moving:
+                    continue
+                l_x = int(labels[x])
+                delta += int(l_x == new_l) - int(l_x == old_l)
+        # Paare innerhalb der bewegten Clubs
+        for pi in range(len(nodes)):
+            for pj in range(pi + 1, len(nodes)):
+                x, y = nodes[pi], nodes[pj]
+                old_lx, new_lx = int(labels[x]), new_leagues[x]
+                old_ly, new_ly = int(labels[y]), new_leagues[y]
+                if y in wish_sets[x]:
+                    delta += int(new_lx == new_ly) - int(old_lx == old_ly)
+                if x in wish_sets[y]:
+                    delta += int(new_lx == new_ly) - int(old_lx == old_ly)
+        return delta
+
+    def _propose_2swap() -> Optional[Tuple[List[int], Dict[int, int]]]:
+        i, j = int(rng.integers(0, n)), int(rng.integers(0, n))
+        if i == j or int(labels[i]) == int(labels[j]):
+            return None
+        return [i, j], {i: int(labels[j]), j: int(labels[i])}
+
+    def _propose_3cycle() -> Optional[Tuple[List[int], Dict[int, int]]]:
+        if k < 3:
+            return None
+        clusters = [int(x) for x in rng.choice(k, size=3, replace=False)]
+        nodes: List[int] = []
+        for c in clusters:
+            pool = [idx for idx in range(n) if int(labels[idx]) == c]
+            if not pool:
+                return None
+            nodes.append(int(rng.choice(pool)))
+        # Vorwaerts-Zyklus: nodes[0]→clusters[1], nodes[1]→clusters[2], nodes[2]→clusters[0]
+        new_leagues = {
+            nodes[0]: clusters[1],
+            nodes[1]: clusters[2],
+            nodes[2]: clusters[0],
+        }
+        return nodes, new_leagues
+
+    current_score = wish_coverage_score(labels, wish_table)
+    best_score = current_score
+    best_labels = labels.copy()
+    direction = 1 if maximize else -1
+
+    progress_step = max(1, iters // 10)
+    n_wishes = n * (len(wish_table[0]) if wish_table else 0)
+
+    for step in range(iters):
+        if rng.random() < move_3_prob:
+            move = _propose_3cycle()
+        else:
+            move = _propose_2swap()
+        if move is None:
+            continue
+        nodes, new_leagues = move
+
+        delta = _cycle_delta(nodes, new_leagues)
+        effective = direction * delta
+
+        accept = False
+        if effective > 0:
+            accept = True
+        elif effective == 0 and rng.random() < 0.05:
+            accept = True
+        elif effective < 0 and anneal_start_temp > 0:
+            t = step / float(iters - 1) if iters > 1 else 1.0
+            temp = anneal_start_temp + (anneal_end_temp - anneal_start_temp) * t
+            temp = max(1e-9, temp)
+            if rng.random() < float(np.exp(effective / temp)):
+                accept = True
+
+        if accept:
+            for node_idx, new_l in new_leagues.items():
+                labels[node_idx] = new_l
+            current_score += delta
+            if direction * current_score > direction * best_score:
+                best_score = current_score
+                best_labels = labels.copy()
+
+        if verbose and ((step + 1) % progress_step == 0 or step + 1 == iters):
+            mode_str = "max" if maximize else "min"
+            print(
+                f"[WishSA-{mode_str}] iter {step + 1}/{iters} | "
+                f"score={best_score}/{n_wishes}",
+                flush=True,
+            )
+
+    return best_labels
+
+
+def run_wish_lns(
+    labels: np.ndarray,
+    wish_table: List[List[int]],
+    k: int = N_LEAGUES,
+    cap: int = TEAMS_PER_LEAGUE,
+    iterations: int = 150,
+    destroy_fraction: float = 0.35,
+    seed: int = 42,
+) -> np.ndarray:
+    """
+    Large Neighborhood Search fuer Wish-Coverage.
+    Ruin: Anteil der Vereine werden aus ihrer Liga entfernt.
+    Recreate: Gierige Neuzuweisung – Verein kommt in die Liga, in der er die
+              meisten Wunsch-Matches hat (Kapazitaet beachten).
+    Akzeptiert nur strikt bessere Loesungen (greedy descent).
+    """
+    rng = np.random.default_rng(seed)
+    n = len(labels)
+    wish_sets = [set(neighbors) for neighbors in wish_table]
+
+    # Reverse-Wunschliste aufbauen
+    reverse_wish: List[List[int]] = [[] for _ in range(n)]
+    for i, neighbors in enumerate(wish_table):
+        for j in neighbors:
+            reverse_wish[j].append(i)
+
+    current = labels.copy()
+    current_score = wish_coverage_score(current, wish_table)
+    best_score = current_score
+    best_result = current.copy()
+    improved_count = 0
+    n_wishes = n * (len(wish_table[0]) if wish_table else 0)
+
+    print(
+        f"[WishLNS] Start: score={current_score}/{n_wishes}, "
+        f"iters={iterations}, destroy={destroy_fraction:.0%}",
+        flush=True,
+    )
+    progress_step = max(1, iterations // 10)
+
+    for it in range(1, iterations + 1):
+        n_destroy = max(2, int(round(n * destroy_fraction)))
+        destroyed = set(int(x) for x in rng.choice(n, size=n_destroy, replace=False))
+
+        new_labels = current.copy()
+        for i in destroyed:
+            new_labels[i] = -1
+
+        # Kapazitaeten der verbleibenden Zuweisung zaehlen
+        league_counts = [
+            sum(1 for x in range(n) if new_labels[x] == j)
+            for j in range(k)
+        ]
+
+        # Gierige Neuzuweisung in zufaelliger Reihenfolge
+        order = list(destroyed)
+        rng.shuffle(order)
+        for i in order:
+            best_j = -1
+            best_gain = -1
+            for j in range(k):
+                if league_counts[j] >= cap:
+                    continue
+                gain = sum(1 for nb in wish_sets[i] if new_labels[nb] == j)
+                gain += sum(1 for x in reverse_wish[i] if new_labels[x] == j)
+                if gain > best_gain:
+                    best_gain = gain
+                    best_j = j
+            if best_j < 0:
+                best_j = int(rng.integers(0, k))
+            new_labels[i] = best_j
+            league_counts[best_j] += 1
+
+        new_score = wish_coverage_score(new_labels, wish_table)
+        if new_score > current_score:
+            current = new_labels
+            current_score = new_score
+            if current_score > best_score:
+                best_score = current_score
+                best_result = current.copy()
+                improved_count += 1
+
+        if it % progress_step == 0 or it == iterations:
+            print(
+                f"[WishLNS] iter {it}/{iterations} | "
+                f"current={current_score}/{n_wishes} | best={best_score}/{n_wishes} | "
+                f"improvements={improved_count}",
+                flush=True,
+            )
+
+    print(
+        f"[WishLNS] Fertig: {wish_coverage_score(labels, wish_table)} -> {best_score}/{n_wishes} "
+        f"({improved_count} Verbesserungen)",
+        flush=True,
+    )
+    return best_result
+
+
+def run_worst_case_distance_sa(
+    labels: np.ndarray,
+    dist_matrix: np.ndarray,
+    k: int = N_LEAGUES,
+    iters: int = 300000,
+    seed: int = 42,
+    anneal_start_temp_km: float = 800.0,
+    anneal_end_temp_km: float = 10.0,
+) -> np.ndarray:
+    """
+    Simulated Annealing das die Summe aller Intra-Liga-Paardistanzen MAXIMIERT.
+    Liefert die schlechtmoegliche geografische Aufteilung.
+    Akzeptiert nur Swaps, die die Distanzsumme erhoehen (oder per SA-Temperatur).
+    """
+    rng = np.random.default_rng(seed)
+    labels = labels.copy()
+    n = len(labels)
+    members = [set(np.where(labels == c)[0].tolist()) for c in range(k)]
+
+    def sum_to_cluster(i: int, cluster_idx: int, exclude: Optional[int] = None) -> float:
+        s = 0.0
+        for x in members[cluster_idx]:
+            if x == exclude:
+                continue
+            s += float(dist_matrix[i, x])
+        return s
+
+    current_obj = objective_intra_league_sum(labels, dist_matrix)
+    best_obj = current_obj
+    best_labels = labels.copy()
+
+    progress_step = max(1, iters // 10)
+    for step in range(iters):
+        i_idx, j_idx = int(rng.integers(0, n)), int(rng.integers(0, n))
+        if i_idx == j_idx:
+            continue
+        src_i, src_j = int(labels[i_idx]), int(labels[j_idx])
+        if src_i == src_j:
+            continue
+
+        # Delta: positiv bedeutet Distanzsumme steigt (gut fuer uns)
+        before = (sum_to_cluster(i_idx, src_i, exclude=i_idx) +
+                  sum_to_cluster(j_idx, src_j, exclude=j_idx))
+        after = (sum_to_cluster(i_idx, src_j, exclude=j_idx) +
+                 sum_to_cluster(j_idx, src_i, exclude=i_idx))
+        delta = float(after - before)
+
+        accept = False
+        if delta > 0:  # Distanz steigt -> gut
+            accept = True
+        elif delta == 0 and rng.random() < 0.05:
+            accept = True
+        elif delta < 0 and anneal_start_temp_km > 0:
+            t = step / float(iters - 1) if iters > 1 else 1.0
+            temp = anneal_start_temp_km + (anneal_end_temp_km - anneal_start_temp_km) * t
+            temp = max(1e-9, temp)
+            if rng.random() < float(np.exp(delta / temp)):
+                accept = True
+
+        if accept:
+            members[src_i].discard(i_idx)
+            members[src_j].discard(j_idx)
+            members[src_j].add(i_idx)
+            members[src_i].add(j_idx)
+            labels[i_idx], labels[j_idx] = labels[j_idx], labels[i_idx]
+            current_obj += delta
+            if current_obj > best_obj:
+                best_obj = current_obj
+                best_labels = labels.copy()
+
+        if (step + 1) % progress_step == 0 or step + 1 == iters:
+            print(
+                f"[WorstSA] iter {step + 1}/{iters} | "
+                f"best_intra={best_obj:.2f} km",
+                flush=True,
+            )
+
+    return best_labels
 
 
 def build_ranked_solutions_payload(
@@ -3598,6 +4029,7 @@ def main() -> None:
             requested_runs_override=requested_runs,
             search_config_override=search_config_override,
         )
+        best_labels_found: np.ndarray = ranked[0]["labels_matrix"]
     else:
         if initial_override_labels is not None:
             labels = initial_override_labels.copy()
@@ -3651,6 +4083,122 @@ def main() -> None:
             )
         export_single_run_matrix_outputs(
             clubs, labels, labels_matrix, dist_matrix)
+        best_labels_found = labels_matrix
+
+    # -------------------------
+    # Wunschlisten- und Worst-Case-Optimierung
+    # -------------------------
+    if WISH_SA_ENABLED or WORST_SA_ENABLED:
+        wish_table = build_wish_table(dist_matrix)
+        n_wishes = len(clubs) * len(wish_table[0]) if wish_table else 0
+
+        if WISH_SA_ENABLED:
+            initial_wish = wish_coverage_score(best_labels_found, wish_table)
+            print(
+                f"\n=== Wunschlisten-Optimierung (Phase 1: Multi-Start, Phase 2: Intensivierung, Phase 3: LNS) ===\n"
+                f"Ausgangspunkt (beste Heuristik): {initial_wish}/{n_wishes} Wuensche erfuellt"
+            )
+
+            # Phase 1: Alle Startpunkte mit reduzierter Iterationszahl scannen
+            wish_greedy_labels = build_wish_greedy_labels(wish_table, k=N_LEAGUES, cap=TEAMS_PER_LEAGUE, seed=12345)
+            all_wish_starts = (
+                [("best_heuristic", best_labels_found), ("wish_greedy", wish_greedy_labels)]
+                + [(name, lbl) for name, lbl in extra_initial_seeds]
+            )
+            wish_candidates: List[Tuple[int, np.ndarray]] = []
+            print(f"[WishSA-P1] {len(all_wish_starts)} Startpunkte x {WISH_SA_PHASE1_ITERS} Iters")
+            for p1_idx, (name, start_labels) in enumerate(all_wish_starts):
+                start_balanced = balance_clusters(clubs, start_labels.copy(), N_LEAGUES, TEAMS_PER_LEAGUE)
+                candidate = run_wish_coverage_sa(
+                    labels=start_balanced,
+                    wish_table=wish_table,
+                    k=N_LEAGUES,
+                    iters=WISH_SA_PHASE1_ITERS,
+                    seed=55500 + p1_idx,
+                    maximize=True,
+                    anneal_start_temp=WISH_SA_ANNEAL_START,
+                    anneal_end_temp=WISH_SA_ANNEAL_END,
+                    move_3_prob=WISH_SA_MOVE_3_PROB,
+                    verbose=False,
+                )
+                sc = wish_coverage_score(candidate, wish_table)
+                wish_candidates.append((sc, candidate))
+                print(f"  [{name}] score={sc}/{n_wishes}", flush=True)
+
+            # Phase 2: Besten Kandidaten intensiv weiteroptimieren
+            best_p1_score, best_p1_labels = max(wish_candidates, key=lambda x: x[0])
+            print(
+                f"[WishSA-P2] Bester P1-Kandidat: {best_p1_score}/{n_wishes} | "
+                f"Intensivierung mit {WISH_SA_ITERS} Iters"
+            )
+            wish_labels = run_wish_coverage_sa(
+                labels=best_p1_labels,
+                wish_table=wish_table,
+                k=N_LEAGUES,
+                iters=WISH_SA_ITERS,
+                seed=55555,
+                maximize=True,
+                anneal_start_temp=WISH_SA_ANNEAL_START,
+                anneal_end_temp=WISH_SA_ANNEAL_END,
+                move_3_prob=WISH_SA_MOVE_3_PROB,
+            )
+
+            # Phase 3: LNS
+            if WISH_LNS_ENABLED:
+                wish_labels = run_wish_lns(
+                    labels=wish_labels,
+                    wish_table=wish_table,
+                    k=N_LEAGUES,
+                    cap=TEAMS_PER_LEAGUE,
+                    iterations=WISH_LNS_ITERATIONS,
+                    destroy_fraction=WISH_LNS_DESTROY_FRACTION,
+                    seed=66666,
+                )
+
+            final_wish = wish_coverage_score(wish_labels, wish_table)
+            wish_dist = average_away_distance_per_club(wish_labels, dist_matrix, TEAMS_PER_LEAGUE)
+            print(
+                f"[WishSA] Ergebnis: {final_wish}/{n_wishes} Wuensche erfuellt "
+                f"(+{final_wish - initial_wish} vs. Heuristik-Start) | "
+                f"Oe Distanz: {wish_dist:.2f} km"
+            )
+            export_solution(
+                clubs,
+                wish_labels,
+                OUT_CSV_WISH_BEST,
+                "4 Kompass-Ligen (Wunschlisten-Optimierung, Beste Coverage)",
+            )
+
+        if WORST_SA_ENABLED:
+            worst_start = build_random_balanced_labels(len(clubs), seed=99991)
+            worst_intra_start = objective_intra_league_sum(worst_start, dist_matrix)
+            print(
+                f"\n=== Worst-Case-Optimierung (maximize Distanz, {WORST_SA_ITERS} Iters) ===\n"
+                f"Startpunkt (zufaellig): Intra-Summe={worst_intra_start:.2f} km"
+            )
+            worst_labels = run_worst_case_distance_sa(
+                labels=worst_start,
+                dist_matrix=dist_matrix,
+                k=N_LEAGUES,
+                iters=WORST_SA_ITERS,
+                seed=77777,
+                anneal_start_temp_km=WORST_SA_ANNEAL_START_KM,
+                anneal_end_temp_km=WORST_SA_ANNEAL_END_KM,
+            )
+            worst_intra = objective_intra_league_sum(worst_labels, dist_matrix)
+            worst_dist = average_away_distance_per_club(worst_labels, dist_matrix, TEAMS_PER_LEAGUE)
+            worst_wish = wish_coverage_score(worst_labels, wish_table) if WISH_SA_ENABLED else 0
+            print(
+                f"[WorstSA] Ergebnis: Intra-Summe={worst_intra:.2f} km | "
+                f"Oe Distanz: {worst_dist:.2f} km"
+                + (f" | {worst_wish}/{n_wishes} Wuensche erfuellt" if WISH_SA_ENABLED else "")
+            )
+            export_solution(
+                clubs,
+                worst_labels,
+                OUT_CSV_WISH_WORST,
+                "4 Kompass-Ligen (Worst-Case-Optimierung, Maximale Distanz)",
+            )
 
 
 if __name__ == "__main__":
