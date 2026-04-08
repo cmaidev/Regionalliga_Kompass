@@ -171,5 +171,12 @@
     "lon": 10.96745,
     "stadium": "Sportplatz FSV Schöningen",
     "source_url": "https://de.wikipedia.org/wiki/FSV_Schöningen"
+  },
+  "SSVg Velbert": {
+    "lat": 51.34498310076768,
+    "lon": 7.062513524884038,
+    "stadium": "IMS Arena",
+    "address": "Bahnhofstr. 116, 42551 Velbert",
+    "source_url": "https://www.ssvg.de/matchcenter/spiel/7969"
   }
 }

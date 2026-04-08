@@ -148,6 +148,8 @@ OUT_CSV_WISH_BEST = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_wish_best.csv")
 OUT_CSV_WISH_WORST = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_wish_worst.csv")
+OUT_CSV_REGIONENMODELL = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_regionenmodell.csv")
 OUT_SOLUTIONS_RANKED_JSON = os.path.join(
     OUTPUT_JSON_DIR, "kompass_solutions_ranked.json")
 OUT_SOLUTION_DIFF_CSV = os.path.join(
@@ -381,6 +383,52 @@ REFORM_3LIGA_RELEGATED_SLOTS = 4
 REFORM_OBERLIGA_MASTER_SLOTS = 14
 REFORM_EXTRA_STARTPLACES = {"Bayern": 1, "Nordost": 1}
 REFORM_STRICT_QUOTA_ALLOW_RESERVES = True
+
+TRANSITION_MODEL_KOMPASS = "kompass"
+TRANSITION_MODEL_REGIONEN = "regionenmodell"
+REGIONEN_BLOCK_NAME = "Nord/Nordost/Bayern"
+REGIONEN_FUTURE_LEAGUES = ("Nord", "West", "Ost", "Südwest")
+REGIONEN_MACRO_REGION_SLOTS: Dict[str, int] = {
+    "West": 20,
+    "Südwest": 20,
+    REGIONEN_BLOCK_NAME: 40,
+}
+REGIONEN_STABLE_RELEGATION: Dict[str, int] = {
+    "West": 3,
+    "Südwest": 3,
+    REGIONEN_BLOCK_NAME: 8,
+}
+REGIONEN_STABLE_OL_PROMOTIONS: Dict[str, int] = {
+    "West": 3,
+    "Südwest": 3,
+    REGIONEN_BLOCK_NAME: 8,
+}
+REGIONEN_CURRENT_RL_TO_MACRO: Dict[str, str] = {
+    "Nord": REGIONEN_BLOCK_NAME,
+    "Nordost": REGIONEN_BLOCK_NAME,
+    "West": "West",
+    "Bayern": REGIONEN_BLOCK_NAME,
+    "Südwest": "Südwest",
+}
+REGIONEN_OL_COMPETITION_TO_MACRO: Dict[str, str] = {
+    "Niedersachsen": REGIONEN_BLOCK_NAME,
+    "Schleswig-Holstein": REGIONEN_BLOCK_NAME,
+    "Hamburg": REGIONEN_BLOCK_NAME,
+    "Bremen": REGIONEN_BLOCK_NAME,
+    "Westfalen": "West",
+    "Niederrhein": "West",
+    "Mittelrhein": "West",
+    "NOFV Nord": REGIONEN_BLOCK_NAME,
+    "NOFV Süd": REGIONEN_BLOCK_NAME,
+    "Baden-Württemberg": "Südwest",
+    "Hessen": "Südwest",
+    "Rheinland-Pfalz/Saar": "Südwest",
+    "Bayernliga Nord": REGIONEN_BLOCK_NAME,
+    "Bayernliga Süd": REGIONEN_BLOCK_NAME,
+}
+REGIONEN_BLOCK_CARRYOVER_PRIORITY = ["Nord", "Nordost", "Bayern"]
+REGIONENMODEL_KMEANS_N_INIT = 32
+REGIONENMODEL_SPLIT_SWAP_ITERS = 9000
 
 
 # -------------------------
@@ -1448,6 +1496,477 @@ def build_rule_based_team_pool(target: int) -> List[str]:
             f"Regelbasierte Teamlogik ergibt {len(out)} Teams statt {target}."
         )
     return out
+
+
+def load_json_file(path: str) -> Dict[str, Any]:
+    p = Path(path)
+    if not p.exists():
+        return {}
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def write_combined_transitions_file(
+    default_model: str,
+    model_payloads: Dict[str, Dict[str, Any]],
+) -> None:
+    default_payload = dict(model_payloads.get(default_model, {}))
+    default_payload["active_model"] = default_model
+    default_payload["models"] = model_payloads
+    with open(SEASON_TRANSITIONS_FILE, "w", encoding="utf-8") as f:
+        json.dump(default_payload, f, ensure_ascii=False, indent=2)
+
+
+_REGIONEN_MACRO_CENTROIDS_CACHE: Optional[Dict[str, Tuple[float, float]]] = None
+
+
+def build_regionenmodell_macro_centroids() -> Dict[str, Tuple[float, float]]:
+    global _REGIONEN_MACRO_CENTROIDS_CACHE
+    if _REGIONEN_MACRO_CENTROIDS_CACHE is not None:
+        return dict(_REGIONEN_MACRO_CENTROIDS_CACHE)
+
+    macro_rosters = {
+        "West": REGIONALLIGA_TEAMS["West"],
+        "Südwest": REGIONALLIGA_TEAMS["Südwest"],
+        REGIONEN_BLOCK_NAME: (
+            REGIONALLIGA_TEAMS["Nord"]
+            + REGIONALLIGA_TEAMS["Nordost"]
+            + REGIONALLIGA_TEAMS["Bayern"]
+        ),
+    }
+    centroids: Dict[str, Tuple[float, float]] = {}
+    for macro_name, team_names in macro_rosters.items():
+        clubs: List[Club] = []
+        unresolved: List[str] = []
+        unique_names = sorted({clean_team_name(t) for t in team_names if clean_team_name(t)})
+        for team_name in unique_names:
+            try:
+                clubs.extend(build_clubs([team_name]))
+            except Exception:
+                unresolved.append(team_name)
+        if not clubs:
+            raise RuntimeError(f"Keine Clubs fuer Makroregion {macro_name} bestimmbar.")
+        if unresolved:
+            print(
+                f"[Regionenmodell] Makro-Zentroid {macro_name}: {len(unresolved)} Clubs ohne Koordinate ignoriert."
+            )
+        centroids[macro_name] = (
+            float(np.mean([c.lat for c in clubs])),
+            float(np.mean([c.lon for c in clubs])),
+        )
+    _REGIONEN_MACRO_CENTROIDS_CACHE = dict(centroids)
+    return centroids
+
+
+def assign_teams_to_regionen_macros(team_names: List[str]) -> Dict[str, List[str]]:
+    centroids = build_regionenmodell_macro_centroids()
+    clubs = build_clubs(team_names)
+    assigned: Dict[str, List[str]] = {macro: [] for macro in centroids}
+    for club in clubs:
+        macro = min(
+            centroids.keys(),
+            key=lambda key: haversine_km(
+                club.lat,
+                club.lon,
+                centroids[key][0],
+                centroids[key][1],
+            ),
+        )
+        assigned[macro].append(club.name)
+    return assigned
+
+
+def pick_carryover_rows_round_robin(
+    rows_by_league: Dict[str, List[Dict]],
+    slots: int,
+    start_rank: int = 2,
+    league_priority: Optional[List[str]] = None,
+) -> List[Tuple[str, str]]:
+    if slots <= 0:
+        return []
+
+    priority = league_priority or list(rows_by_league.keys())
+    priority_index = {name: idx for idx, name in enumerate(priority)}
+    rank_maps = {league: _rows_by_rank(rows) for league, rows in rows_by_league.items()}
+
+    selected: List[Tuple[str, str]] = []
+    used_keys: set[str] = set()
+    rank = max(1, int(start_rank))
+    max_rank = max((max(rmap.keys()) for rmap in rank_maps.values() if rmap), default=0)
+    while len(selected) < slots and rank <= max_rank:
+        round_candidates: List[Tuple[str, Dict]] = []
+        for league_name, rank_map in rank_maps.items():
+            row = rank_map.get(rank)
+            if not row:
+                continue
+            team = clean_team_name(row.get("team", ""))
+            if not team:
+                continue
+            team_k = team_key(team)
+            if team_k in used_keys:
+                continue
+            round_candidates.append((league_name, row))
+
+        remaining = slots - len(selected)
+        if remaining > 0 and round_candidates:
+            if len(round_candidates) > remaining:
+                round_candidates = sorted(
+                    round_candidates,
+                    key=lambda item: (
+                        float(_score_tuple(item[1])[0]),
+                        float(_score_tuple(item[1])[1]),
+                        float(_score_tuple(item[1])[2]),
+                        -int(priority_index.get(item[0], 999)),
+                    ),
+                    reverse=True,
+                )[:remaining]
+            else:
+                round_candidates = sorted(
+                    round_candidates,
+                    key=lambda item: int(priority_index.get(item[0], 999)),
+                )
+
+            for league_name, row in round_candidates:
+                team = clean_team_name(row.get("team", ""))
+                team_k = team_key(team)
+                if team_k in used_keys:
+                    continue
+                used_keys.add(team_k)
+                selected.append((league_name, team))
+                if len(selected) >= slots:
+                    break
+        rank += 1
+
+    if len(selected) < slots:
+        raise RuntimeError(
+            f"Zu wenig carry-over Teams: {len(selected)} von {slots} verfuegbar."
+        )
+    return selected
+
+
+def export_named_solution(
+    leagues: Dict[str, List[Club]],
+    out_csv: str,
+    title: str,
+    league_order: Optional[List[str]] = None,
+) -> pd.DataFrame:
+    rows: List[Dict[str, Any]] = []
+    for lname, lst in leagues.items():
+        if len(lst) != TEAMS_PER_LEAGUE:
+            raise RuntimeError(
+                f"Liga {lname} hat {len(lst)} Teams statt {TEAMS_PER_LEAGUE}."
+            )
+        leagues[lname] = sorted(lst, key=lambda c: normalize_text(c.name).lower())
+        for club in leagues[lname]:
+            rows.append(
+                {
+                    "Liga": lname,
+                    "Verein": club.name,
+                    "lat": club.lat,
+                    "lon": club.lon,
+                }
+            )
+
+    print(f"\n=== Ergebnis: {title} ===")
+    order = league_order or sorted(leagues.keys(), key=lambda x: normalize_text(x).lower())
+    for lname in order:
+        if lname not in leagues:
+            continue
+        metrics = league_metrics(leagues[lname])
+        print(
+            f"\n--- {lname} (20 Teams) | Ø Paar-Distanz: {metrics['avg_pair_km']:.1f} km | Max: {metrics['max_pair_km']:.1f} km ---"
+        )
+        for club in leagues[lname]:
+            print(f"  - {club.name}")
+
+    ensure_parent_dir(out_csv)
+    df = pd.DataFrame(rows).sort_values(["Liga", "Verein"])
+    df.to_csv(out_csv, index=False, encoding="utf-8")
+    print(f"\nCSV geschrieben: {out_csv}")
+    return df
+
+
+def split_regionenmodell_block(clubs: List[Club]) -> Dict[str, str]:
+    if len(clubs) != 2 * TEAMS_PER_LEAGUE:
+        raise RuntimeError(
+            f"Regionen-Block erwartet {2 * TEAMS_PER_LEAGUE} Teams, erhalten: {len(clubs)}"
+        )
+
+    X = clubs_to_array(clubs)
+    km = KMeans(n_clusters=2, n_init=REGIONENMODEL_KMEANS_N_INIT, random_state=MULTI_START_BASE_SEED + 404)
+    labels = km.fit_predict(X)
+    labels = balance_clusters(clubs, labels, 2, TEAMS_PER_LEAGUE)
+    dist_matrix = compute_distance_matrix_km(clubs)
+    labels = improve_by_swaps_distance_matrix(
+        labels=labels,
+        dist_matrix=dist_matrix,
+        k=2,
+        iters=REGIONENMODEL_SPLIT_SWAP_ITERS,
+        seed=MULTI_START_BASE_SEED + 505,
+        accept_equal_prob=0.01,
+        anneal_start_temp_km=40.0,
+        anneal_end_temp_km=1.0,
+        move_2_prob=1.0,
+        move_3_prob=0.0,
+        move_4_prob=0.0,
+        stagnation_shake_iters=1500,
+        stagnation_shake_fraction=0.03,
+    )
+    centroids = compute_centroids(clubs, labels, 2)
+    north_cluster = int(np.argmax(centroids[:, 0]))
+    name_map = {
+        north_cluster: "Nord",
+        1 - north_cluster: "Ost",
+    }
+    return {
+        normalize_text(club.name): name_map[int(labels[idx])]
+        for idx, club in enumerate(clubs)
+    }
+
+
+def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
+    rl_rows_by_league: Dict[str, List[Dict]] = {}
+    rl_source_info: Dict[str, str] = {}
+    for league_name, source_urls in REGIONALLIGA_TABLE_URLS.items():
+        rows, src, src_info = extract_standings_rows_with_fallback(source_urls)
+        if rows:
+            norm_name = normalize_text(league_name)
+            rl_rows_by_league[norm_name] = rows
+            rl_source_info[norm_name] = f"{src}:{src_info}"
+
+    required_leagues = {"Nord", "Nordost", "West", "Bayern", "Südwest"}
+    if set(rl_rows_by_league.keys()) != required_leagues:
+        missing = sorted(required_leagues - set(rl_rows_by_league.keys()))
+        raise RuntimeError(f"Fehlende RL-Daten fuer Regionenmodell: {missing}")
+
+    promoted_to_3liga: List[str] = []
+    promoted_to_3liga_league: Dict[str, str] = {}
+    for league_name in ["Nord", "Nordost", "West", "Bayern", "Südwest"]:
+        rank_map = _rows_by_rank(rl_rows_by_league[league_name])
+        if 1 not in rank_map:
+            continue
+        champ = clean_team_name(rank_map[1]["team"])
+        if champ:
+            promoted_to_3liga.append(champ)
+            promoted_to_3liga_league[champ] = league_name
+
+    third_rows, third_src, third_src_info = extract_standings_rows_with_fallback(
+        THIRD_LIGA_TABLE_URLS
+    )
+    relegated_3liga = _pick_3liga_relegated(
+        third_rows, REFORM_3LIGA_RELEGATED_SLOTS
+    )
+    if len(relegated_3liga) < REFORM_3LIGA_RELEGATED_SLOTS:
+        raise RuntimeError("Zu wenig 3.-Liga-Absteiger fuer Regionenmodell gefunden.")
+    relegated_3liga_by_macro = assign_teams_to_regionen_macros(relegated_3liga)
+
+    oberliga_entries: List[Dict[str, str]] = []
+    for comp in OBERLIGA_MASTER_COMPETITIONS:
+        table_pick = int(comp.get("wikipedia_table_pick", 0))
+        rows, src, src_info = extract_standings_rows_with_fallback(
+            comp["sources"], table_pick=table_pick
+        )
+        champ = _pick_top_n_from_rows(rows, 1)
+        if not champ:
+            raise RuntimeError(f"Kein Oberliga-Meister fuer {comp['name']} gefunden.")
+        team = champ[0]
+        macro = REGIONEN_OL_COMPETITION_TO_MACRO.get(comp["name"])
+        if not macro:
+            raise RuntimeError(f"Keine Regionenmodell-Zuordnung fuer Oberliga {comp['name']}.")
+        oberliga_entries.append(
+            {
+                "competition": comp["name"],
+                "team": team,
+                "macro": macro,
+                "source": f"{src}:{src_info}",
+            }
+        )
+
+    oberliga_by_macro: Dict[str, List[Dict[str, str]]] = {
+        macro: [] for macro in REGIONEN_MACRO_REGION_SLOTS
+    }
+    for entry in oberliga_entries:
+        oberliga_by_macro[entry["macro"]].append(entry)
+
+    selected_current_rl: List[Tuple[str, str]] = []
+    west_slots = REGIONEN_MACRO_REGION_SLOTS["West"] - len(oberliga_by_macro["West"]) - len(relegated_3liga_by_macro.get("West", []))
+    suedwest_slots = REGIONEN_MACRO_REGION_SLOTS["Südwest"] - len(oberliga_by_macro["Südwest"]) - len(relegated_3liga_by_macro.get("Südwest", []))
+    block_slots = REGIONEN_MACRO_REGION_SLOTS[REGIONEN_BLOCK_NAME] - len(oberliga_by_macro[REGIONEN_BLOCK_NAME]) - len(relegated_3liga_by_macro.get(REGIONEN_BLOCK_NAME, []))
+    for label, slots in [("West", west_slots), ("Südwest", suedwest_slots), (REGIONEN_BLOCK_NAME, block_slots)]:
+        if slots < 0:
+            raise RuntimeError(f"Regionenmodell ueberfuellt in {label}: {slots}")
+
+    selected_current_rl.extend(
+        pick_carryover_rows_round_robin(
+            {"West": rl_rows_by_league["West"]},
+            west_slots,
+            start_rank=2,
+            league_priority=["West"],
+        )
+    )
+    selected_current_rl.extend(
+        pick_carryover_rows_round_robin(
+            {"Südwest": rl_rows_by_league["Südwest"]},
+            suedwest_slots,
+            start_rank=2,
+            league_priority=["Südwest"],
+        )
+    )
+    selected_current_rl.extend(
+        pick_carryover_rows_round_robin(
+            {
+                "Nord": rl_rows_by_league["Nord"],
+                "Nordost": rl_rows_by_league["Nordost"],
+                "Bayern": rl_rows_by_league["Bayern"],
+            },
+            block_slots,
+            start_rank=2,
+            league_priority=REGIONEN_BLOCK_CARRYOVER_PRIORITY,
+        )
+    )
+
+    selected_entries: List[Dict[str, str]] = []
+    seen_keys: set[str] = set()
+
+    def add_entry(team: str, macro: str, kind: str, source_name: str, source_detail: str = "") -> None:
+        t = clean_team_name(team)
+        if not t:
+            return
+        t_key = team_key(t)
+        if t_key in seen_keys:
+            raise RuntimeError(f"Doppelte Teamzuordnung im Regionenmodell: {t}")
+        seen_keys.add(t_key)
+        selected_entries.append(
+            {
+                "team": t,
+                "macro": macro,
+                "kind": kind,
+                "source_name": source_name,
+                "source_detail": source_detail,
+            }
+        )
+
+    for league_name, team in selected_current_rl:
+        add_entry(
+            team=team,
+            macro=REGIONEN_CURRENT_RL_TO_MACRO[league_name],
+            kind="carryover_rl",
+            source_name=league_name,
+        )
+
+    for macro_name, teams in relegated_3liga_by_macro.items():
+        for team in teams:
+            add_entry(
+                team=team,
+                macro=macro_name,
+                kind="relegated_3liga",
+                source_name="3. Liga",
+                source_detail=f"{third_src}:{third_src_info}",
+            )
+
+    for entry in oberliga_entries:
+        add_entry(
+            team=entry["team"],
+            macro=entry["macro"],
+            kind="promoted_oberliga",
+            source_name=entry["competition"],
+            source_detail=entry["source"],
+        )
+
+    if len(selected_entries) != TARGET_TEAM_COUNT:
+        raise RuntimeError(
+            f"Regionenmodell ergibt {len(selected_entries)} Teams statt {TARGET_TEAM_COUNT}."
+        )
+
+    clubs = build_clubs([entry["team"] for entry in selected_entries])
+    clubs_by_name = {normalize_text(club.name): club for club in clubs}
+
+    leagues: Dict[str, List[Club]] = {
+        "West": [],
+        "Südwest": [],
+    }
+    block_clubs: List[Club] = []
+    for entry in selected_entries:
+        team = normalize_text(entry["team"])
+        club = clubs_by_name[team]
+        if entry["macro"] == "West":
+            leagues["West"].append(club)
+        elif entry["macro"] == "Südwest":
+            leagues["Südwest"].append(club)
+        else:
+            block_clubs.append(club)
+
+    block_leagues = split_regionenmodell_block(block_clubs)
+    for club in block_clubs:
+        league_name = block_leagues[normalize_text(club.name)]
+        leagues.setdefault(league_name, []).append(club)
+
+    df = export_named_solution(
+        leagues=leagues,
+        out_csv=OUT_CSV_REGIONENMODELL,
+        title="4 Regionalligen (Regionenmodell)",
+        league_order=["Nord", "West", "Ost", "Südwest"],
+    )
+
+    current_rl_teams = {
+        clean_team_name(r["team"])
+        for rows in rl_rows_by_league.values()
+        for r in rows
+        if clean_team_name(r["team"])
+    }
+    selected_rl_teams = {
+        clean_team_name(team) for _, team in selected_current_rl if clean_team_name(team)
+    }
+    relegated_from_regionalliga = sorted(
+        current_rl_teams - selected_rl_teams - {clean_team_name(t) for t in promoted_to_3liga}
+    )
+
+    oberliga_details: List[Dict[str, str]] = []
+    for entry in oberliga_entries:
+        team = normalize_text(entry["team"])
+        future_league = (
+            entry["macro"]
+            if entry["macro"] in {"West", "Südwest"}
+            else block_leagues[team]
+        )
+        oberliga_details.append(
+            {
+                "competition": entry["competition"],
+                "team": entry["team"],
+                "macro_region": entry["macro"],
+                "future_league": future_league,
+            }
+        )
+
+    transitions = {
+        "promoted_to_3liga": sorted(promoted_to_3liga),
+        "promoted_to_3liga_league": promoted_to_3liga_league,
+        "relegated_from_regionalliga": relegated_from_regionalliga,
+        "relegated_from_3liga": sorted(relegated_3liga),
+        "promoted_from_oberliga": sorted([entry["team"] for entry in oberliga_entries]),
+        "promoted_from_oberliga_details": oberliga_details,
+        "reform_rule": (
+            "Regionenmodell-Uebergang: West und Südwest bleiben fix bei 20 Teams; "
+            "Nord, Nordost und Bayern bilden einen 40er-Block und werden danach in Nord/Ost geteilt. "
+            "Stabile Folgejahre: 4 Direktaufsteiger in die 3. Liga, "
+            "RL-Abstieg West=3, Südwest=3, Nord/Nordost/Bayern-Block=8."
+        ),
+        "macro_region_slots": REGIONEN_MACRO_REGION_SLOTS,
+        "stable_relegation": REGIONEN_STABLE_RELEGATION,
+        "stable_oberliga_promotions": REGIONEN_STABLE_OL_PROMOTIONS,
+        "macro_centroids": {
+            key: [round(val[0], 6), round(val[1], 6)]
+            for key, val in build_regionenmodell_macro_centroids().items()
+        },
+        "source_info": {
+            "regionalliga": rl_source_info,
+            "third_liga": f"{third_src}:{third_src_info}",
+        },
+    }
+    return df, transitions
 
 
 def fill_up_to_target(base: List[str], target: int) -> List[str]:
@@ -3803,6 +4322,17 @@ def select_teams_for_season(target_count: int) -> List[str]:
 def main() -> None:
     # 1) Teamliste bauen
     teams = select_teams_for_season(TARGET_TEAM_COUNT)
+    kompass_transitions = load_json_file(SEASON_TRANSITIONS_FILE)
+
+    # 1b) Alternativmodell "Regionenmodell" als feste Vergleichsvariante erzeugen
+    _, regionenmodell_transitions = build_regionenmodell_solution()
+    write_combined_transitions_file(
+        default_model=TRANSITION_MODEL_KOMPASS,
+        model_payloads={
+            TRANSITION_MODEL_KOMPASS: kompass_transitions,
+            TRANSITION_MODEL_REGIONEN: regionenmodell_transitions,
+        },
+    )
 
     # 2) Koordinaten holen
     clubs = build_clubs(teams)

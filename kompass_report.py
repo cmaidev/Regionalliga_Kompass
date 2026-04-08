@@ -38,6 +38,7 @@ INPUT_CSV_RANK10 = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_rank10
 INPUT_CSV_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_worst.csv")
 INPUT_CSV_WISH_BEST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_best.csv")
 INPUT_CSV_WISH_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_worst.csv")
+INPUT_CSV_REGIONENMODELL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_regionenmodell.csv")
 MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
 MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
 MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
@@ -48,6 +49,7 @@ MAP_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank5.html
 MAP_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank10.html")
 MAP_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_worst.html")
 MAP_HTML_WISH_BEST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_best.html")
+MAP_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_regionenmodell.html")
 MAP_COMPARE_HTML_WISH = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_wish.html")
 MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
 MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
@@ -56,6 +58,7 @@ MAP_COMPARE_HTML_RANK3 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_ran
 MAP_COMPARE_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank5.html")
 MAP_COMPARE_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank10.html")
 MAP_COMPARE_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_worst.html")
+MAP_COMPARE_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_regionenmodell.html")
 INDEX_HTML = str(OUTPUT_HTML_DIR / "index.html")
 CLUB_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_club.csv")
 LEAGUE_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_league.csv")
@@ -103,11 +106,17 @@ def sync_pages_docs(source_dir: Path, docs_dir: Path) -> int:
 
 
 
-def load_transitions(path: str) -> Dict:
+def load_transitions(path: str, model_name: Optional[str] = None) -> Dict:
     p = Path(path)
     if not p.exists():
         return {}
     raw = json.loads(p.read_text(encoding="utf-8"))
+    if model_name:
+        models = raw.get("models", {})
+        if isinstance(models, dict) and isinstance(models.get(model_name), dict):
+            raw = models[model_name]
+        else:
+            raw = {}
     out: Dict = {}
     for k in (
         "promoted_to_3liga",
@@ -121,6 +130,9 @@ def load_transitions(path: str) -> Dict:
         out["promoted_to_3liga_league"] = {
             normalize_text(k): normalize_text(v) for k, v in pmap.items()
         }
+    rule_text = raw.get("reform_rule")
+    if isinstance(rule_text, str) and rule_text.strip():
+        out["reform_rule"] = normalize_text(rule_text)
     return out
 
 
@@ -590,6 +602,7 @@ def build_map(
         "Ost": "green",
         "Sued": "orange",
         "Süd": "orange",
+        "Südwest": "orange",
     }
     center_lat = float(df["lat"].mean())
     center_lon = float(df["lon"].mean())
@@ -725,7 +738,7 @@ def build_map(
       <span style="color:blue;">●</span> Nord<br>
       <span style="color:red;">●</span> West<br>
       <span style="color:green;">●</span> Ost<br>
-      <span style="color:orange;">●</span> Sued<br>
+      <span style="color:orange;">●</span> Sued / Südwest<br>
       <span style="color:gray;">◯</span> Absteiger RL<br>
       <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
       <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
@@ -980,6 +993,8 @@ def build_variant_payload(
     trips_df: pd.DataFrame,
     cross_trips_df: pd.DataFrame,
     rank_info: Optional[Dict[str, Any]] = None,
+    show_club_list: bool = True,
+    note: str = "",
 ) -> Dict[str, Any]:
     clubs_by_league: Dict[str, List[str]] = {}
     for liga, group in df.groupby("Liga", sort=True):
@@ -1033,6 +1048,8 @@ def build_variant_payload(
         "top_trips": top_trips,
         "top_close_cross_trips": top_close_cross_trips,
         "clubs_by_league": clubs_by_league,
+        "show_club_list": bool(show_club_list),
+        "note": normalize_text(note),
     }
     if rank_info:
         out["rank"] = int(rank_info.get("rank", 0))
@@ -1253,7 +1270,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       </div>
     </section>
 
-    <section>
+    <section id="clubs-section">
       <h2>Vereinsliste</h2>
       <div class="clubs-grid" id="clubs-grid"></div>
     </section>
@@ -1329,6 +1346,9 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       if (Number.isFinite(Number(variant.gap_to_best_km))) {
         rankBits.push("Gap zu Rank 1: " + fmtKm(variant.gap_to_best_km));
       }
+      if (variant.note) {
+        rankBits.push(String(variant.note));
+      }
       note.textContent = rankBits.join(" | ");
 
       const overall = document.getElementById("overall-table");
@@ -1370,6 +1390,10 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 
       const clubsByLeague = variant.clubs_by_league || {};
       const leaguesOrdered = Object.keys(clubsByLeague).sort();
+      const clubsSection = document.getElementById("clubs-section");
+      if (clubsSection) {
+        clubsSection.hidden = variant.show_club_list === false;
+      }
       document.getElementById("clubs-grid").innerHTML = leaguesOrdered.map(liga => {
         const clubs = clubsByLeague[liga] || [];
         const rows = clubs.map((team, idx) => `<tr><td>${idx + 1}</td><td>${esc(team)}</td></tr>`).join("");
@@ -1483,6 +1507,7 @@ def main() -> None:
     df_rank1 = load_solution_csv(in_path)
 
     transitions = load_transitions(TRANSITIONS_JSON)
+    regionenmodell_transitions = load_transitions(TRANSITIONS_JSON, model_name="regionenmodell")
     ranked_payload = load_ranked_solutions(SOLUTIONS_RANKED_JSON)
     ranked_entries_raw = ranked_payload.get("solutions", [])
     ranked_entries = ranked_entries_raw if isinstance(ranked_entries_raw, list) else []
@@ -1549,6 +1574,14 @@ def main() -> None:
             initial_manual_data = {"df": df_initial_manual, "csv": str(initial_manual_csv_path)}
         except Exception:
             initial_manual_data = None
+    regionenmodell_data: Optional[Dict[str, Any]] = None
+    regionenmodell_csv_path = Path(INPUT_CSV_REGIONENMODELL)
+    if regionenmodell_csv_path.exists():
+        try:
+            df_regionenmodell = load_solution_csv(regionenmodell_csv_path)
+            regionenmodell_data = {"df": df_regionenmodell, "csv": str(regionenmodell_csv_path)}
+        except Exception:
+            regionenmodell_data = None
 
     df_map_rank1, map_coord_stats = resolve_map_coordinates(rank_data[1]["df"])
     changed_vs_rank2 = (
@@ -1685,6 +1718,52 @@ def main() -> None:
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL}")
         print(f"Sichtbare Unterschiede Initial-Auto/Initial-Manuell: {len(changed_auto_manual)}")
 
+    if regionenmodell_data is not None:
+        changed_regionenmodell = compute_changed_teams(rank_data[1]["df"], regionenmodell_data["df"])
+        df_regionenmodell_map, _ = resolve_map_coordinates(regionenmodell_data["df"])
+        build_map(
+            df_regionenmodell_map,
+            MAP_HTML_REGIONENMODELL,
+            regionenmodell_transitions or transitions,
+            changed_teams=changed_regionenmodell if changed_regionenmodell else None,
+            variant="regionenmodell",
+            changed_left_label="RANK1",
+            changed_right_label="REGIONEN",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML),
+            html_asset_name(MAP_HTML_REGIONENMODELL),
+            MAP_COMPARE_HTML_REGIONENMODELL,
+            left_title="Distanzmatrix-Optimierung (Rank 1)",
+            right_title="Regionenmodell",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_REGIONENMODELL), "label": "Rank 1 vs Regionenmodell"})
+        club_df_rm, league_df_rm, trips_df_rm, cross_trips_df_rm = compute_metrics(regionenmodell_data["df"])
+        regionenmodell_score = float(club_df_rm["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "regionenmodell",
+                "Regionenmodell",
+                html_asset_name(MAP_HTML_REGIONENMODELL),
+                regionenmodell_data["df"],
+                club_df_rm,
+                league_df_rm,
+                trips_df_rm,
+                cross_trips_df_rm,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Regionenmodell",
+                    "score_avg_away_km": regionenmodell_score,
+                    "gap_to_best_km": regionenmodell_score - float(best_score) if best_score is not None else 0.0,
+                },
+                show_club_list=False,
+                note="West/Suedwest fix, 4 Direktaufsteiger, RL-Abstieg 3/3/8",
+            )
+        )
+        print(f"Karte (Regionenmodell): {MAP_HTML_REGIONENMODELL}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_REGIONENMODELL}")
+        print(f"Sichtbare Unterschiede Rank1/Regionenmodell: {len(changed_regionenmodell)}")
+
     if wish_best_data is not None:
         changed_wish_best = compute_changed_teams(rank_data[1]["df"], wish_best_data["df"])
         df_wish_best_map, _ = resolve_map_coordinates(wish_best_data["df"])
@@ -1795,6 +1874,8 @@ def main() -> None:
     worst_score = worst_score_computed if worst_data is not None else None
     if wish_best_data is None:
         wish_best_score_computed = None
+    if regionenmodell_data is None:
+        regionenmodell_score = None
     gap_text = "-"
     try:
         if best_score is not None and second_score is not None:
@@ -1803,9 +1884,11 @@ def main() -> None:
         gap_text = "-"
 
     page_data = {
-        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Wunschlisten-Optimierung und Worst-Case.",
+        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Wunschlisten-Optimierung und Worst-Case.",
         "simple_explanation": (
             "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
+            "Das Regionenmodell hält West und Südwest stabil und teilt den Block aus Nord, Nordost und Bayern "
+            "in zwei 20er-Staffeln. "
             "Die Wunschlisten-Optimierung maximiert stattdessen, wie viele der 19 geografisch nächsten "
             "Nachbarn eines Vereins tatsächlich in derselben Liga landen. "
             "Der Worst-Case zeigt die schlechtestmögliche Aufteilung mit maximalen Reisedistanzen."
@@ -1822,6 +1905,10 @@ def main() -> None:
             {"label": "Rank-1 Score", "value": f"{float(best_score):.2f} km" if best_score is not None else "-"},
             {"label": "Gap Rank2-Rank1", "value": gap_text},
             {"label": "Verfügbare Ranks", "value": ", ".join(str(r) for r in sorted(rank_data.keys()))},
+            {
+                "label": "Regionenmodell",
+                "value": f"{regionenmodell_score:.2f} km" if regionenmodell_score is not None else "-",
+            },
             {
                 "label": "Wunschlisten-Best",
                 "value": f"{wish_best_score_computed:.2f} km" if wish_best_score_computed is not None else "-",

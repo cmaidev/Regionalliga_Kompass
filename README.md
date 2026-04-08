@@ -17,6 +17,19 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
 - Quellenpriorität: `FuPa -> Wikipedia`
 
+## Vergleichsmodelle
+- `Kompassmodell` bleibt das Standardmodell des Repos.
+- `Regionenmodell` wird zusätzlich als feste Vergleichsvariante exportiert.
+- Projektannahmen für das Regionenmodell:
+  - `West` und `Südwest` bleiben als eigene 20er-Staffeln erhalten.
+  - `Nord`, `Nordost` und `Bayern` bilden zunächst einen gemeinsamen 40er-Block.
+  - Der 40er-Block wird anschließend geografisch balanciert in `Nord` und `Ost` geteilt.
+  - Oberliga-Meister werden zuerst ihrer Makroregion zugeordnet:
+    - `West`: Westfalen, Niederrhein, Mittelrhein
+    - `Südwest`: Baden-Württemberg, Hessen, Rheinland-Pfalz/Saar
+    - `Nord/Nordost/Bayern`: Niedersachsen, Schleswig-Holstein, Hamburg, Bremen, NOFV Nord, NOFV Süd, Bayernliga Nord, Bayernliga Süd
+  - Projektannahme für stabile Folgejahre: `4` Direktaufsteiger in die 3. Liga, RL-Abstieg `West=3`, `Südwest=3`, `Nord/Nordost/Bayern-Block=8`.
+
 ## Optimierung
 
 ### Metriken
@@ -59,12 +72,13 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 - `kompass_report.py` — Karten (Folium), Distanzmetriken, `index.html`, GitHub-Pages-Sync
 - `kompass_utils.py` — Shared Utilities (normalize_text, haversine_km, Club-Klasse)
 - `data/regionalliga_2025_26.json` — statische RL-Teilnehmerliste 2025/26
-- `season_transitions.json` — Auf-/Abstiegsmarker
+- `season_transitions.json` — Auf-/Abstiegsmarker, inkl. modellbezogener Transition-Daten
 - `tests/test_utils.py` — 42 Offline-Tests
 
 ## Ausgaben
 ### CSV (`outputs/csv/`)
 - `kompass_regionalliga_4x20.csv` — Rank 1 (Hauptausgabe)
+- `kompass_regionalliga_4x20_regionenmodell.csv` — feste Regionenmodell-Variante
 - `kompass_regionalliga_4x20_matrix_rank2.csv` bis `_rank10.csv` — weitere Top-Lösungen
 - `kompass_regionalliga_4x20_matrix_worst.csv` — schlechteste Lösung
 - `kompass_regionalliga_4x20_initial*.csv` — verschiedene Initialverteilungen
@@ -79,9 +93,10 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 ### HTML (`outputs/html/`)
 - `index.html` — Übersichtsseite mit Kartenschalten
 - `kompass_regionalliga_4x20_map.html` — Rank 1 Karte
+- `kompass_regionalliga_4x20_map_regionenmodell.html` — Regionenmodell-Karte
 - `kompass_regionalliga_4x20_map_initial.html` — Initialverteilung
 - `kompass_regionalliga_4x20_map_worst.html` — schlechteste Lösung
-- Vergleichskarten (Initial vs Rank 1, Rank 1 vs Worst)
+- Vergleichskarten (u.a. Rank 1 vs Regionenmodell, Initial vs Rank 1, Rank 1 vs Worst)
 
 ## Schnellstart
 ```powershell
