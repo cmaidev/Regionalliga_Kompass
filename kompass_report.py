@@ -39,6 +39,8 @@ INPUT_CSV_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_worst.c
 INPUT_CSV_WISH_BEST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_best.csv")
 INPUT_CSV_WISH_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_worst.csv")
 INPUT_CSV_REGIONENMODELL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_regionenmodell.csv")
+INPUT_CSV_FUERTH_MEISTER = str(OUTPUT_CSV_DIR / "kompass_fuerth_meisterrunde.csv")
+INPUT_CSV_FUERTH_ABSTIEG = str(OUTPUT_CSV_DIR / "kompass_fuerth_abstiegsrunde.csv")
 MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
 MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
 MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
@@ -50,6 +52,8 @@ MAP_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank10.ht
 MAP_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_worst.html")
 MAP_HTML_WISH_BEST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_best.html")
 MAP_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_regionenmodell.html")
+MAP_HTML_FUERTH_MEISTER = str(OUTPUT_HTML_DIR / "kompass_fuerth_meisterrunde_map.html")
+MAP_HTML_FUERTH_ABSTIEG = str(OUTPUT_HTML_DIR / "kompass_fuerth_abstiegsrunde_map.html")
 MAP_COMPARE_HTML_WISH = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_wish.html")
 MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
 MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
@@ -59,6 +63,8 @@ MAP_COMPARE_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_ran
 MAP_COMPARE_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank10.html")
 MAP_COMPARE_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_worst.html")
 MAP_COMPARE_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_regionenmodell.html")
+MAP_COMPARE_HTML_FUERTH_MEISTER = str(OUTPUT_HTML_DIR / "kompass_fuerth_compare_meisterrunde.html")
+MAP_COMPARE_HTML_FUERTH_SPLIT = str(OUTPUT_HTML_DIR / "kompass_fuerth_compare_split.html")
 INDEX_HTML = str(OUTPUT_HTML_DIR / "index.html")
 CLUB_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_club.csv")
 LEAGUE_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_league.csv")
@@ -83,6 +89,23 @@ EUROPLAN_LEAGUE_IDS = {
     "Regionalliga Suedwest": 24,
 }
 EUROPLAN_BASE = "https://www.europlan-online.de/"
+
+TARGET_LEAGUE_COLORS = {
+    "Nord": "#2563eb",
+    "West": "#dc2626",
+    "Ost": "#16a34a",
+    "Sued": "#f59e0b",
+    "Süd": "#f59e0b",
+    "Südwest": "#f59e0b",
+}
+
+RL_ORIGIN_COLORS = {
+    "Nord": "#2563eb",
+    "Nordost": "#0f766e",
+    "West": "#dc2626",
+    "Bayern": "#8b5e34",
+    "Südwest": "#f59e0b",
+}
 
 
 def html_asset_name(path: str) -> str:
@@ -133,7 +156,118 @@ def load_transitions(path: str, model_name: Optional[str] = None) -> Dict:
     rule_text = raw.get("reform_rule")
     if isinstance(rule_text, str) and rule_text.strip():
         out["reform_rule"] = normalize_text(rule_text)
+    for group_key in ("meisterrunde_teams", "abstiegsrunde_teams"):
+        groups_raw = raw.get(group_key, {})
+        groups_out: Dict[str, List[Dict[str, Any]]] = {}
+        if isinstance(groups_raw, dict):
+            for league_name, entries in groups_raw.items():
+                norm_league = normalize_text(league_name)
+                if not norm_league or not isinstance(entries, list):
+                    continue
+                normalized_entries: List[Dict[str, Any]] = []
+                for entry in entries:
+                    if not isinstance(entry, dict):
+                        continue
+                    item: Dict[str, Any] = {}
+                    for key, value in entry.items():
+                        if isinstance(value, str):
+                            item[key] = normalize_text(value)
+                        else:
+                            item[key] = value
+                    if normalize_text(item.get("team", "")):
+                        normalized_entries.append(item)
+                if normalized_entries:
+                    groups_out[norm_league] = normalized_entries
+        if groups_out:
+            out[group_key] = groups_out
     return out
+
+
+def build_team_origin_lookup(
+    groups: Dict[str, List[Dict[str, Any]]],
+    fallback_to_group: bool = False,
+) -> Dict[str, str]:
+    lookup: Dict[str, str] = {}
+    for group_name, entries in groups.items():
+        norm_group = normalize_text(group_name)
+        if not norm_group or not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            team = normalize_text(entry.get("team", ""))
+            if not team:
+                continue
+            origin = normalize_text(entry.get("rl_league", "")) or (
+                norm_group if fallback_to_group else ""
+            )
+            if origin:
+                lookup[team] = origin
+    return lookup
+
+
+def resolve_map_color_mode(
+    variant: str,
+    transitions: Dict,
+) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str], str, List[Tuple[str, str]]]:
+    if variant == "fuerth_meisterrunde":
+        origin_lookup = build_team_origin_lookup(
+            transitions.get("meisterrunde_teams", {})
+        )
+        legend_items = [
+            ("Nord", "Nord"),
+            ("West", "West"),
+            ("Ost", "Ost"),
+            ("Südwest", "Süd / Südwest"),
+        ]
+        return {}, origin_lookup, TARGET_LEAGUE_COLORS, "RL-Herkunft", legend_items
+    if variant == "fuerth_abstiegsrunde":
+        origin_lookup = build_team_origin_lookup(
+            transitions.get("abstiegsrunde_teams", {}),
+            fallback_to_group=True,
+        )
+        legend_items = [
+            ("Nord", "Nord"),
+            ("Nordost", "Nordost"),
+            ("West", "West"),
+            ("Bayern", "Bayern"),
+            ("Südwest", "Südwest"),
+        ]
+        return origin_lookup, {}, RL_ORIGIN_COLORS, "Liga", legend_items
+    legend_items = [
+        ("Nord", "Nord"),
+        ("West", "West"),
+        ("Ost", "Ost"),
+        ("Südwest", "Süd / Südwest"),
+    ]
+    return {}, {}, TARGET_LEAGUE_COLORS, "Liga", legend_items
+
+
+def build_legend_html(
+    legend_items: List[Tuple[str, str]],
+    league_colors: Dict[str, str],
+) -> str:
+    league_lines = []
+    for key, label in legend_items:
+        color = league_colors.get(key)
+        if not color:
+            continue
+        league_lines.append(f'<span style="color:{color};">●</span> {label}<br>')
+    league_markup = "".join(league_lines)
+    return f"""
+    <div style="
+      position: fixed;
+      bottom: 20px; left: 20px; z-index: 9999;
+      background: white; border: 1px solid #333; padding: 10px; font-size: 14px;">
+      <b>Liga</b><br>
+      {league_markup}
+      <span style="color:gray;">◯</span> Absteiger RL<br>
+      <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
+      <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
+      <span style="color:#2f2f2f;">⬟</span> Aufsteiger aus Oberliga (nur Form)<br>
+      <span style="color:#111;">◯</span> Unterschied STD/MATRIX
+    </div>
+    """
 
 
 def load_cache_coords(path: str) -> Dict[str, Tuple[float, float]]:
@@ -596,14 +730,9 @@ def build_map(
     changed_left_label: str = "STD",
     changed_right_label: str = "MATRIX",
 ) -> List[str]:
-    league_colors = {
-        "Nord": "blue",
-        "West": "red",
-        "Ost": "green",
-        "Sued": "orange",
-        "Süd": "orange",
-        "Südwest": "orange",
-    }
+    team_color_lookup, team_info_lookup, league_colors, info_label, legend_items = resolve_map_color_mode(
+        variant, transitions
+    )
     center_lat = float(df["lat"].mean())
     center_lon = float(df["lon"].mean())
     m = folium.Map(location=[center_lat, center_lon], zoom_start=6, tiles=None)
@@ -613,11 +742,16 @@ def build_map(
         name="OpenStreetMap DE",
     ).add_to(m)
     for _, row in df.iterrows():
+        team = normalize_text(row["Verein"])
         liga = normalize_text(row["Liga"])
-        color = league_colors.get(liga, "gray")
+        color_key = team_color_lookup.get(team, liga)
+        color = league_colors.get(color_key, "gray")
+        info_value = team_info_lookup.get(team, "")
         stadium = normalize_text(row.get("stadium", ""))
         source = normalize_text(row.get("coord_source", "club"))
         popup = f"{row['Verein']} ({liga})"
+        if info_value and info_value != liga:
+            popup += f"<br>{info_label}: {info_value}"
         if stadium:
             popup += f"<br>Stadion: {stadium}<br>Quelle: {source}"
         folium.CircleMarker(
@@ -628,7 +762,11 @@ def build_map(
             fill_color=color,
             fill_opacity=0.8,
             popup=popup,
-            tooltip=f"{row['Verein']} | {liga}",
+            tooltip=(
+                f"{row['Verein']} | {liga}"
+                if not info_value or info_value == liga
+                else f"{row['Verein']} | {liga} | {info_label}: {info_value}"
+            ),
         ).add_to(m)
 
     # Unterschiede zwischen Standard- und Matrix-Lösung sichtbar markieren.
@@ -729,23 +867,7 @@ def build_map(
             popup=f"{t} (Aufsteiger aus Oberliga)",
         ).add_to(m)
 
-    legend_html = """
-    <div style="
-      position: fixed;
-      bottom: 20px; left: 20px; z-index: 9999;
-      background: white; border: 1px solid #333; padding: 10px; font-size: 14px;">
-      <b>Liga</b><br>
-      <span style="color:blue;">●</span> Nord<br>
-      <span style="color:red;">●</span> West<br>
-      <span style="color:green;">●</span> Ost<br>
-      <span style="color:orange;">●</span> Sued / Südwest<br>
-      <span style="color:gray;">◯</span> Absteiger RL<br>
-      <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
-      <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
-      <span style="color:#2f2f2f;">⬟</span> Aufsteiger aus Oberliga (nur Form)<br>
-      <span style="color:#111;">◯</span> Unterschied STD/MATRIX
-    </div>
-    """
+    legend_html = build_legend_html(legend_items, league_colors)
     m.get_root().html.add_child(folium.Element(legend_html))
     ensure_parent_dir(out_html)
     m.save(out_html)
@@ -1508,6 +1630,7 @@ def main() -> None:
 
     transitions = load_transitions(TRANSITIONS_JSON)
     regionenmodell_transitions = load_transitions(TRANSITIONS_JSON, model_name="regionenmodell")
+    fuerth_transitions = load_transitions(TRANSITIONS_JSON, model_name="fuerth_vorrunden_split")
     ranked_payload = load_ranked_solutions(SOLUTIONS_RANKED_JSON)
     ranked_entries_raw = ranked_payload.get("solutions", [])
     ranked_entries = ranked_entries_raw if isinstance(ranked_entries_raw, list) else []
@@ -1582,6 +1705,22 @@ def main() -> None:
             regionenmodell_data = {"df": df_regionenmodell, "csv": str(regionenmodell_csv_path)}
         except Exception:
             regionenmodell_data = None
+    fuerth_meister_data: Optional[Dict[str, Any]] = None
+    fuerth_meister_csv_path = Path(INPUT_CSV_FUERTH_MEISTER)
+    if fuerth_meister_csv_path.exists():
+        try:
+            df_fuerth_meister = load_solution_csv(fuerth_meister_csv_path)
+            fuerth_meister_data = {"df": df_fuerth_meister, "csv": str(fuerth_meister_csv_path)}
+        except Exception:
+            fuerth_meister_data = None
+    fuerth_abstieg_data: Optional[Dict[str, Any]] = None
+    fuerth_abstieg_csv_path = Path(INPUT_CSV_FUERTH_ABSTIEG)
+    if fuerth_abstieg_csv_path.exists():
+        try:
+            df_fuerth_abstieg = load_solution_csv(fuerth_abstieg_csv_path)
+            fuerth_abstieg_data = {"df": df_fuerth_abstieg, "csv": str(fuerth_abstieg_csv_path)}
+        except Exception:
+            fuerth_abstieg_data = None
 
     df_map_rank1, map_coord_stats = resolve_map_coordinates(rank_data[1]["df"])
     changed_vs_rank2 = (
@@ -1764,6 +1903,101 @@ def main() -> None:
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_REGIONENMODELL}")
         print(f"Sichtbare Unterschiede Rank1/Regionenmodell: {len(changed_regionenmodell)}")
 
+    fuerth_meister_score: Optional[float] = None
+    if fuerth_meister_data is not None:
+        df_fuerth_meister_map, _ = resolve_map_coordinates(fuerth_meister_data["df"])
+        build_map(
+            df_fuerth_meister_map,
+            MAP_HTML_FUERTH_MEISTER,
+            fuerth_transitions or transitions,
+            changed_teams=None,
+            variant="fuerth_meisterrunde",
+        )
+        create_compare_html(
+            html_asset_name(MAP_HTML),
+            html_asset_name(MAP_HTML_FUERTH_MEISTER),
+            MAP_COMPARE_HTML_FUERTH_MEISTER,
+            left_title="Distanzmatrix-Optimierung (Rank 1, 4x20)",
+            right_title="Fuerth-Meisterrunde (4x10)",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_FUERTH_MEISTER), "label": "Rank 1 vs Fuerth-Meisterrunde"})
+        club_df_fm, league_df_fm, trips_df_fm, cross_trips_df_fm = compute_metrics(fuerth_meister_data["df"])
+        fuerth_meister_score = float(club_df_fm["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "fuerth_meisterrunde",
+                "Fuerth-Vorrunden-Split (Meisterrunde, 4x10)",
+                html_asset_name(MAP_HTML_FUERTH_MEISTER),
+                fuerth_meister_data["df"],
+                club_df_fm,
+                league_df_fm,
+                trips_df_fm,
+                cross_trips_df_fm,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Fuerth-Meisterrunde",
+                    "score_avg_away_km": fuerth_meister_score,
+                    "gap_to_best_km": 0.0,
+                },
+                show_club_list=False,
+                note=(
+                    "Farben zeigen die 4 Meisterrunden-Staffeln; RL-Herkunft steht in Tooltip/Popup. "
+                    "Nur Top-8 je RL (40 Teams) in 4 Staffeln a 10 – "
+                    "Ø-Auswärts-Metrik nicht direkt mit 20er-Ligen vergleichbar (9 statt 19 Gegner)."
+                ),
+            )
+        )
+        print(f"Karte (Fuerth-Meisterrunde): {MAP_HTML_FUERTH_MEISTER}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_FUERTH_MEISTER}")
+
+    fuerth_abstieg_score: Optional[float] = None
+    if fuerth_abstieg_data is not None:
+        df_fuerth_abstieg_map, _ = resolve_map_coordinates(fuerth_abstieg_data["df"])
+        build_map(
+            df_fuerth_abstieg_map,
+            MAP_HTML_FUERTH_ABSTIEG,
+            fuerth_transitions or transitions,
+            changed_teams=None,
+            variant="fuerth_abstiegsrunde",
+        )
+        club_df_fa, league_df_fa, trips_df_fa, cross_trips_df_fa = compute_metrics(fuerth_abstieg_data["df"])
+        fuerth_abstieg_score = float(club_df_fa["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "fuerth_abstiegsrunde",
+                "Fuerth-Vorrunden-Split (Abstiegsrunde, 5 RL)",
+                html_asset_name(MAP_HTML_FUERTH_ABSTIEG),
+                fuerth_abstieg_data["df"],
+                club_df_fa,
+                league_df_fa,
+                trips_df_fa,
+                cross_trips_df_fa,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Fuerth-Abstiegsrunde",
+                    "score_avg_away_km": fuerth_abstieg_score,
+                    "gap_to_best_km": 0.0,
+                },
+                show_club_list=False,
+                note=(
+                    "Farben zeigen die bisherigen RL-Staffeln; untere Teams jeder RL bleiben in ihrer bisherigen Staffel – "
+                    "Ligagrößen variieren, Vergleich mit 4x20 nur eingeschränkt aussagekräftig."
+                ),
+            )
+        )
+        print(f"Karte (Fuerth-Abstiegsrunde): {MAP_HTML_FUERTH_ABSTIEG}")
+
+    if fuerth_meister_data is not None and fuerth_abstieg_data is not None:
+        create_compare_html(
+            html_asset_name(MAP_HTML_FUERTH_MEISTER),
+            html_asset_name(MAP_HTML_FUERTH_ABSTIEG),
+            MAP_COMPARE_HTML_FUERTH_SPLIT,
+            left_title="Fuerth-Meisterrunde (4x10)",
+            right_title="Fuerth-Abstiegsrunde (5 RL)",
+        )
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_FUERTH_SPLIT), "label": "Fuerth: Meisterrunde vs Abstiegsrunde"})
+        print(f"Kartenvergleich Fuerth-Split: {MAP_COMPARE_HTML_FUERTH_SPLIT}")
+
     if wish_best_data is not None:
         changed_wish_best = compute_changed_teams(rank_data[1]["df"], wish_best_data["df"])
         df_wish_best_map, _ = resolve_map_coordinates(wish_best_data["df"])
@@ -1876,6 +2110,10 @@ def main() -> None:
         wish_best_score_computed = None
     if regionenmodell_data is None:
         regionenmodell_score = None
+    if fuerth_meister_data is None:
+        fuerth_meister_score = None
+    if fuerth_abstieg_data is None:
+        fuerth_abstieg_score = None
     gap_text = "-"
     try:
         if best_score is not None and second_score is not None:
@@ -1884,11 +2122,14 @@ def main() -> None:
         gap_text = "-"
 
     page_data = {
-        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Wunschlisten-Optimierung und Worst-Case.",
+        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Fuerth-Vorrunden-Split, Wunschlisten-Optimierung und Worst-Case.",
         "simple_explanation": (
             "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
             "Das Regionenmodell hält West und Südwest stabil und teilt den Block aus Nord, Nordost und Bayern "
             "in zwei 20er-Staffeln. "
+            "Der Fuerth-Vorrunden-Split (diskutiert beim DFB-Treffen in Fürth) teilt jede der 5 bestehenden "
+            "Regionalligen nach der Hinrunde: Top-8 je Liga (40 Teams) bilden 4 geografisch optimierte "
+            "Meisterrunden-Staffeln à 10; die übrigen Teams bleiben in ihrer RL und spielen eine Abstiegsrunde. "
             "Die Wunschlisten-Optimierung maximiert stattdessen, wie viele der 19 geografisch nächsten "
             "Nachbarn eines Vereins tatsächlich in derselben Liga landen. "
             "Der Worst-Case zeigt die schlechtestmögliche Aufteilung mit maximalen Reisedistanzen."
@@ -1908,6 +2149,14 @@ def main() -> None:
             {
                 "label": "Regionenmodell",
                 "value": f"{regionenmodell_score:.2f} km" if regionenmodell_score is not None else "-",
+            },
+            {
+                "label": "Fuerth-Meisterrunde (4x10)",
+                "value": f"{fuerth_meister_score:.2f} km" if fuerth_meister_score is not None else "-",
+            },
+            {
+                "label": "Fuerth-Abstiegsrunde (5 RL)",
+                "value": f"{fuerth_abstieg_score:.2f} km" if fuerth_abstieg_score is not None else "-",
             },
             {
                 "label": "Wunschlisten-Best",

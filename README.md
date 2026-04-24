@@ -29,6 +29,11 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
     - `Südwest`: Baden-Württemberg, Hessen, Rheinland-Pfalz/Saar
     - `Nord/Nordost/Bayern`: Niedersachsen, Schleswig-Holstein, Hamburg, Bremen, NOFV Nord, NOFV Süd, Bayernliga Nord, Bayernliga Süd
   - Projektannahme für stabile Folgejahre: `4` Direktaufsteiger in die 3. Liga, RL-Abstieg `West=3`, `Südwest=3`, `Nord/Nordost/Bayern-Block=8`.
+- `Fuerth-Vorrunden-Split` (diskutiert beim DFB-Treffen in Fürth):
+  - Jede der 5 bestehenden Regionalligen spielt eine gemeinsame Vorrunde.
+  - Nach der Hinrunde teilt sich die Tabelle: Top-8 jeder RL (5×8 = 40 Teams) bilden **4 geografisch optimierte Meisterrunden-Staffeln à 10 Teams** und spielen dort Aufstiegsplätze zur 3. Liga aus.
+  - Die übrigen Teams bleiben in ihrer bisherigen RL und spielen dort eine Abstiegsrunde (Ligagröße je Staffel variiert).
+  - Hinweis: Die durchschnittliche Auswärtsdistanz der Meisterrunde ist nicht direkt mit dem 4x20-Modell vergleichbar (9 statt 19 Gegner pro Liga).
 
 ## Optimierung
 
@@ -79,6 +84,8 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 ### CSV (`outputs/csv/`)
 - `kompass_regionalliga_4x20.csv` — Rank 1 (Hauptausgabe)
 - `kompass_regionalliga_4x20_regionenmodell.csv` — feste Regionenmodell-Variante
+- `kompass_fuerth_meisterrunde.csv` — Fuerth-Vorrunden-Split: Meisterrunde (4×10, geografisch optimiert)
+- `kompass_fuerth_abstiegsrunde.csv` — Fuerth-Vorrunden-Split: Abstiegsrunde (5 RL, variable Größe)
 - `kompass_regionalliga_4x20_matrix_rank2.csv` bis `_rank10.csv` — weitere Top-Lösungen
 - `kompass_regionalliga_4x20_matrix_worst.csv` — schlechteste Lösung
 - `kompass_regionalliga_4x20_initial*.csv` — verschiedene Initialverteilungen
@@ -94,6 +101,8 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 - `index.html` — Übersichtsseite mit Kartenschalten
 - `kompass_regionalliga_4x20_map.html` — Rank 1 Karte
 - `kompass_regionalliga_4x20_map_regionenmodell.html` — Regionenmodell-Karte
+- `kompass_fuerth_meisterrunde_map.html` — Fuerth-Vorrunden-Split: Meisterrunde
+- `kompass_fuerth_abstiegsrunde_map.html` — Fuerth-Vorrunden-Split: Abstiegsrunde
 - `kompass_regionalliga_4x20_map_initial.html` — Initialverteilung
 - `kompass_regionalliga_4x20_map_worst.html` — schlechteste Lösung
 - Vergleichskarten (u.a. Rank 1 vs Regionenmodell, Initial vs Rank 1, Rank 1 vs Worst)
