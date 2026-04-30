@@ -14,7 +14,6 @@
     "SG Sonnenhof Großaspach": "Südwest"
   },
   "relegated_from_regionalliga": [
-    "1. FC Bocholt",
     "Altona 93",
     "BSG Chemie Leipzig",
     "Bahlinger SC",
@@ -27,6 +26,7 @@
     "Greifswalder FC",
     "HSC Hannover",
     "Kickers Offenbach",
+    "SC Paderborn 07",
     "SC Wiedenbrück",
     "SSVg Velbert",
     "SV Rödinghausen",
@@ -85,7 +85,6 @@
         "SG Sonnenhof Großaspach": "Südwest"
       },
       "relegated_from_regionalliga": [
-        "1. FC Bocholt",
         "Altona 93",
         "BSG Chemie Leipzig",
         "Bahlinger SC",
@@ -98,6 +97,7 @@
         "Greifswalder FC",
         "HSC Hannover",
         "Kickers Offenbach",
+        "SC Paderborn 07",
         "SC Wiedenbrück",
         "SSVg Velbert",
         "SV Rödinghausen",
@@ -173,7 +173,7 @@
         "SpVgg Bayreuth",
         "SpVgg Greuther Fürth",
         "SpVgg Hankofen-Hailing",
-        "TSV Schott Mainz",
+        "TSG Balingen",
         "TSV Schwaben Augsburg",
         "TuS Blau-Weiß Lohne",
         "Viktoria Aschaffenburg",
@@ -363,17 +363,17 @@
           {
             "team": "SV Sandhausen",
             "rl_league": "Südwest",
-            "rl_rank": 6
+            "rl_rank": 4
           },
           {
             "team": "TSV Aubstadt",
             "rl_league": "Bayern",
-            "rl_rank": 5
+            "rl_rank": 6
           },
           {
             "team": "VfB Eichstätt",
             "rl_league": "Bayern",
-            "rl_rank": 6
+            "rl_rank": 5
           },
           {
             "team": "Wacker Burghausen",
@@ -395,12 +395,12 @@
           {
             "team": "BFC Preussen",
             "rl_league": "Nordost",
-            "rl_rank": 7
+            "rl_rank": 8
           },
           {
             "team": "Chemnitzer FC",
             "rl_league": "Nordost",
-            "rl_rank": 8
+            "rl_rank": 7
           },
           {
             "team": "DJK Vilzing",
@@ -477,7 +477,7 @@
           {
             "team": "SV Drochtersen/Assel",
             "rl_league": "Nord",
-            "rl_rank": 3
+            "rl_rank": 2
           },
           {
             "team": "SV Meppen",
@@ -487,7 +487,7 @@
           {
             "team": "VfB Oldenburg",
             "rl_league": "Nord",
-            "rl_rank": 2
+            "rl_rank": 3
           }
         ],
         "West": [
@@ -504,7 +504,7 @@
           {
             "team": "FC 08 Homburg",
             "rl_league": "Südwest",
-            "rl_rank": 4
+            "rl_rank": 5
           },
           {
             "team": "FC Schalke 04",
@@ -514,12 +514,12 @@
           {
             "team": "FSV Frankfurt",
             "rl_league": "Südwest",
-            "rl_rank": 3
+            "rl_rank": 7
           },
           {
             "team": "FSV Mainz 05",
             "rl_league": "Südwest",
-            "rl_rank": 5
+            "rl_rank": 3
           },
           {
             "team": "Rot-Weiß Oberhausen",
@@ -539,7 +539,7 @@
           {
             "team": "TSV Steinbach Haiger",
             "rl_league": "Südwest",
-            "rl_rank": 7
+            "rl_rank": 6
           }
         ]
       },
@@ -550,11 +550,11 @@
             "rl_rank": 9
           },
           {
-            "team": "TSV Buchbach",
+            "team": "SpVgg Ansbach 09",
             "rl_rank": 10
           },
           {
-            "team": "SpVgg Ansbach 09",
+            "team": "TSV Buchbach",
             "rl_rank": 11
           },
           {
@@ -566,11 +566,11 @@
             "rl_rank": 13
           },
           {
-            "team": "SpVgg Greuther Fürth",
+            "team": "TSV Schwaben Augsburg",
             "rl_rank": 14
           },
           {
-            "team": "TSV Schwaben Augsburg",
+            "team": "SpVgg Greuther Fürth",
             "rl_rank": 15
           },
           {
@@ -588,7 +588,7 @@
         ],
         "Nord": [
           {
-            "team": "VfB Lübeck",
+            "team": "SC Weiche Flensburg 08",
             "rl_rank": 9
           },
           {
@@ -596,7 +596,7 @@
             "rl_rank": 10
           },
           {
-            "team": "SC Weiche Flensburg 08",
+            "team": "VfB Lübeck",
             "rl_rank": 11
           },
           {
@@ -608,11 +608,11 @@
             "rl_rank": 13
           },
           {
-            "team": "FC Eintracht Norderstedt",
+            "team": "HSC Hannover",
             "rl_rank": 14
           },
           {
-            "team": "HSC Hannover",
+            "team": "FC Eintracht Norderstedt",
             "rl_rank": 15
           },
           {
@@ -642,19 +642,19 @@
             "rl_rank": 11
           },
           {
-            "team": "BFC Dynamo",
+            "team": "SV Babelsberg 03",
             "rl_rank": 12
           },
           {
-            "team": "SV Babelsberg 03",
+            "team": "BFC Dynamo",
             "rl_rank": 13
           },
           {
-            "team": "ZFC Meuselwitz",
+            "team": "BSG Chemie Leipzig",
             "rl_rank": 14
           },
           {
-            "team": "BSG Chemie Leipzig",
+            "team": "ZFC Meuselwitz",
             "rl_rank": 15
           },
           {
@@ -672,19 +672,19 @@
         ],
         "Südwest": [
           {
-            "team": "Stuttgarter Kickers",
+            "team": "KSV Hessen Kassel",
             "rl_rank": 9
           },
           {
-            "team": "KSV Hessen Kassel",
+            "team": "Stuttgarter Kickers",
             "rl_rank": 10
           },
           {
-            "team": "FC-Astoria Walldorf",
+            "team": "SC Freiburg",
             "rl_rank": 11
           },
           {
-            "team": "SC Freiburg",
+            "team": "FC-Astoria Walldorf",
             "rl_rank": 12
           },
           {
@@ -700,11 +700,11 @@
             "rl_rank": 15
           },
           {
-            "team": "TSG Balingen",
+            "team": "TSV Schott Mainz",
             "rl_rank": 16
           },
           {
-            "team": "TSV Schott Mainz",
+            "team": "TSG Balingen",
             "rl_rank": 17
           },
           {
@@ -722,7 +722,7 @@
             "rl_rank": 10
           },
           {
-            "team": "VfL Sportfreunde Lotte",
+            "team": "1. FC Bocholt",
             "rl_rank": 11
           },
           {
@@ -730,11 +730,11 @@
             "rl_rank": 12
           },
           {
-            "team": "SC Paderborn 07",
+            "team": "VfL Sportfreunde Lotte",
             "rl_rank": 13
           },
           {
-            "team": "1. FC Bocholt",
+            "team": "SC Paderborn 07",
             "rl_rank": 14
           },
           {
