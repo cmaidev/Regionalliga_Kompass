@@ -150,10 +150,10 @@ OUT_CSV_WISH_WORST = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_wish_worst.csv")
 OUT_CSV_REGIONENMODELL = os.path.join(
     OUTPUT_CSV_DIR, "kompass_regionalliga_4x20_regionenmodell.csv")
-OUT_CSV_FUERTH_MEISTER = os.path.join(
-    OUTPUT_CSV_DIR, "kompass_fuerth_meisterrunde.csv")
-OUT_CSV_FUERTH_ABSTIEG = os.path.join(
-    OUTPUT_CSV_DIR, "kompass_fuerth_abstiegsrunde.csv")
+OUT_CSV_BAYERN_MEISTER = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_bayern_meisterrunde.csv")
+OUT_CSV_BAYERN_ABSTIEG = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_bayern_abstiegsrunde.csv")
 OUT_SOLUTIONS_RANKED_JSON = os.path.join(
     OUTPUT_JSON_DIR, "kompass_solutions_ranked.json")
 OUT_SOLUTION_DIFF_CSV = os.path.join(
@@ -390,19 +390,19 @@ REFORM_STRICT_QUOTA_ALLOW_RESERVES = True
 
 TRANSITION_MODEL_KOMPASS = "kompass"
 TRANSITION_MODEL_REGIONEN = "regionenmodell"
-TRANSITION_MODEL_FUERTH = "fuerth_vorrunden_split"
+TRANSITION_MODEL_BAYERN = "bayern_vorrunden_split"
 
-# Fuerth-Vorrunden-Split (Treffen in Fuerth, April 2026):
+# Bayern-Vorrunden-Split:
 # Nach der Hinrunde teilt sich jede der 5 Regionalligen in obere und untere Tabellenhaelfte.
 # Top-8 je Liga (5x8 = 40 Teams) spielen in 4 geografisch optimierten Meisterrunden-Staffeln (4x10).
 # Die unteren Teams (je Liga N-8) bleiben in ihrer Regionalliga und spielen eine Abstiegsrunde.
-FUERTH_MEISTER_TOP_N_PER_LEAGUE = 8
-FUERTH_MEISTER_N_LEAGUES = 4
-FUERTH_MEISTER_TEAMS_PER_LEAGUE = (
-    len(["Nord", "Nordost", "West", "Bayern", "Südwest"]) * FUERTH_MEISTER_TOP_N_PER_LEAGUE
-) // FUERTH_MEISTER_N_LEAGUES  # 10
-FUERTH_KMEANS_N_INIT = 32
-FUERTH_MATRIX_SWAP_ITERS = 20000
+BAYERN_MEISTER_TOP_N_PER_LEAGUE = 8
+BAYERN_MEISTER_N_LEAGUES = 4
+BAYERN_MEISTER_TEAMS_PER_LEAGUE = (
+    len(["Nord", "Nordost", "West", "Bayern", "Südwest"]) * BAYERN_MEISTER_TOP_N_PER_LEAGUE
+) // BAYERN_MEISTER_N_LEAGUES  # 10
+BAYERN_KMEANS_N_INIT = 32
+BAYERN_MATRIX_SWAP_ITERS = 20000
 REGIONEN_BLOCK_NAME = "Nord/Nordost/Bayern"
 REGIONEN_FUTURE_LEAGUES = ("Nord", "West", "Ost", "Südwest")
 REGIONEN_MACRO_REGION_SLOTS: Dict[str, int] = {
@@ -1986,9 +1986,9 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     return df, transitions
 
 
-def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
+def build_bayern_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """
-    Erzeugt das Fuerth-Modell: nach der Hinrunde teilt jede der 5 RL ihre Tabelle.
+    Erzeugt das Bayern-Modell: nach der Hinrunde teilt jede der 5 RL ihre Tabelle.
     Top-8 je Liga bilden 40 Teams fuer die Meisterrunde (4 geografisch optimierte Staffeln a 10).
     Die unteren Teams bleiben je RL zusammen und spielen eine Abstiegsrunde.
     Exportiert zwei CSVs (Meisterrunde + Abstiegsrunde) und liefert ein Transitions-Payload.
@@ -2005,9 +2005,9 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
     required_leagues = {"Nord", "Nordost", "West", "Bayern", "Südwest"}
     if set(rl_rows_by_league.keys()) != required_leagues:
         missing = sorted(required_leagues - set(rl_rows_by_league.keys()))
-        raise RuntimeError(f"Fehlende RL-Daten fuer Fuerth-Modell: {missing}")
+        raise RuntimeError(f"Fehlende RL-Daten fuer Bayern-Modell: {missing}")
 
-    top_n = FUERTH_MEISTER_TOP_N_PER_LEAGUE
+    top_n = BAYERN_MEISTER_TOP_N_PER_LEAGUE
     meister_entries: List[Dict[str, Any]] = []
     abstieg_entries: List[Dict[str, Any]] = []
 
@@ -2021,7 +2021,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
         if len(ranked_teams) < top_n:
             raise RuntimeError(
                 f"RL {league_name}: nur {len(ranked_teams)} platzierte Teams, "
-                f"benoetigt {top_n} fuer Fuerth-Meisterrunde."
+                f"benoetigt {top_n} fuer Bayern-Meisterrunde."
             )
         for rk, team in ranked_teams[:top_n]:
             meister_entries.append(
@@ -2034,7 +2034,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
 
     if len(meister_entries) != top_n * len(required_leagues):
         raise RuntimeError(
-            f"Fuerth-Meisterrunde hat {len(meister_entries)} Teams statt "
+            f"Bayern-Meisterrunde hat {len(meister_entries)} Teams statt "
             f"{top_n * len(required_leagues)}."
         )
 
@@ -2045,15 +2045,15 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
     # build_clubs liefert gleiche Reihenfolge wie Eingabe; defensive Pruefung:
     if len(meister_clubs) != len(meister_entries):
         raise RuntimeError(
-            "Fuerth-Meisterrunde: Koordinaten konnten nicht fuer alle Teams bestimmt werden."
+            "Bayern-Meisterrunde: Koordinaten konnten nicht fuer alle Teams bestimmt werden."
         )
 
     X = clubs_to_array(meister_clubs)
-    k_meister = FUERTH_MEISTER_N_LEAGUES
-    cap_meister = FUERTH_MEISTER_TEAMS_PER_LEAGUE
+    k_meister = BAYERN_MEISTER_N_LEAGUES
+    cap_meister = BAYERN_MEISTER_TEAMS_PER_LEAGUE
     km = KMeans(
         n_clusters=k_meister,
-        n_init=FUERTH_KMEANS_N_INIT,
+        n_init=BAYERN_KMEANS_N_INIT,
         random_state=MULTI_START_BASE_SEED + 707,
     )
     labels = km.fit_predict(X)
@@ -2063,7 +2063,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
         labels=labels,
         dist_matrix=dm,
         k=k_meister,
-        iters=FUERTH_MATRIX_SWAP_ITERS,
+        iters=BAYERN_MATRIX_SWAP_ITERS,
         seed=MULTI_START_BASE_SEED + 808,
         accept_equal_prob=0.02,
         anneal_start_temp_km=40.0,
@@ -2086,7 +2086,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
     for lname, lst in meister_leagues.items():
         if len(lst) != cap_meister:
             raise RuntimeError(
-                f"Fuerth-Meisterrunde: Staffel {lname} hat {len(lst)} Teams statt {cap_meister}."
+                f"Bayern-Meisterrunde: Staffel {lname} hat {len(lst)} Teams statt {cap_meister}."
             )
         meister_leagues[lname] = sorted(lst, key=lambda c: normalize_text(c.name).lower())
 
@@ -2098,9 +2098,9 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
                 {"Liga": lname, "Verein": club.name, "lat": club.lat, "lon": club.lon}
             )
     meister_df = pd.DataFrame(meister_rows).sort_values(["Liga", "Verein"])
-    ensure_parent_dir(OUT_CSV_FUERTH_MEISTER)
-    meister_df.to_csv(OUT_CSV_FUERTH_MEISTER, index=False, encoding="utf-8")
-    print(f"\n=== Ergebnis: Fuerth-Meisterrunde (4 Staffeln a {cap_meister}) ===")
+    ensure_parent_dir(OUT_CSV_BAYERN_MEISTER)
+    meister_df.to_csv(OUT_CSV_BAYERN_MEISTER, index=False, encoding="utf-8")
+    print(f"\n=== Ergebnis: Bayern-Meisterrunde (4 Staffeln a {cap_meister}) ===")
     for lname in preferred_league_print_order(meister_leagues):
         metrics = league_metrics(meister_leagues[lname])
         print(
@@ -2110,14 +2110,14 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
         )
         for club in meister_leagues[lname]:
             print(f"  - {club.name}")
-    print(f"\nCSV geschrieben: {OUT_CSV_FUERTH_MEISTER}")
+    print(f"\nCSV geschrieben: {OUT_CSV_BAYERN_MEISTER}")
 
     # Abstiegsrunde: Clubs bleiben je RL zusammen, keine Optimierung.
     abstieg_team_names = [e["team"] for e in abstieg_entries]
     abstieg_clubs = build_clubs(abstieg_team_names)
     if len(abstieg_clubs) != len(abstieg_entries):
         raise RuntimeError(
-            "Fuerth-Abstiegsrunde: Koordinaten konnten nicht fuer alle Teams bestimmt werden."
+            "Bayern-Abstiegsrunde: Koordinaten konnten nicht fuer alle Teams bestimmt werden."
         )
     abstieg_by_name = {normalize_text(c.name): c for c in abstieg_clubs}
     abstieg_leagues: Dict[str, List[Club]] = {name: [] for name in sorted(required_leagues)}
@@ -2135,9 +2135,9 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
                 {"Liga": lname, "Verein": club.name, "lat": club.lat, "lon": club.lon}
             )
     abstieg_df = pd.DataFrame(abstieg_rows).sort_values(["Liga", "Verein"])
-    ensure_parent_dir(OUT_CSV_FUERTH_ABSTIEG)
-    abstieg_df.to_csv(OUT_CSV_FUERTH_ABSTIEG, index=False, encoding="utf-8")
-    print(f"\n=== Ergebnis: Fuerth-Abstiegsrunde (5 RL-Staffeln) ===")
+    ensure_parent_dir(OUT_CSV_BAYERN_ABSTIEG)
+    abstieg_df.to_csv(OUT_CSV_BAYERN_ABSTIEG, index=False, encoding="utf-8")
+    print(f"\n=== Ergebnis: Bayern-Abstiegsrunde (5 RL-Staffeln) ===")
     for lname in sorted(abstieg_leagues.keys()):
         lst = abstieg_leagues[lname]
         if not lst:
@@ -2150,7 +2150,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
         )
         for club in lst:
             print(f"  - {club.name}")
-    print(f"\nCSV geschrieben: {OUT_CSV_FUERTH_ABSTIEG}")
+    print(f"\nCSV geschrieben: {OUT_CSV_BAYERN_ABSTIEG}")
 
     # Transitions-Payload (reines Modell-Metadaten-Objekt, keine Auf/Abstiegsmarker).
     meisterrunde_teams: Dict[str, List[Dict[str, Any]]] = {}
@@ -2172,7 +2172,7 @@ def build_fuerth_vorrunden_split_solution() -> Tuple[pd.DataFrame, Dict[str, Any
 
     transitions = {
         "reform_rule": (
-            f"Fuerth-Vorrunden-Split: Die {len(required_leagues)} bisherigen Regionalligen "
+            f"Bayern-Vorrunden-Split: Die {len(required_leagues)} bisherigen Regionalligen "
             f"spielen eine gemeinsame Vorrunde; die Top-{top_n} jeder Liga "
             f"({len(required_leagues) * top_n} Teams) bilden {k_meister} geografisch optimierte "
             f"Meisterrunden-Staffeln (je {cap_meister} Teams). Die Uebrigen Teams bleiben in "
@@ -4548,20 +4548,20 @@ def main() -> None:
     # 1b) Alternativmodell "Regionenmodell" als feste Vergleichsvariante erzeugen
     _, regionenmodell_transitions = build_regionenmodell_solution()
 
-    # 1c) Alternativmodell "Fuerth-Vorrunden-Split" (Top-8 je RL -> 4x10 Meisterrunde,
+    # 1c) Alternativmodell "Bayern-Vorrunden-Split" (Top-8 je RL -> 4x10 Meisterrunde,
     #     N-8 je RL bleiben fuer Abstiegsrunde in ihrer Liga).
     try:
-        _, fuerth_transitions = build_fuerth_vorrunden_split_solution()
+        _, bayern_transitions = build_bayern_vorrunden_split_solution()
     except Exception as exc:
-        print(f"[Warnung] Fuerth-Modell konnte nicht erzeugt werden: {exc}")
-        fuerth_transitions = {}
+        print(f"[Warnung] Bayern-Modell konnte nicht erzeugt werden: {exc}")
+        bayern_transitions = {}
 
     write_combined_transitions_file(
         default_model=TRANSITION_MODEL_KOMPASS,
         model_payloads={
             TRANSITION_MODEL_KOMPASS: kompass_transitions,
             TRANSITION_MODEL_REGIONEN: regionenmodell_transitions,
-            TRANSITION_MODEL_FUERTH: fuerth_transitions,
+            TRANSITION_MODEL_BAYERN: bayern_transitions,
         },
     )
 

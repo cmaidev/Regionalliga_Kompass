@@ -39,8 +39,8 @@ INPUT_CSV_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_matrix_worst.c
 INPUT_CSV_WISH_BEST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_best.csv")
 INPUT_CSV_WISH_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_worst.csv")
 INPUT_CSV_REGIONENMODELL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_regionenmodell.csv")
-INPUT_CSV_FUERTH_MEISTER = str(OUTPUT_CSV_DIR / "kompass_fuerth_meisterrunde.csv")
-INPUT_CSV_FUERTH_ABSTIEG = str(OUTPUT_CSV_DIR / "kompass_fuerth_abstiegsrunde.csv")
+INPUT_CSV_BAYERN_MEISTER = str(OUTPUT_CSV_DIR / "kompass_bayern_meisterrunde.csv")
+INPUT_CSV_BAYERN_ABSTIEG = str(OUTPUT_CSV_DIR / "kompass_bayern_abstiegsrunde.csv")
 MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
 MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
 MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
@@ -52,8 +52,8 @@ MAP_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_rank10.ht
 MAP_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_worst.html")
 MAP_HTML_WISH_BEST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_best.html")
 MAP_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_regionenmodell.html")
-MAP_HTML_FUERTH_MEISTER = str(OUTPUT_HTML_DIR / "kompass_fuerth_meisterrunde_map.html")
-MAP_HTML_FUERTH_ABSTIEG = str(OUTPUT_HTML_DIR / "kompass_fuerth_abstiegsrunde_map.html")
+MAP_HTML_BAYERN_MEISTER = str(OUTPUT_HTML_DIR / "kompass_bayern_meisterrunde_map.html")
+MAP_HTML_BAYERN_ABSTIEG = str(OUTPUT_HTML_DIR / "kompass_bayern_abstiegsrunde_map.html")
 MAP_COMPARE_HTML_WISH = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_wish.html")
 MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
 MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
@@ -63,8 +63,8 @@ MAP_COMPARE_HTML_RANK5 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_ran
 MAP_COMPARE_HTML_RANK10 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank10.html")
 MAP_COMPARE_HTML_WORST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_worst.html")
 MAP_COMPARE_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_regionenmodell.html")
-MAP_COMPARE_HTML_FUERTH_MEISTER = str(OUTPUT_HTML_DIR / "kompass_fuerth_compare_meisterrunde.html")
-MAP_COMPARE_HTML_FUERTH_SPLIT = str(OUTPUT_HTML_DIR / "kompass_fuerth_compare_split.html")
+MAP_COMPARE_HTML_BAYERN_MEISTER = str(OUTPUT_HTML_DIR / "kompass_bayern_compare_meisterrunde.html")
+MAP_COMPARE_HTML_BAYERN_SPLIT = str(OUTPUT_HTML_DIR / "kompass_bayern_compare_split.html")
 INDEX_HTML = str(OUTPUT_HTML_DIR / "index.html")
 CLUB_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_club.csv")
 LEAGUE_METRICS_CSV = str(OUTPUT_CSV_DIR / "kompass_away_metrics_per_league.csv")
@@ -80,6 +80,7 @@ STADIUM_OVERRIDES_FILE = "stadium_overrides.json"
 USE_STADIUM_COORDS_FOR_MAP = True
 USE_EUROPLAN_STADIUM_SOURCE = False
 DISPLAY_MATRIX_RANKS = [1]
+TEAMS_PER_LEAGUE = 20
 
 EUROPLAN_LEAGUE_IDS = {
     "Regionalliga Nord": 2900,
@@ -210,7 +211,7 @@ def resolve_map_color_mode(
     variant: str,
     transitions: Dict,
 ) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, str], str, List[Tuple[str, str]]]:
-    if variant == "fuerth_meisterrunde":
+    if variant == "bayern_meisterrunde":
         origin_lookup = build_team_origin_lookup(
             transitions.get("meisterrunde_teams", {})
         )
@@ -221,7 +222,7 @@ def resolve_map_color_mode(
             ("Südwest", "Süd / Südwest"),
         ]
         return {}, origin_lookup, TARGET_LEAGUE_COLORS, "RL-Herkunft", legend_items
-    if variant == "fuerth_abstiegsrunde":
+    if variant == "bayern_abstiegsrunde":
         origin_lookup = build_team_origin_lookup(
             transitions.get("abstiegsrunde_teams", {}),
             fallback_to_group=True,
@@ -246,6 +247,7 @@ def resolve_map_color_mode(
 def build_legend_html(
     legend_items: List[Tuple[str, str]],
     league_colors: Dict[str, str],
+    legend_title: str = "Liga",
 ) -> str:
     league_lines = []
     for key, label in legend_items:
@@ -258,9 +260,17 @@ def build_legend_html(
     <div style="
       position: fixed;
       bottom: 20px; left: 20px; z-index: 9999;
-      background: white; border: 1px solid #333; padding: 10px; font-size: 14px;">
-      <b>Liga</b><br>
+      max-width: 260px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #d9e1eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.35;">
+      <b>Farben: {legend_title}</b><br>
       {league_markup}
+      <hr style="border:0;border-top:1px solid #d9e1eb;margin:8px 0;">
       <span style="color:gray;">◯</span> Absteiger RL<br>
       <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
       <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
@@ -867,7 +877,7 @@ def build_map(
             popup=f"{t} (Aufsteiger aus Oberliga)",
         ).add_to(m)
 
-    legend_html = build_legend_html(legend_items, league_colors)
+    legend_html = build_legend_html(legend_items, league_colors, info_label)
     m.get_root().html.add_child(folium.Element(legend_html))
     ensure_parent_dir(out_html)
     m.save(out_html)
@@ -1161,14 +1171,61 @@ def build_variant_payload(
             }
         )
 
+    club_lookup: Dict[str, Dict[str, Any]] = {}
+    for _, row in club_df.iterrows():
+        team = normalize_text(row["Verein"])
+        club_lookup[team] = {
+            "liga": normalize_text(row["Liga"]),
+            "avg_km": float(row["Durchschnitt_Auswaerts_km"]),
+            "season_km": float(row["Saison_Auswaerts_km"]),
+            "longest_km": float(row["Laengste_Einzelreise_km"]),
+            "longest_opponent": "",
+        }
+
+    for _, row in trips_df.iterrows():
+        team_a = normalize_text(row["Von"])
+        team_b = normalize_text(row["Nach"])
+        km = float(row["Distanz_km"])
+        if team_a in club_lookup and not club_lookup[team_a]["longest_opponent"]:
+            club_lookup[team_a]["longest_opponent"] = team_b
+            club_lookup[team_a]["longest_km"] = km
+        if team_b in club_lookup and not club_lookup[team_b]["longest_opponent"]:
+            club_lookup[team_b]["longest_opponent"] = team_a
+            club_lookup[team_b]["longest_km"] = km
+
+    closest_cross_by_club: Dict[str, Dict[str, Any]] = {}
+    for _, row in cross_trips_df.iterrows():
+        team_a = normalize_text(row["Von"])
+        team_b = normalize_text(row["Nach"])
+        item_a = {
+            "opponent": team_b,
+            "own_liga": normalize_text(row["Liga_A"]),
+            "opponent_liga": normalize_text(row["Liga_B"]),
+            "km": float(row["Distanz_km"]),
+        }
+        item_b = {
+            "opponent": team_a,
+            "own_liga": normalize_text(row["Liga_B"]),
+            "opponent_liga": normalize_text(row["Liga_A"]),
+            "km": float(row["Distanz_km"]),
+        }
+        closest_cross_by_club.setdefault(team_a, item_a)
+        closest_cross_by_club.setdefault(team_b, item_b)
+
     out: Dict[str, Any] = {
         "id": variant_id,
         "title": title,
         "map_html": map_html,
         "overall_avg_km": float(club_df["Durchschnitt_Auswaerts_km"].mean()),
+        "team_count": int(len(df)),
+        "league_count": int(df["Liga"].nunique()),
+        "longest_trip_route": top_trips[0]["route"] if top_trips else "",
+        "longest_trip_km": float(top_trips[0]["km"]) if top_trips else 0.0,
         "leagues": leagues,
         "top_trips": top_trips,
         "top_close_cross_trips": top_close_cross_trips,
+        "club_lookup": club_lookup,
+        "closest_cross_by_club": closest_cross_by_club,
         "clubs_by_league": clubs_by_league,
         "show_club_list": bool(show_club_list),
         "note": normalize_text(note),
@@ -1178,6 +1235,217 @@ def build_variant_payload(
         out["rank_label"] = normalize_text(rank_info.get("rank_label", ""))
         out["score_avg_away_km"] = float(rank_info.get("score_avg_away_km", 0.0))
         out["gap_to_best_km"] = float(rank_info.get("gap_to_best_km", 0.0))
+    return out
+
+
+def _variant_by_id(variants: List[Dict[str, Any]], variant_id: str) -> Optional[Dict[str, Any]]:
+    for variant in variants:
+        if variant.get("id") == variant_id:
+            return variant
+    return None
+
+
+def _short_variant_label(variant: Dict[str, Any]) -> str:
+    mapping = {
+        "rank1": "Matrix",
+        "wish_best": "Wunschliste",
+        "regionenmodell": "Regionenmodell",
+        "bayern_meisterrunde": "Bayern Meister",
+        "bayern_abstiegsrunde": "Bayern Abstieg",
+        "worst": "Worst-Case",
+    }
+    return mapping.get(str(variant.get("id", "")), normalize_text(variant.get("title", "")))
+
+
+def _format_metric_km(value: Any) -> str:
+    try:
+        return f"{float(value):.2f} km"
+    except Exception:
+        return "-"
+
+
+def _assignment_lookup(variant: Dict[str, Any]) -> Dict[str, str]:
+    out: Dict[str, str] = {}
+    groups = variant.get("clubs_by_league", {})
+    if not isinstance(groups, dict):
+        return out
+    for league_name, teams in groups.items():
+        if not isinstance(teams, list):
+            continue
+        for team in teams:
+            out[normalize_text(team)] = normalize_text(league_name)
+    return out
+
+
+def _changed_assignments_count(left: Dict[str, Any], right: Dict[str, Any]) -> int:
+    left_lookup = _assignment_lookup(left)
+    right_lookup = _assignment_lookup(right)
+    common = set(left_lookup) & set(right_lookup)
+    return sum(1 for team in common if left_lookup[team] != right_lookup[team])
+
+
+def build_model_cards(variants: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    rank1 = _variant_by_id(variants, "rank1")
+    wish = _variant_by_id(variants, "wish_best")
+    region = _variant_by_id(variants, "regionenmodell")
+    bayern_meister = _variant_by_id(variants, "bayern_meisterrunde")
+
+    cards: List[Dict[str, str]] = []
+    if rank1:
+        cards.append(
+            {
+                "title": "Matrix",
+                "target_variant": "rank1",
+                "avg_label": _format_metric_km(rank1.get("overall_avg_km")),
+                "longest_label": _format_metric_km(rank1.get("longest_trip_km")),
+                "best_for": "kürzeste 4x20-Distanzen",
+            }
+        )
+    if wish:
+        cards.append(
+            {
+                "title": "Wunschliste",
+                "target_variant": "wish_best",
+                "avg_label": _format_metric_km(wish.get("overall_avg_km")),
+                "longest_label": _format_metric_km(wish.get("longest_trip_km")),
+                "best_for": "möglichst viele Nähe-Duelle",
+            }
+        )
+    if region:
+        cards.append(
+            {
+                "title": "Regionenmodell",
+                "target_variant": "regionenmodell",
+                "avg_label": _format_metric_km(region.get("overall_avg_km")),
+                "longest_label": _format_metric_km(region.get("longest_trip_km")),
+                "best_for": "stabile Regionalstruktur",
+            }
+        )
+    if bayern_meister:
+        cards.append(
+            {
+                "title": "Bayern-Modell",
+                "target_variant": "bayern_meisterrunde",
+                "avg_label": _format_metric_km(bayern_meister.get("overall_avg_km")),
+                "longest_label": _format_metric_km(bayern_meister.get("longest_trip_km")),
+                "best_for": "Meisterrunde nach Vorrunden-Split",
+            }
+        )
+    return cards
+
+
+def build_chart_groups(rank1_df: pd.DataFrame, variants: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    chart_variant_ids = [
+        "rank1",
+        "wish_best",
+        "regionenmodell",
+        "bayern_meisterrunde",
+    ]
+    chart_variants = [
+        v for vid in chart_variant_ids for v in [_variant_by_id(variants, vid)] if v is not None
+    ]
+
+    avg_items = [
+        {
+            "label": _short_variant_label(v),
+            "value": float(v.get("overall_avg_km", 0.0)),
+            "detail": _format_metric_km(v.get("overall_avg_km")),
+            "target_variant": str(v.get("id", "")),
+        }
+        for v in chart_variants
+    ]
+    longest_items = [
+        {
+            "label": _short_variant_label(v),
+            "value": float(v.get("longest_trip_km", 0.0)),
+            "detail": _format_metric_km(v.get("longest_trip_km")),
+            "target_variant": str(v.get("id", "")),
+        }
+        for v in chart_variants
+    ]
+
+    coverage_items = build_wish_coverage_items(rank1_df, variants)
+    return [
+        {"title": "Ø Auswärts-km", "unit": "km", "items": avg_items},
+        {"title": "Längste Reise", "unit": "km", "items": longest_items},
+        {"title": "Wunschlisten-Coverage", "unit": "%", "items": coverage_items},
+    ]
+
+
+def build_wish_coverage_items(rank1_df: pd.DataFrame, variants: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    records = []
+    for row in rank1_df.to_dict("records"):
+        records.append(
+            {
+                "team": normalize_text(row["Verein"]),
+                "lat": float(row["lat"]),
+                "lon": float(row["lon"]),
+            }
+        )
+    base_teams = {r["team"] for r in records}
+    if not records:
+        return []
+
+    wish_table: Dict[str, List[str]] = {}
+    for a in records:
+        distances = []
+        for b in records:
+            if a["team"] == b["team"]:
+                continue
+            d = haversine_km(a["lat"], a["lon"], b["lat"], b["lon"])
+            distances.append((d, b["team"]))
+        distances.sort(key=lambda item: item[0])
+        wish_table[a["team"]] = [team for _, team in distances[: TEAMS_PER_LEAGUE - 1]]
+
+    max_score = len(base_teams) * (TEAMS_PER_LEAGUE - 1)
+    items: List[Dict[str, Any]] = []
+    for variant in variants:
+        if variant.get("id") in {"bayern_abstiegsrunde", "worst"}:
+            continue
+        assignment = _assignment_lookup(variant)
+        if set(assignment) != base_teams:
+            continue
+        score = 0
+        for team, wishes in wish_table.items():
+            league = assignment.get(team)
+            score += sum(1 for wish in wishes if assignment.get(wish) == league)
+        pct = (score / max_score * 100.0) if max_score else 0.0
+        items.append(
+            {
+                "label": _short_variant_label(variant),
+                "value": pct,
+                "detail": f"{score}/{max_score}",
+                "target_variant": str(variant.get("id", "")),
+            }
+        )
+    return items
+
+
+def build_key_takeaways(variants: List[Dict[str, Any]]) -> List[str]:
+    out: List[str] = []
+    rank1 = _variant_by_id(variants, "rank1")
+    wish = _variant_by_id(variants, "wish_best")
+    region = _variant_by_id(variants, "regionenmodell")
+    bayern_meister = _variant_by_id(variants, "bayern_meisterrunde")
+    bayern_abstieg = _variant_by_id(variants, "bayern_abstiegsrunde")
+    worst = _variant_by_id(variants, "worst")
+
+    if rank1 and wish:
+        changed = _changed_assignments_count(rank1, wish)
+        if changed == 0:
+            out.append("Matrix und Wunschlisten-Optimierung liefern aktuell dieselbe 4x20-Aufteilung.")
+        else:
+            out.append(f"Wunschlisten-Optimierung verschiebt {changed} Teams gegenüber der Matrix-Lösung.")
+    if rank1 and region:
+        diff = float(region.get("overall_avg_km", 0.0)) - float(rank1.get("overall_avg_km", 0.0))
+        out.append(f"Das Regionenmodell ist strukturell stabiler, liegt aber bei Ø {diff:+.2f} km gegenüber Matrix.")
+    if bayern_meister:
+        out.append("Das Bayern-Modell bleibt oben als Meisterrunde sichtbar; die Abstiegsrunde ist wegen variabler Ligagrößen ein Benchmark.")
+    if worst and rank1:
+        diff = float(worst.get("overall_avg_km", 0.0)) - float(rank1.get("overall_avg_km", 0.0))
+        out.append(f"Benchmark: Der Worst-Case liegt bei Ø {diff:+.2f} km gegenüber Matrix.")
+    if bayern_abstieg:
+        out.append("Benchmark: Die Bayern-Abstiegsrunde zeigt die Wege innerhalb der bisherigen Regionalligen nach dem Split.")
     return out
 
 
@@ -1225,6 +1493,53 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       padding: 14px;
       margin-bottom: 14px;
     }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .score-card,
+    .model-item,
+    .chart-row {
+      font: inherit;
+      color: inherit;
+    }
+    .score-card {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .score-card.active,
+    .model-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 94, 203, 0.12);
+    }
+    .score-card h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .score-card .best-for {
+      min-height: 2.6em;
+      margin-bottom: 10px;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 7px;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .metric-row strong {
+      color: var(--text);
+      text-align: right;
+    }
     .map-frame {
       width: 100%;
       min-height: 70vh;
@@ -1252,6 +1567,20 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       color: #fff;
       border-color: var(--accent);
     }
+    .switch-label {
+      align-self: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-left: 4px;
+    }
+    .switch button.benchmark {
+      color: var(--muted);
+      border-style: dashed;
+    }
+    .switch button.benchmark.active {
+      color: #fff;
+      border-style: solid;
+    }
     .meta {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1277,15 +1606,123 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       margin-bottom: 4px;
       color: var(--muted);
     }
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .model-item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .model-item h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    .model-item p:last-child {
+      margin-bottom: 0;
+    }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 12px;
     }
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .chart-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 104px 1fr 74px;
+      gap: 8px;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      padding: 5px 0;
+      text-align: left;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .chart-row.active {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .bar-track {
+      height: 9px;
+      border-radius: 999px;
+      background: #e7edf5;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+    .takeaways ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .takeaways li {
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+    .club-search {
+      display: grid;
+      grid-template-columns: minmax(220px, 360px) 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .club-search input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+    .club-result {
+      color: var(--muted);
+    }
+    .club-result h3 {
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .club-result table {
+      margin-top: 8px;
+    }
     .clubs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 12px;
+    }
+    .details-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 14px;
+    }
+    .details-section > summary {
+      cursor: pointer;
+      padding: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .details-section[open] > summary {
+      border-bottom: 1px solid var(--border);
+    }
+    .details-body {
+      padding: 0 14px 14px;
+    }
+    .details-body h2 {
+      margin-top: 18px;
     }
     .league-table {
       width: 100%;
@@ -1309,11 +1746,6 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       width: 34px;
     }
     .repo-link { margin-top: 8px; font-size: 0.95rem; }
-    .compare-links a {
-      display: inline-block;
-      margin-right: 10px;
-      margin-bottom: 6px;
-    }
     .note {
       margin-top: 18px;
       padding: 12px;
@@ -1328,6 +1760,20 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       text-decoration: none;
     }
     a:hover { text-decoration: underline; }
+    @media (max-width: 980px) {
+      .score-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 720px) {
+      .score-grid,
+      .model-grid {
+        grid-template-columns: 1fr;
+      }
+      .club-search {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1336,7 +1782,22 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     <p id="subtitle"></p>
     <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
 
+    <section>
+      <h2>Modellvergleich</h2>
+      <div class="score-grid" id="model-score-grid"></div>
+    </section>
+
     <section class="card">
+      <h2>Modell-Erklärungen</h2>
+      <div class="model-grid" id="model-explanations"></div>
+    </section>
+
+    <section class="card takeaways">
+      <h2>Key Takeaways</h2>
+      <ul id="takeaways-list"></ul>
+    </section>
+
+    <section class="card" id="map-section">
       <h2>Karte</h2>
       <div class="switch" id="variant-switch"></div>
       <p id="variant-note"></p>
@@ -1344,63 +1805,81 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       <iframe id="map-frame" class="map-frame" src="" title="Kompass-Regionalliga Karte"></iframe>
     </section>
 
-    <section>
-      <h2>Datenstand</h2>
-      <div class="meta" id="meta-grid"></div>
-    </section>
-
-    <section class="selection">
-      <h2>Wie die Auswahl erfolgt</h2>
-      <ul>
-        <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
-        <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
-        <li>Hinzu kommen 14 Oberliga-Meister.</li>
-        <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
-        <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Optimierung</h2>
-      <div class="meta" id="search-grid"></div>
-    </section>
-
     <section class="card">
-      <h2>Einfach Erklärt</h2>
-      <p id="simple-explanation"></p>
-    </section>
-
-    <section>
-      <h2>Statistiken</h2>
-      <div class="stats-grid">
-        <div class="card">
-          <h3>Gesamt</h3>
-          <table class="league-table" id="overall-table"></table>
+      <h2>Vereinssuche</h2>
+      <div class="club-search">
+        <div>
+          <input id="club-search-input" list="club-options" type="search" placeholder="Verein suchen">
+          <datalist id="club-options"></datalist>
         </div>
-        <div class="card">
-          <h3>Pro Liga</h3>
-          <table class="league-table" id="league-table"></table>
-        </div>
-        <div class="card">
-          <h3>Top 5 längste Reisen (gesamt)</h3>
-          <table class="league-table" id="trip-table"></table>
-        </div>
-        <div class="card">
-          <h3>Top 5 kürzeste verpasste Duelle (verschiedene Ligen)</h3>
-          <table class="league-table" id="cross-trip-table"></table>
-        </div>
+        <div class="club-result" id="club-result">Verein eingeben, um Modellzuordnung und Wege zu sehen.</div>
       </div>
     </section>
 
-    <section id="clubs-section">
-      <h2>Vereinsliste</h2>
-      <div class="clubs-grid" id="clubs-grid"></div>
-    </section>
+    <details class="details-section">
+      <summary>Analyse-Details</summary>
+      <div class="details-body">
+        <section>
+          <h2>Datenstand</h2>
+          <div class="meta" id="meta-grid"></div>
+        </section>
 
-    <section class="card">
-      <h2>Vergleichsseiten</h2>
-      <div class="compare-links" id="compare-links"></div>
-    </section>
+        <section class="selection">
+          <h2>Wie die Auswahl erfolgt</h2>
+          <ul>
+            <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
+            <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
+            <li>Hinzu kommen 14 Oberliga-Meister.</li>
+            <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
+            <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Optimierung</h2>
+          <div class="meta" id="search-grid"></div>
+        </section>
+
+        <section>
+          <h2>Mini-Charts</h2>
+          <div class="chart-grid" id="mini-chart-grid"></div>
+        </section>
+
+        <section class="card">
+          <h2>Einfach Erklärt</h2>
+          <p id="simple-explanation"></p>
+        </section>
+
+        <section>
+          <h2>Statistiken</h2>
+          <div class="stats-grid">
+            <div class="card">
+              <h3>Gesamt</h3>
+              <table class="league-table" id="overall-table"></table>
+            </div>
+            <div class="card">
+              <h3>Pro Liga</h3>
+              <table class="league-table" id="league-table"></table>
+            </div>
+            <div class="card">
+              <h3>Top 5 längste Reisen (gesamt)</h3>
+              <table class="league-table" id="trip-table"></table>
+            </div>
+            <div class="card">
+              <h3>Top 5 kürzeste verpasste Duelle (verschiedene Ligen)</h3>
+              <table class="league-table" id="cross-trip-table"></table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </details>
+
+    <details class="details-section" id="clubs-section">
+      <summary>Vereinsliste</summary>
+      <div class="details-body">
+        <div class="clubs-grid" id="clubs-grid"></div>
+      </div>
+    </details>
 
     <p class="note">
       Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
@@ -1433,16 +1912,79 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
         .join("");
     }
 
-    function renderCompareLinks(links) {
-      const el = document.getElementById("compare-links");
+    function renderModelExplanations(items) {
+      const el = document.getElementById("model-explanations");
       if (!el) return;
-      if (!links || links.length === 0) {
-        el.textContent = "Keine Vergleichsseite verfügbar.";
-        return;
-      }
-      el.innerHTML = links
-        .map(link => `<a href="${esc(link.href)}">${esc(link.label)}</a>`)
-        .join("");
+      el.innerHTML = (items || []).map(item => [
+        `<button type="button" class="model-item${item.target_variant === activeId ? " active" : ""}" data-variant="${esc(item.target_variant || "")}">`,
+        `<h3>${esc(item.title)}</h3>`,
+        `<p>${esc(item.text)}</p>`,
+        '</button>',
+      ].join("")).join("");
+      el.querySelectorAll("[data-variant]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          navigateToVariant(this.getAttribute("data-variant") || "", true);
+        });
+      });
+    }
+
+    function renderModelCards(cards) {
+      const el = document.getElementById("model-score-grid");
+      if (!el) return;
+      el.innerHTML = (cards || []).map(card => [
+        `<button type="button" class="score-card${card.target_variant === activeId ? " active" : ""}" data-variant="${esc(card.target_variant || "")}">`,
+        `<h3>${esc(card.title)}</h3>`,
+        `<p class="best-for">${esc(card.best_for)}</p>`,
+        '<div class="metric-row"><span>Ø Auswärts-km</span>',
+        `<strong>${esc(card.avg_label)}</strong></div>`,
+        '<div class="metric-row"><span>Längste Reise</span>',
+        `<strong>${esc(card.longest_label)}</strong></div>`,
+        '</button>',
+      ].join("")).join("");
+      el.querySelectorAll("[data-variant]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          navigateToVariant(this.getAttribute("data-variant") || "", true);
+        });
+      });
+    }
+
+    function renderTakeaways(items) {
+      const el = document.getElementById("takeaways-list");
+      if (!el) return;
+      el.innerHTML = (items || []).map(item => `<li>${esc(item)}</li>`).join("");
+    }
+
+    function renderCharts(groups) {
+      const el = document.getElementById("mini-chart-grid");
+      if (!el) return;
+      el.innerHTML = (groups || []).map((group, groupIndex) => {
+        const items = group.items || [];
+        const maxValue = Math.max(1, ...items.map(item => Number(item.value) || 0));
+        const rows = items.map(item => {
+          const value = Number(item.value) || 0;
+          const width = Math.max(2, Math.min(100, value / maxValue * 100));
+          return [
+            `<button type="button" class="chart-row${item.target_variant === activeId ? " active" : ""}" data-variant="${esc(item.target_variant || "")}">`,
+            `<span>${esc(item.label)}</span>`,
+            '<span class="bar-track">',
+            `<span class="bar-fill" style="width:${width.toFixed(2)}%"></span>`,
+            '</span>',
+            `<span>${esc(item.detail)}</span>`,
+            '</button>',
+          ].join("");
+        }).join("");
+        return [
+          '<div class="card">',
+          `<h3>${esc(group.title)}</h3>`,
+          `<div id="chart-${groupIndex}">${rows}</div>`,
+          '</div>',
+        ].join("");
+      }).join("");
+      el.querySelectorAll("[data-variant]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          navigateToVariant(this.getAttribute("data-variant") || "", true);
+        });
+      });
     }
 
     const variants = PAGE_DATA.variants || [];
@@ -1450,6 +1992,32 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 
     function findVariant(id) {
       return variants.find(v => v.id === id) || variants[0];
+    }
+
+    function comparisonText(variant) {
+      if (!variant) return "";
+      if (variant.id === "rank1") return "Referenzmodell";
+      if (variant.id === "bayern_meisterrunde") return "nicht direkt vergleichbar: 9 Gegner statt 19";
+      if (variant.id === "bayern_abstiegsrunde") return "Benchmark: variable Ligagrößen nach dem Split";
+      if (variant.id === "worst") return "Benchmark: maximale gefundene Distanz";
+      const gap = Number(variant.gap_to_best_km);
+      if (!Number.isFinite(gap)) return "";
+      if (Math.abs(gap) < 0.005) return "wie Matrix";
+      return (gap > 0 ? "+" : "") + gap.toFixed(2) + " km vs Matrix";
+    }
+
+    function navigateToVariant(id, scrollToMap) {
+      if (!id || !findVariant(id)) return;
+      activeId = id;
+      renderSwitch();
+      renderModelCards(PAGE_DATA.model_cards || []);
+      renderModelExplanations(PAGE_DATA.model_explanations || []);
+      renderCharts(PAGE_DATA.chart_groups || []);
+      renderVariant(findVariant(activeId));
+      if (scrollToMap) {
+        const mapSection = document.getElementById("map-section");
+        if (mapSection) mapSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function renderVariant(variant) {
@@ -1461,12 +2029,9 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       mapLink.href = variant.map_html;
 
       const rankBits = [];
-      if (variant.rank_label) rankBits.push(variant.rank_label);
-      if (Number.isFinite(Number(variant.score_avg_away_km))) {
-        rankBits.push("Score: " + fmtKm(variant.score_avg_away_km));
-      }
-      if (Number.isFinite(Number(variant.gap_to_best_km))) {
-        rankBits.push("Gap zu Rank 1: " + fmtKm(variant.gap_to_best_km));
+      const comparison = comparisonText(variant);
+      if (comparison) {
+        rankBits.push(comparison);
       }
       if (variant.note) {
         rankBits.push(String(variant.note));
@@ -1529,19 +2094,108 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
           '</div>',
         ].join("");
       }).join("");
+      renderClubSearch();
+    }
+
+    function allClubNames() {
+      const names = new Set();
+      variants.forEach(variant => {
+        Object.keys(variant.club_lookup || {}).forEach(name => names.add(name));
+      });
+      return Array.from(names).sort((a, b) => a.localeCompare(b, "de"));
+    }
+
+    function setupClubSearch() {
+      const input = document.getElementById("club-search-input");
+      const options = document.getElementById("club-options");
+      if (options) {
+        options.innerHTML = allClubNames().map(name => `<option value="${esc(name)}"></option>`).join("");
+      }
+      if (!input) return;
+      input.addEventListener("input", function () {
+        renderClubSearch();
+      });
+    }
+
+    function findClubName(query) {
+      const q = String(query || "").trim().toLowerCase();
+      if (!q) return "";
+      const names = allClubNames();
+      return (
+        names.find(name => name.toLowerCase() === q) ||
+        names.find(name => name.toLowerCase().startsWith(q)) ||
+        names.find(name => name.toLowerCase().includes(q)) ||
+        ""
+      );
+    }
+
+    function leagueForTeam(variant, team) {
+      const info = (variant.club_lookup || {})[team];
+      return info ? info.liga : "nicht dabei";
+    }
+
+    function renderClubSearch() {
+      const input = document.getElementById("club-search-input");
+      const result = document.getElementById("club-result");
+      if (!input || !result) return;
+      const team = findClubName(input.value);
+      if (!team) {
+        result.textContent = "Verein eingeben, um Modellzuordnung und Wege zu sehen.";
+        return;
+      }
+      const activeVariant = findVariant(activeId);
+      const info = (activeVariant.club_lookup || {})[team];
+      const missed = (activeVariant.closest_cross_by_club || {})[team];
+      const assignments = variants
+        .filter(variant => ["rank1", "wish_best", "regionenmodell", "bayern_meisterrunde"].includes(variant.id))
+        .map(variant => (
+          `<tr><td>${esc(variant.title)}</td><td>${esc(leagueForTeam(variant, team))}</td></tr>`
+        ))
+        .join("");
+
+      const activeRows = info ? [
+        `<tr><td>Aktive Karte</td><td>${esc(activeVariant.title)}</td></tr>`,
+        `<tr><td>Liga</td><td>${esc(info.liga)}</td></tr>`,
+        `<tr><td>Ø Auswärtsfahrt</td><td>${esc(fmtKm(info.avg_km))}</td></tr>`,
+        `<tr><td>Längste Auswärtsfahrt</td><td>${esc(info.longest_opponent || "-")} (${esc(fmtKm(info.longest_km))})</td></tr>`,
+      ].join("") : `<tr><td>Aktive Karte</td><td>${esc(activeVariant.title)}: nicht dabei</td></tr>`;
+
+      const missedText = missed
+        ? `${esc(missed.opponent)} (${esc(missed.own_liga)} / ${esc(missed.opponent_liga)}, ${esc(fmtKm(missed.km))})`
+        : "-";
+
+      result.innerHTML = [
+        `<h3>${esc(team)}</h3>`,
+        '<table class="league-table">',
+        '<tbody>',
+        activeRows,
+        `<tr><td>Nächstes verpasstes Duell</td><td>${missedText}</td></tr>`,
+        '</tbody>',
+        '</table>',
+        '<table class="league-table">',
+        '<thead><tr><th>Modell</th><th>Zuordnung</th></tr></thead>',
+        `<tbody>${assignments}</tbody>`,
+        '</table>',
+      ].join("");
     }
 
     function renderSwitch() {
       const el = document.getElementById("variant-switch");
       if (!el) return;
-      el.innerHTML = variants.map(v => (
-        `<button class="${v.id === activeId ? "active" : ""}" data-variant="${esc(v.id)}">${esc(v.title)}</button>`
-      )).join("");
+      const benchmarkIds = new Set(["bayern_abstiegsrunde", "worst"]);
+      const primary = variants.filter(v => !benchmarkIds.has(v.id));
+      const benchmarks = variants.filter(v => benchmarkIds.has(v.id));
+      const buttonHtml = (v, extraClass) => (
+        `<button class="${extraClass || ""}${v.id === activeId ? " active" : ""}" data-variant="${esc(v.id)}">${esc(v.title)}</button>`
+      );
+      el.innerHTML = [
+        primary.map(v => buttonHtml(v, "")).join(""),
+        benchmarks.length ? '<span class="switch-label">Benchmark</span>' : "",
+        benchmarks.map(v => buttonHtml(v, "benchmark")).join(""),
+      ].join("");
       el.querySelectorAll("button[data-variant]").forEach(btn => {
         btn.addEventListener("click", function () {
-          activeId = this.getAttribute("data-variant") || "";
-          renderSwitch();
-          renderVariant(findVariant(activeId));
+          navigateToVariant(this.getAttribute("data-variant") || "", false);
         });
       });
     }
@@ -1551,9 +2205,13 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       if (subtitle) subtitle.textContent = PAGE_DATA.subtitle || "";
       const simpleExplanation = document.getElementById("simple-explanation");
       if (simpleExplanation) simpleExplanation.textContent = PAGE_DATA.simple_explanation || "";
+      renderModelCards(PAGE_DATA.model_cards || []);
+      renderModelExplanations(PAGE_DATA.model_explanations || []);
+      renderTakeaways(PAGE_DATA.takeaways || []);
       renderCards("meta-grid", PAGE_DATA.meta_cards || []);
       renderCards("search-grid", PAGE_DATA.search_cards || []);
-      renderCompareLinks(PAGE_DATA.compare_links || []);
+      renderCharts(PAGE_DATA.chart_groups || []);
+      setupClubSearch();
       renderSwitch();
       renderVariant(findVariant(activeId));
 
@@ -1630,7 +2288,7 @@ def main() -> None:
 
     transitions = load_transitions(TRANSITIONS_JSON)
     regionenmodell_transitions = load_transitions(TRANSITIONS_JSON, model_name="regionenmodell")
-    fuerth_transitions = load_transitions(TRANSITIONS_JSON, model_name="fuerth_vorrunden_split")
+    bayern_transitions = load_transitions(TRANSITIONS_JSON, model_name="bayern_vorrunden_split")
     ranked_payload = load_ranked_solutions(SOLUTIONS_RANKED_JSON)
     ranked_entries_raw = ranked_payload.get("solutions", [])
     ranked_entries = ranked_entries_raw if isinstance(ranked_entries_raw, list) else []
@@ -1705,22 +2363,22 @@ def main() -> None:
             regionenmodell_data = {"df": df_regionenmodell, "csv": str(regionenmodell_csv_path)}
         except Exception:
             regionenmodell_data = None
-    fuerth_meister_data: Optional[Dict[str, Any]] = None
-    fuerth_meister_csv_path = Path(INPUT_CSV_FUERTH_MEISTER)
-    if fuerth_meister_csv_path.exists():
+    bayern_meister_data: Optional[Dict[str, Any]] = None
+    bayern_meister_csv_path = Path(INPUT_CSV_BAYERN_MEISTER)
+    if bayern_meister_csv_path.exists():
         try:
-            df_fuerth_meister = load_solution_csv(fuerth_meister_csv_path)
-            fuerth_meister_data = {"df": df_fuerth_meister, "csv": str(fuerth_meister_csv_path)}
+            df_bayern_meister = load_solution_csv(bayern_meister_csv_path)
+            bayern_meister_data = {"df": df_bayern_meister, "csv": str(bayern_meister_csv_path)}
         except Exception:
-            fuerth_meister_data = None
-    fuerth_abstieg_data: Optional[Dict[str, Any]] = None
-    fuerth_abstieg_csv_path = Path(INPUT_CSV_FUERTH_ABSTIEG)
-    if fuerth_abstieg_csv_path.exists():
+            bayern_meister_data = None
+    bayern_abstieg_data: Optional[Dict[str, Any]] = None
+    bayern_abstieg_csv_path = Path(INPUT_CSV_BAYERN_ABSTIEG)
+    if bayern_abstieg_csv_path.exists():
         try:
-            df_fuerth_abstieg = load_solution_csv(fuerth_abstieg_csv_path)
-            fuerth_abstieg_data = {"df": df_fuerth_abstieg, "csv": str(fuerth_abstieg_csv_path)}
+            df_bayern_abstieg = load_solution_csv(bayern_abstieg_csv_path)
+            bayern_abstieg_data = {"df": df_bayern_abstieg, "csv": str(bayern_abstieg_csv_path)}
         except Exception:
-            fuerth_abstieg_data = None
+            bayern_abstieg_data = None
 
     df_map_rank1, map_coord_stats = resolve_map_coordinates(rank_data[1]["df"])
     changed_vs_rank2 = (
@@ -1903,40 +2561,40 @@ def main() -> None:
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_REGIONENMODELL}")
         print(f"Sichtbare Unterschiede Rank1/Regionenmodell: {len(changed_regionenmodell)}")
 
-    fuerth_meister_score: Optional[float] = None
-    if fuerth_meister_data is not None:
-        df_fuerth_meister_map, _ = resolve_map_coordinates(fuerth_meister_data["df"])
+    bayern_meister_score: Optional[float] = None
+    if bayern_meister_data is not None:
+        df_bayern_meister_map, _ = resolve_map_coordinates(bayern_meister_data["df"])
         build_map(
-            df_fuerth_meister_map,
-            MAP_HTML_FUERTH_MEISTER,
-            fuerth_transitions or transitions,
+            df_bayern_meister_map,
+            MAP_HTML_BAYERN_MEISTER,
+            bayern_transitions or transitions,
             changed_teams=None,
-            variant="fuerth_meisterrunde",
+            variant="bayern_meisterrunde",
         )
         create_compare_html(
             html_asset_name(MAP_HTML),
-            html_asset_name(MAP_HTML_FUERTH_MEISTER),
-            MAP_COMPARE_HTML_FUERTH_MEISTER,
+            html_asset_name(MAP_HTML_BAYERN_MEISTER),
+            MAP_COMPARE_HTML_BAYERN_MEISTER,
             left_title="Distanzmatrix-Optimierung (Rank 1, 4x20)",
-            right_title="Fuerth-Meisterrunde (4x10)",
+            right_title="Bayern-Meisterrunde (4x10)",
         )
-        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_FUERTH_MEISTER), "label": "Rank 1 vs Fuerth-Meisterrunde"})
-        club_df_fm, league_df_fm, trips_df_fm, cross_trips_df_fm = compute_metrics(fuerth_meister_data["df"])
-        fuerth_meister_score = float(club_df_fm["Durchschnitt_Auswaerts_km"].mean())
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_BAYERN_MEISTER), "label": "Rank 1 vs Bayern-Meisterrunde"})
+        club_df_fm, league_df_fm, trips_df_fm, cross_trips_df_fm = compute_metrics(bayern_meister_data["df"])
+        bayern_meister_score = float(club_df_fm["Durchschnitt_Auswaerts_km"].mean())
         variants.append(
             build_variant_payload(
-                "fuerth_meisterrunde",
-                "Fuerth-Vorrunden-Split (Meisterrunde, 4x10)",
-                html_asset_name(MAP_HTML_FUERTH_MEISTER),
-                fuerth_meister_data["df"],
+                "bayern_meisterrunde",
+                "Bayern-Vorrunden-Split (Meisterrunde, 4x10)",
+                html_asset_name(MAP_HTML_BAYERN_MEISTER),
+                bayern_meister_data["df"],
                 club_df_fm,
                 league_df_fm,
                 trips_df_fm,
                 cross_trips_df_fm,
                 rank_info={
                     "rank": 0,
-                    "rank_label": "Fuerth-Meisterrunde",
-                    "score_avg_away_km": fuerth_meister_score,
+                    "rank_label": "Bayern-Meisterrunde",
+                    "score_avg_away_km": bayern_meister_score,
                     "gap_to_best_km": 0.0,
                 },
                 show_club_list=False,
@@ -1947,35 +2605,35 @@ def main() -> None:
                 ),
             )
         )
-        print(f"Karte (Fuerth-Meisterrunde): {MAP_HTML_FUERTH_MEISTER}")
-        print(f"Kartenvergleich: {MAP_COMPARE_HTML_FUERTH_MEISTER}")
+        print(f"Karte (Bayern-Meisterrunde): {MAP_HTML_BAYERN_MEISTER}")
+        print(f"Kartenvergleich: {MAP_COMPARE_HTML_BAYERN_MEISTER}")
 
-    fuerth_abstieg_score: Optional[float] = None
-    if fuerth_abstieg_data is not None:
-        df_fuerth_abstieg_map, _ = resolve_map_coordinates(fuerth_abstieg_data["df"])
+    bayern_abstieg_score: Optional[float] = None
+    if bayern_abstieg_data is not None:
+        df_bayern_abstieg_map, _ = resolve_map_coordinates(bayern_abstieg_data["df"])
         build_map(
-            df_fuerth_abstieg_map,
-            MAP_HTML_FUERTH_ABSTIEG,
-            fuerth_transitions or transitions,
+            df_bayern_abstieg_map,
+            MAP_HTML_BAYERN_ABSTIEG,
+            bayern_transitions or transitions,
             changed_teams=None,
-            variant="fuerth_abstiegsrunde",
+            variant="bayern_abstiegsrunde",
         )
-        club_df_fa, league_df_fa, trips_df_fa, cross_trips_df_fa = compute_metrics(fuerth_abstieg_data["df"])
-        fuerth_abstieg_score = float(club_df_fa["Durchschnitt_Auswaerts_km"].mean())
+        club_df_fa, league_df_fa, trips_df_fa, cross_trips_df_fa = compute_metrics(bayern_abstieg_data["df"])
+        bayern_abstieg_score = float(club_df_fa["Durchschnitt_Auswaerts_km"].mean())
         variants.append(
             build_variant_payload(
-                "fuerth_abstiegsrunde",
-                "Fuerth-Vorrunden-Split (Abstiegsrunde, 5 RL)",
-                html_asset_name(MAP_HTML_FUERTH_ABSTIEG),
-                fuerth_abstieg_data["df"],
+                "bayern_abstiegsrunde",
+                "Bayern-Abstiegsrunde (Benchmark)",
+                html_asset_name(MAP_HTML_BAYERN_ABSTIEG),
+                bayern_abstieg_data["df"],
                 club_df_fa,
                 league_df_fa,
                 trips_df_fa,
                 cross_trips_df_fa,
                 rank_info={
                     "rank": 0,
-                    "rank_label": "Fuerth-Abstiegsrunde",
-                    "score_avg_away_km": fuerth_abstieg_score,
+                    "rank_label": "Bayern-Abstiegsrunde",
+                    "score_avg_away_km": bayern_abstieg_score,
                     "gap_to_best_km": 0.0,
                 },
                 show_club_list=False,
@@ -1985,18 +2643,18 @@ def main() -> None:
                 ),
             )
         )
-        print(f"Karte (Fuerth-Abstiegsrunde): {MAP_HTML_FUERTH_ABSTIEG}")
+        print(f"Karte (Bayern-Abstiegsrunde): {MAP_HTML_BAYERN_ABSTIEG}")
 
-    if fuerth_meister_data is not None and fuerth_abstieg_data is not None:
+    if bayern_meister_data is not None and bayern_abstieg_data is not None:
         create_compare_html(
-            html_asset_name(MAP_HTML_FUERTH_MEISTER),
-            html_asset_name(MAP_HTML_FUERTH_ABSTIEG),
-            MAP_COMPARE_HTML_FUERTH_SPLIT,
-            left_title="Fuerth-Meisterrunde (4x10)",
-            right_title="Fuerth-Abstiegsrunde (5 RL)",
+            html_asset_name(MAP_HTML_BAYERN_MEISTER),
+            html_asset_name(MAP_HTML_BAYERN_ABSTIEG),
+            MAP_COMPARE_HTML_BAYERN_SPLIT,
+            left_title="Bayern-Meisterrunde (4x10)",
+            right_title="Bayern-Abstiegsrunde (5 RL)",
         )
-        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_FUERTH_SPLIT), "label": "Fuerth: Meisterrunde vs Abstiegsrunde"})
-        print(f"Kartenvergleich Fuerth-Split: {MAP_COMPARE_HTML_FUERTH_SPLIT}")
+        compare_links.append({"href": html_asset_name(MAP_COMPARE_HTML_BAYERN_SPLIT), "label": "Bayern: Meisterrunde vs Abstiegsrunde"})
+        print(f"Kartenvergleich Bayern-Split: {MAP_COMPARE_HTML_BAYERN_SPLIT}")
 
     if wish_best_data is not None:
         changed_wish_best = compute_changed_teams(rank_data[1]["df"], wish_best_data["df"])
@@ -2088,6 +2746,7 @@ def main() -> None:
                         else 0.0
                     ),
                 },
+                show_club_list=False,
             )
         )
 
@@ -2110,10 +2769,10 @@ def main() -> None:
         wish_best_score_computed = None
     if regionenmodell_data is None:
         regionenmodell_score = None
-    if fuerth_meister_data is None:
-        fuerth_meister_score = None
-    if fuerth_abstieg_data is None:
-        fuerth_abstieg_score = None
+    if bayern_meister_data is None:
+        bayern_meister_score = None
+    if bayern_abstieg_data is None:
+        bayern_abstieg_score = None
     gap_text = "-"
     try:
         if best_score is not None and second_score is not None:
@@ -2122,18 +2781,61 @@ def main() -> None:
         gap_text = "-"
 
     page_data = {
-        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Fuerth-Vorrunden-Split, Wunschlisten-Optimierung und Worst-Case.",
+        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Bayern-Vorrunden-Split und Wunschlisten-Optimierung.",
         "simple_explanation": (
             "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
             "Das Regionenmodell hält West und Südwest stabil und teilt den Block aus Nord, Nordost und Bayern "
             "in zwei 20er-Staffeln. "
-            "Der Fuerth-Vorrunden-Split (diskutiert beim DFB-Treffen in Fürth) teilt jede der 5 bestehenden "
+            "Der Bayern-Vorrunden-Split teilt jede der 5 bestehenden "
             "Regionalligen nach der Hinrunde: Top-8 je Liga (40 Teams) bilden 4 geografisch optimierte "
-            "Meisterrunden-Staffeln à 10; die übrigen Teams bleiben in ihrer RL und spielen eine Abstiegsrunde. "
+            "Meisterrunden-Staffeln à 10. Die Abstiegsrunde bleibt als Benchmark im Karten-Switch. "
             "Die Wunschlisten-Optimierung maximiert stattdessen, wie viele der 19 geografisch nächsten "
             "Nachbarn eines Vereins tatsächlich in derselben Liga landen. "
-            "Der Worst-Case zeigt die schlechtestmögliche Aufteilung mit maximalen Reisedistanzen."
+            "Der Worst-Case bleibt als Benchmark für die schlechtestmögliche Aufteilung verfügbar."
         ),
+        "model_explanations": [
+            {
+                "title": "Matrix-Methode",
+                "target_variant": "rank1",
+                "text": (
+                    "Alle Vereinsstandorte werden paarweise in einer Distanzmatrix verglichen. Ausgehend von "
+                    "Startverteilungen tauscht der Optimierer wiederholt 2, 3 oder 4 Vereine zwischen Staffeln "
+                    "und behält bessere Lösungen. Rank 1 ist die beste gefundene 4x20-Aufteilung."
+                ),
+            },
+            {
+                "title": "Wunschlisten-Optimierung",
+                "target_variant": "wish_best",
+                "text": (
+                    "Für jeden Verein wird eine Wunschliste der 19 geografisch nächsten Nachbarn gebaut. "
+                    "Optimiert wird nicht direkt die Gesamtdistanz, sondern wie viele dieser Wunschgegner "
+                    "in derselben 20er-Staffel landen."
+                ),
+            },
+            {
+                "title": "Regionenmodell",
+                "target_variant": "regionenmodell",
+                "text": (
+                    "West und Südwest bleiben als eigene 20er-Staffeln erhalten. Nord, Nordost und Bayern "
+                    "bilden einen gemeinsamen 40er-Block, der geografisch in Nord und Ost geteilt wird. "
+                    "Oberliga-Meister werden ihrer Makroregion zugeordnet; für Folgejahre gilt die Annahme "
+                    "4 Direktaufsteiger, RL-Abstieg West=3, Südwest=3 und Nord/Nordost/Bayern-Block=8."
+                ),
+            },
+            {
+                "title": "Bayern-Modell",
+                "target_variant": "bayern_meisterrunde",
+                "text": (
+                    "Die fünf bestehenden Regionalligen spielen zunächst in ihrer bisherigen Struktur. Nach der "
+                    "Hinrunde gehen die Top-8 jeder Liga in eine 40-Team-Meisterrunde, die in vier geografische "
+                    "10er-Staffeln geteilt wird. Die Abstiegsrunde wird separat als Benchmark angezeigt, weil "
+                    "ihre Ligagrößen variieren und sie nicht sauber mit 4x20 vergleichbar ist."
+                ),
+            },
+        ],
+        "model_cards": build_model_cards(variants),
+        "chart_groups": build_chart_groups(rank_data[1]["df"], variants),
+        "takeaways": build_key_takeaways(variants),
         "meta_cards": [
             {"label": "Letzter Lauf", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
             {"label": "Modus", "value": "Reformregel 12+4+14+2"},
@@ -2151,12 +2853,12 @@ def main() -> None:
                 "value": f"{regionenmodell_score:.2f} km" if regionenmodell_score is not None else "-",
             },
             {
-                "label": "Fuerth-Meisterrunde (4x10)",
-                "value": f"{fuerth_meister_score:.2f} km" if fuerth_meister_score is not None else "-",
+                "label": "Bayern-Meisterrunde (4x10)",
+                "value": f"{bayern_meister_score:.2f} km" if bayern_meister_score is not None else "-",
             },
             {
-                "label": "Fuerth-Abstiegsrunde (5 RL)",
-                "value": f"{fuerth_abstieg_score:.2f} km" if fuerth_abstieg_score is not None else "-",
+                "label": "Benchmark: Bayern-Abstiegsrunde",
+                "value": f"{bayern_abstieg_score:.2f} km" if bayern_abstieg_score is not None else "-",
             },
             {
                 "label": "Wunschlisten-Best",
@@ -2175,7 +2877,6 @@ def main() -> None:
             },
         ],
         "variants": variants,
-        "compare_links": compare_links,
     }
     create_index_html(page_data, INDEX_HTML)
     docs_count = sync_pages_docs(OUTPUT_HTML_DIR, PAGES_DOCS_DIR)

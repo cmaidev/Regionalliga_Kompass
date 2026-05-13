@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_4ca89e67f227fb6565fb3583d00865b1 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="
+      position: fixed;
+      bottom: 20px; left: 20px; z-index: 9999;
+      max-width: 260px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #d9e1eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.35;">
+      <b>Farben: RL-Herkunft</b><br>
+      <span style="color:#2563eb;">●</span> Nord<br><span style="color:#dc2626;">●</span> West<br><span style="color:#16a34a;">●</span> Ost<br><span style="color:#f59e0b;">●</span> Süd / Südwest<br>
+      <hr style="border:0;border-top:1px solid #d9e1eb;margin:8px 0;">
+      <span style="color:gray;">◯</span> Absteiger RL<br>
+      <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
+      <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
+      <span style="color:#2f2f2f;">⬟</span> Aufsteiger aus Oberliga (nur Form)<br>
+      <span style="color:#111;">◯</span> Unterschied STD/MATRIX
+    </div>
+    
+    
+            <div class="folium-map" id="map_4ca89e67f227fb6565fb3583d00865b1" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_4ca89e67f227fb6565fb3583d00865b1 = L.map(
+                "map_4ca89e67f227fb6565fb3583d00865b1",
+                {
+                    center: [50.907081371888864, 9.681171391944442],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_2bc1fb8dd1f49d9e547465937e098ae5 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2bc1fb8dd1f49d9e547465937e098ae5.addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+            var circle_marker_9e9669126ebce50fd09124b8a135282e = L.circleMarker(
+                [53.85827778, 10.68133333],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_16a59b8c911642faca8ba49c924414e5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2722a2919f31e022cae842192d6eb570 = $(`<div id="html_2722a2919f31e022cae842192d6eb570" style="width: 100.0%; height: 100.0%;">1. FC Phönix Lübeck (Nord)<br>Stadion: Buniamshof<br>Quelle: wikipedia.infobox.1. FC Phönix Lübeck->Buniamshof.wikipedia.coordinates</div>`)[0];
+                popup_16a59b8c911642faca8ba49c924414e5.setContent(html_2722a2919f31e022cae842192d6eb570);
+            
+        
+
+        circle_marker_9e9669126ebce50fd09124b8a135282e.bindPopup(popup_16a59b8c911642faca8ba49c924414e5)
+        ;
+
+        
+    
+    
+            circle_marker_9e9669126ebce50fd09124b8a135282e.bindTooltip(
+                `<div>
+                     1. FC Phönix Lübeck | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a410cb2ca783b626d2492cd1cc3be9ad = L.circleMarker(
+                [51.4925, 7.451667],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_dcfcbf772db2175b339b65ef1e218bbc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a22efa849c022110aefcbf463e9a8c72 = $(`<div id="html_a22efa849c022110aefcbf463e9a8c72" style="width: 100.0%; height: 100.0%;">Borussia Dortmund (Nord)<br>RL-Herkunft: West<br>Stadion: Signal Iduna Park<br>Quelle: wikidata.P115.Q41420->Q150928.P625</div>`)[0];
+                popup_dcfcbf772db2175b339b65ef1e218bbc.setContent(html_a22efa849c022110aefcbf463e9a8c72);
+            
+        
+
+        circle_marker_a410cb2ca783b626d2492cd1cc3be9ad.bindPopup(popup_dcfcbf772db2175b339b65ef1e218bbc)
+        ;
+
+        
+    
+    
+            circle_marker_a410cb2ca783b626d2492cd1cc3be9ad.bindTooltip(
+                `<div>
+                     Borussia Dortmund | Nord | RL-Herkunft: West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ee1c5168b95f0d007f50d52e146294e0 = L.circleMarker(
+                [53.086732, 8.794422],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_be29fd8b7899fb8f5903eb4f557dd673 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_84738be659dfbc8b87ff9eba807d26ab = $(`<div id="html_84738be659dfbc8b87ff9eba807d26ab" style="width: 100.0%; height: 100.0%;">Bremer SV (Nord)<br>Stadion: Stadion am Panzenberg<br>Quelle: wikipedia.infobox.Bremer SV->Stadion am Panzenberg.wikipedia.coordinates</div>`)[0];
+                popup_be29fd8b7899fb8f5903eb4f557dd673.setContent(html_84738be659dfbc8b87ff9eba807d26ab);
+            
+        
+
+        circle_marker_ee1c5168b95f0d007f50d52e146294e0.bindPopup(popup_be29fd8b7899fb8f5903eb4f557dd673)
+        ;
+
+        
+    
+    
+            circle_marker_ee1c5168b95f0d007f50d52e146294e0.bindTooltip(
+                `<div>
+                     Bremer SV | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bcc9ec6d798e1b6165f392f8e277e8f6 = L.circleMarker(
+                [51.891765, 8.388059],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_610eff522ded857aee5dcabbe3613652 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f44aa5361ebef928fcafd97de4c93cb2 = $(`<div id="html_f44aa5361ebef928fcafd97de4c93cb2" style="width: 100.0%; height: 100.0%;">FC Gütersloh (Nord)<br>RL-Herkunft: West<br>Stadion: Heidewaldstadion<br>Quelle: override</div>`)[0];
+                popup_610eff522ded857aee5dcabbe3613652.setContent(html_f44aa5361ebef928fcafd97de4c93cb2);
+            
+        
+
+        circle_marker_bcc9ec6d798e1b6165f392f8e277e8f6.bindPopup(popup_610eff522ded857aee5dcabbe3613652)
+        ;
+
+        
+    
+    
+            circle_marker_bcc9ec6d798e1b6165f392f8e277e8f6.bindTooltip(
+                `<div>
+                     FC Gütersloh | Nord | RL-Herkunft: West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6184d025e894eb6fcc08bdb24818dd3f = L.circleMarker(
+                [52.36, 9.731111],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_d78d3f8d66dc011e49a4e2d5b68cd468 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_06aa54030a1acbee45370e84e973af91 = $(`<div id="html_06aa54030a1acbee45370e84e973af91" style="width: 100.0%; height: 100.0%;">Hannover 96 (Nord)<br>Stadion: Heinz-von-Heiden-Arena<br>Quelle: wikidata.P115.Q33748->Q152633.P625</div>`)[0];
+                popup_d78d3f8d66dc011e49a4e2d5b68cd468.setContent(html_06aa54030a1acbee45370e84e973af91);
+            
+        
+
+        circle_marker_6184d025e894eb6fcc08bdb24818dd3f.bindPopup(popup_d78d3f8d66dc011e49a4e2d5b68cd468)
+        ;
+
+        
+    
+    
+            circle_marker_6184d025e894eb6fcc08bdb24818dd3f.bindTooltip(
+                `<div>
+                     Hannover 96 | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_962778e22c37f3e4d03a7f08f2668886 = L.circleMarker(
+                [53.379167, 7.203333],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_c2f40e09798ef4e71bad7a3090337f96 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bbfda225db24ddb6bb50e4d370c92f83 = $(`<div id="html_bbfda225db24ddb6bb50e4d370c92f83" style="width: 100.0%; height: 100.0%;">Kickers Emden (Nord)<br>Stadion: Ostfriesland-Stadion<br>Quelle: wikidata.P115.Q319167->Q474775.P625</div>`)[0];
+                popup_c2f40e09798ef4e71bad7a3090337f96.setContent(html_bbfda225db24ddb6bb50e4d370c92f83);
+            
+        
+
+        circle_marker_962778e22c37f3e4d03a7f08f2668886.bindPopup(popup_c2f40e09798ef4e71bad7a3090337f96)
+        ;
+
+        
+    
+    
+            circle_marker_962778e22c37f3e4d03a7f08f2668886.bindTooltip(
+                `<div>
+                     Kickers Emden | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d3278af24813dcdaa3ec15e6695b8ade = L.circleMarker(
+                [53.125833333333, 7.9825],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_6cd4a47e90307948fb77f9c5ef500ef4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4fad5f7b6f977e489cd88d334c760327 = $(`<div id="html_4fad5f7b6f977e489cd88d334c760327" style="width: 100.0%; height: 100.0%;">SSV Jeddeloh (Nord)<br>Stadion: HASKAMP-Arena<br>Quelle: override</div>`)[0];
+                popup_6cd4a47e90307948fb77f9c5ef500ef4.setContent(html_4fad5f7b6f977e489cd88d334c760327);
+            
+        
+
+        circle_marker_d3278af24813dcdaa3ec15e6695b8ade.bindPopup(popup_6cd4a47e90307948fb77f9c5ef500ef4)
+        ;
+
+        
+    
+    
+            circle_marker_d3278af24813dcdaa3ec15e6695b8ade.bindTooltip(
+                `<div>
+                     SSV Jeddeloh | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_472c27d6d1d20c550f4e56dff7ec4715 = L.circleMarker(
+                [53.70383, 9.38048],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_9d505888bdd802d34f4583376b93d692 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ffc0a9e38379764b2f080d479abb4bb9 = $(`<div id="html_ffc0a9e38379764b2f080d479abb4bb9" style="width: 100.0%; height: 100.0%;">SV Drochtersen/Assel (Nord)<br>Stadion: Kehdinger Stadion<br>Quelle: override</div>`)[0];
+                popup_9d505888bdd802d34f4583376b93d692.setContent(html_ffc0a9e38379764b2f080d479abb4bb9);
+            
+        
+
+        circle_marker_472c27d6d1d20c550f4e56dff7ec4715.bindPopup(popup_9d505888bdd802d34f4583376b93d692)
+        ;
+
+        
+    
+    
+            circle_marker_472c27d6d1d20c550f4e56dff7ec4715.bindTooltip(
+                `<div>
+                     SV Drochtersen/Assel | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4b550252d65b2a26ea96117f5396b447 = L.circleMarker(
+                [52.707988, 7.297963],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_a7770adbcc42359552bfe705e27a1731 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_61988d494820dd78b45f2ead6ed1a54d = $(`<div id="html_61988d494820dd78b45f2ead6ed1a54d" style="width: 100.0%; height: 100.0%;">SV Meppen (Nord)<br>Stadion: Hänsch-Arena<br>Quelle: wikipedia.infobox.SV Meppen->Hänsch-Arena.wikipedia.coordinates</div>`)[0];
+                popup_a7770adbcc42359552bfe705e27a1731.setContent(html_61988d494820dd78b45f2ead6ed1a54d);
+            
+        
+
+        circle_marker_4b550252d65b2a26ea96117f5396b447.bindPopup(popup_a7770adbcc42359552bfe705e27a1731)
+        ;
+
+        
+    
+    
+            circle_marker_4b550252d65b2a26ea96117f5396b447.bindTooltip(
+                `<div>
+                     SV Meppen | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c4c3f5d769c14eceda988d788cdadb87 = L.circleMarker(
+                [53.129167, 8.206389],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_a419e0b682f9935e517e933d4e400c0b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_75990005b624533b298900c80e9f1e34 = $(`<div id="html_75990005b624533b298900c80e9f1e34" style="width: 100.0%; height: 100.0%;">VfB Oldenburg (Nord)<br>Stadion: Marschweg-Stadion<br>Quelle: wikidata.P115.Q826212->Q1902661.P625</div>`)[0];
+                popup_a419e0b682f9935e517e933d4e400c0b.setContent(html_75990005b624533b298900c80e9f1e34);
+            
+        
+
+        circle_marker_c4c3f5d769c14eceda988d788cdadb87.bindPopup(popup_a419e0b682f9935e517e933d4e400c0b)
+        ;
+
+        
+    
+    
+            circle_marker_c4c3f5d769c14eceda988d788cdadb87.bindTooltip(
+                `<div>
+                     VfB Oldenburg | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6996dd778239421bad0189ff782f5bbc = L.circleMarker(
+                [51.30290278, 12.41924167],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_6915ff9d10b825bbafa7b738ef5c5e2a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2106fb7bb87e53b4c59bdad4bf34078e = $(`<div id="html_2106fb7bb87e53b4c59bdad4bf34078e" style="width: 100.0%; height: 100.0%;">1. FC Lokomotive Leipzig (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Bruno-Plache-Stadion<br>Quelle: wikipedia.infobox.1. FC Lokomotive Leipzig->Bruno-Plache-Stadion.wikipedia.coordinates</div>`)[0];
+                popup_6915ff9d10b825bbafa7b738ef5c5e2a.setContent(html_2106fb7bb87e53b4c59bdad4bf34078e);
+            
+        
+
+        circle_marker_6996dd778239421bad0189ff782f5bbc.bindPopup(popup_6915ff9d10b825bbafa7b738ef5c5e2a)
+        ;
+
+        
+    
+    
+            circle_marker_6996dd778239421bad0189ff782f5bbc.bindTooltip(
+                `<div>
+                     1. FC Lokomotive Leipzig | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1378e076659ebb55f5b598bbb11e51fe = L.circleMarker(
+                [52.4326, 13.3548],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_911e63eb38e9b034b5a03c64ee7e45f1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ec59a85089ddd1fa4e0f766195214c4a = $(`<div id="html_ec59a85089ddd1fa4e0f766195214c4a" style="width: 100.0%; height: 100.0%;">BFC Preussen (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Preussenstadion<br>Quelle: wikidata.P115.Q666155->Q2109121.P625</div>`)[0];
+                popup_911e63eb38e9b034b5a03c64ee7e45f1.setContent(html_ec59a85089ddd1fa4e0f766195214c4a);
+            
+        
+
+        circle_marker_1378e076659ebb55f5b598bbb11e51fe.bindPopup(popup_911e63eb38e9b034b5a03c64ee7e45f1)
+        ;
+
+        
+    
+    
+            circle_marker_1378e076659ebb55f5b598bbb11e51fe.bindTooltip(
+                `<div>
+                     BFC Preussen | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5286cb1a9149f36a0eef7c267a915c49 = L.circleMarker(
+                [50.842186, 12.945669],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_f715ea5965992d1adbec610991b6dea0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2137c010125ff05920135590bb678d0a = $(`<div id="html_2137c010125ff05920135590bb678d0a" style="width: 100.0%; height: 100.0%;">Chemnitzer FC (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Stadion an der Gellertstraße<br>Quelle: wikidata.P115.Q161554->Q314582.P625</div>`)[0];
+                popup_f715ea5965992d1adbec610991b6dea0.setContent(html_2137c010125ff05920135590bb678d0a);
+            
+        
+
+        circle_marker_5286cb1a9149f36a0eef7c267a915c49.bindPopup(popup_f715ea5965992d1adbec610991b6dea0)
+        ;
+
+        
+    
+    
+            circle_marker_5286cb1a9149f36a0eef7c267a915c49.bindTooltip(
+                `<div>
+                     Chemnitzer FC | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_eb2c59ebd743c31ca81701da7e734db6 = L.circleMarker(
+                [49.218333333333334, 12.665833333333333],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_3c384ef4bac14b54116a527c89ea74a9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e48ebd5931535c3fb2afd3416b10f76d = $(`<div id="html_e48ebd5931535c3fb2afd3416b10f76d" style="width: 100.0%; height: 100.0%;">DJK Vilzing (Ost)<br>RL-Herkunft: Bayern<br>Stadion: Sportplatz DJK Vilzing<br>Quelle: override</div>`)[0];
+                popup_3c384ef4bac14b54116a527c89ea74a9.setContent(html_e48ebd5931535c3fb2afd3416b10f76d);
+            
+        
+
+        circle_marker_eb2c59ebd743c31ca81701da7e734db6.bindPopup(popup_3c384ef4bac14b54116a527c89ea74a9)
+        ;
+
+        
+    
+    
+            circle_marker_eb2c59ebd743c31ca81701da7e734db6.bindTooltip(
+                `<div>
+                     DJK Vilzing | Ost | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a43260e62eec518be82bd88df7171b8 = L.circleMarker(
+                [50.915833, 11.582778],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_569dfd999b6fea29a0a8b592133fafdb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_86ae9792d666317d7863fb6df437d5e3 = $(`<div id="html_86ae9792d666317d7863fb6df437d5e3" style="width: 100.0%; height: 100.0%;">FC Carl Zeiss Jena (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Ernst-Abbe-Sportfeld<br>Quelle: wikidata.P115.Q155186->Q547985.P625</div>`)[0];
+                popup_569dfd999b6fea29a0a8b592133fafdb.setContent(html_86ae9792d666317d7863fb6df437d5e3);
+            
+        
+
+        circle_marker_3a43260e62eec518be82bd88df7171b8.bindPopup(popup_569dfd999b6fea29a0a8b592133fafdb)
+        ;
+
+        
+    
+    
+            circle_marker_3a43260e62eec518be82bd88df7171b8.bindTooltip(
+                `<div>
+                     FC Carl Zeiss Jena | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7f96630148d44da4b6ac08e9a66763df = L.circleMarker(
+                [50.960278, 11.037222],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_823f7739a5260d4ffb02d6087849c258 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_49647ce75c76fb268d218c1ce736cd99 = $(`<div id="html_49647ce75c76fb268d218c1ce736cd99" style="width: 100.0%; height: 100.0%;">FC Rot-Weiß Erfurt (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Steigerwaldstadion<br>Quelle: wikidata.P115.Q170107->Q547589.P625</div>`)[0];
+                popup_823f7739a5260d4ffb02d6087849c258.setContent(html_49647ce75c76fb268d218c1ce736cd99);
+            
+        
+
+        circle_marker_7f96630148d44da4b6ac08e9a66763df.bindPopup(popup_823f7739a5260d4ffb02d6087849c258)
+        ;
+
+        
+    
+    
+            circle_marker_7f96630148d44da4b6ac08e9a66763df.bindTooltip(
+                `<div>
+                     FC Rot-Weiß Erfurt | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8e875633fd66d81ead7643456e979a04 = L.circleMarker(
+                [50.728539, 12.519325],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_4cc14f0475bbd8434849bb4cdcf29c3a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_729e43977827a5e13397f222d42604ff = $(`<div id="html_729e43977827a5e13397f222d42604ff" style="width: 100.0%; height: 100.0%;">FSV Zwickau (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Stadion Zwickau<br>Quelle: wikidata.P115.Q316896->Q26791679.P625</div>`)[0];
+                popup_4cc14f0475bbd8434849bb4cdcf29c3a.setContent(html_729e43977827a5e13397f222d42604ff);
+            
+        
+
+        circle_marker_8e875633fd66d81ead7643456e979a04.bindPopup(popup_4cc14f0475bbd8434849bb4cdcf29c3a)
+        ;
+
+        
+    
+    
+            circle_marker_8e875633fd66d81ead7643456e979a04.bindTooltip(
+                `<div>
+                     FSV Zwickau | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_577cc6dd1f93cd394998e8a616dd5481 = L.circleMarker(
+                [51.465278, 11.961944],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_8c68dbdcfa111a0ad175a123b1724839 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7e71222d00d57b0be603aa99606c7539 = $(`<div id="html_7e71222d00d57b0be603aa99606c7539" style="width: 100.0%; height: 100.0%;">Hallescher FC (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Leuna-Chemie-Stadion<br>Quelle: wikidata.P115.Q316855->Q821115.P625</div>`)[0];
+                popup_8c68dbdcfa111a0ad175a123b1724839.setContent(html_7e71222d00d57b0be603aa99606c7539);
+            
+        
+
+        circle_marker_577cc6dd1f93cd394998e8a616dd5481.bindPopup(popup_8c68dbdcfa111a0ad175a123b1724839)
+        ;
+
+        
+    
+    
+            circle_marker_577cc6dd1f93cd394998e8a616dd5481.bindTooltip(
+                `<div>
+                     Hallescher FC | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7d42ec9523c577208e60bc09ba458f8f = L.circleMarker(
+                [51.298611, 9.484167],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_3e363c967bfc2626603dfc5fb811c0f6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_911edf15d0c3c8ea0189d7a33222bede = $(`<div id="html_911edf15d0c3c8ea0189d7a33222bede" style="width: 100.0%; height: 100.0%;">KSV Hessen Kassel (Ost)<br>RL-Herkunft: Südwest<br>Stadion: Auestadion<br>Quelle: wikidata.P115.Q819354->Q759298.P625</div>`)[0];
+                popup_3e363c967bfc2626603dfc5fb811c0f6.setContent(html_911edf15d0c3c8ea0189d7a33222bede);
+            
+        
+
+        circle_marker_7d42ec9523c577208e60bc09ba458f8f.bindPopup(popup_3e363c967bfc2626603dfc5fb811c0f6)
+        ;
+
+        
+    
+    
+            circle_marker_7d42ec9523c577208e60bc09ba458f8f.bindTooltip(
+                `<div>
+                     KSV Hessen Kassel | Ost | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ad87615c96e512a0862466c400954ef9 = L.circleMarker(
+                [52.3607, 14.0544],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_d73279f86474a9d7f69101082f192605 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4bd892caaef6891be110d0d86708d54f = $(`<div id="html_4bd892caaef6891be110d0d86708d54f" style="width: 100.0%; height: 100.0%;">VSG Altglienicke (Ost)<br>RL-Herkunft: Nordost<br>Stadion: Spree-Arena<br>Quelle: override</div>`)[0];
+                popup_d73279f86474a9d7f69101082f192605.setContent(html_4bd892caaef6891be110d0d86708d54f);
+            
+        
+
+        circle_marker_ad87615c96e512a0862466c400954ef9.bindPopup(popup_d73279f86474a9d7f69101082f192605)
+        ;
+
+        
+    
+    
+            circle_marker_ad87615c96e512a0862466c400954ef9.bindTooltip(
+                `<div>
+                     VSG Altglienicke | Ost | RL-Herkunft: Nordost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0fc5d6244f75a5775990258774b1910a = L.circleMarker(
+                [49.426255, 11.125707],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_3590b8f21ad85d3acde27cccffefb89b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a484308c9e276f211c778b78eb66666e = $(`<div id="html_a484308c9e276f211c778b78eb66666e" style="width: 100.0%; height: 100.0%;">1. FC Nürnberg (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Max-Morlock-Stadion<br>Quelle: wikipedia.infobox.1. FC Nürnberg->Max-Morlock-Stadion.wikipedia.coordinates</div>`)[0];
+                popup_3590b8f21ad85d3acde27cccffefb89b.setContent(html_a484308c9e276f211c778b78eb66666e);
+            
+        
+
+        circle_marker_0fc5d6244f75a5775990258774b1910a.bindPopup(popup_3590b8f21ad85d3acde27cccffefb89b)
+        ;
+
+        
+    
+    
+            circle_marker_0fc5d6244f75a5775990258774b1910a.bindTooltip(
+                `<div>
+                     1. FC Nürnberg | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3717f8cd399c17197bf17c2d96db734c = L.circleMarker(
+                [48.21797, 10.09233],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_44761ee7ece7e422b36cd37fc49f35b4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_efd059710bffa9a779ebf82caeaa7f34 = $(`<div id="html_efd059710bffa9a779ebf82caeaa7f34" style="width: 100.0%; height: 100.0%;">FV Illertissen (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Vöhlinstadion<br>Quelle: wikipedia.infobox.FV Illertissen->Vöhlinstadion.wikipedia.coordinates</div>`)[0];
+                popup_44761ee7ece7e422b36cd37fc49f35b4.setContent(html_efd059710bffa9a779ebf82caeaa7f34);
+            
+        
+
+        circle_marker_3717f8cd399c17197bf17c2d96db734c.bindPopup(popup_44761ee7ece7e422b36cd37fc49f35b4)
+        ;
+
+        
+    
+    
+            circle_marker_3717f8cd399c17197bf17c2d96db734c.bindTooltip(
+                `<div>
+                     FV Illertissen | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e5925f7764b444c8b85c06a57b01018 = L.circleMarker(
+                [48.9799, 9.39413],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_1f93230966777b5689ab76519a21a14b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_11974630454ce66df18a1f62031fe82c = $(`<div id="html_11974630454ce66df18a1f62031fe82c" style="width: 100.0%; height: 100.0%;">SG Sonnenhof Großaspach (Süd)<br>RL-Herkunft: Südwest<br>Stadion: WIRmachenDRUCK Arena<br>Quelle: wikidata.P115.Q692755->Q1122869.P625</div>`)[0];
+                popup_1f93230966777b5689ab76519a21a14b.setContent(html_11974630454ce66df18a1f62031fe82c);
+            
+        
+
+        circle_marker_4e5925f7764b444c8b85c06a57b01018.bindPopup(popup_1f93230966777b5689ab76519a21a14b)
+        ;
+
+        
+    
+    
+            circle_marker_4e5925f7764b444c8b85c06a57b01018.bindTooltip(
+                `<div>
+                     SG Sonnenhof Großaspach | Süd | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3de0be4f2402b9dd8683026246207bc8 = L.circleMarker(
+                [48.934722222222, 9.1916666666667],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_8358afa486fe9312f7154f8f8baa140f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8c5322df09d0a4cb2f2f7fd025202cb6 = $(`<div id="html_8c5322df09d0a4cb2f2f7fd025202cb6" style="width: 100.0%; height: 100.0%;">SGV Freiberg (Süd)<br>RL-Herkunft: Südwest<br>Stadion: SGV Freiberg<br>Quelle: wikipedia.infobox.SGV Freiberg->SGV Freiberg.wikidata.Q885184.P159->Q61840.P625</div>`)[0];
+                popup_8358afa486fe9312f7154f8f8baa140f.setContent(html_8c5322df09d0a4cb2f2f7fd025202cb6);
+            
+        
+
+        circle_marker_3de0be4f2402b9dd8683026246207bc8.bindPopup(popup_8358afa486fe9312f7154f8f8baa140f)
+        ;
+
+        
+    
+    
+            circle_marker_3de0be4f2402b9dd8683026246207bc8.bindTooltip(
+                `<div>
+                     SGV Freiberg | Süd | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_12d1cf0faef22e5b90b69b60f98cdce3 = L.circleMarker(
+                [49.332083, 8.647667],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_37bcbe7c340f6dd646b24aa8ba57d5d0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_778861faabfb258753b2783c62b2f01f = $(`<div id="html_778861faabfb258753b2783c62b2f01f" style="width: 100.0%; height: 100.0%;">SV Sandhausen (Süd)<br>RL-Herkunft: Südwest<br>Stadion: Hardtwaldstadion<br>Quelle: wikidata.P115.Q639525->Q832650.P625</div>`)[0];
+                popup_37bcbe7c340f6dd646b24aa8ba57d5d0.setContent(html_778861faabfb258753b2783c62b2f01f);
+            
+        
+
+        circle_marker_12d1cf0faef22e5b90b69b60f98cdce3.bindPopup(popup_37bcbe7c340f6dd646b24aa8ba57d5d0)
+        ;
+
+        
+    
+    
+            circle_marker_12d1cf0faef22e5b90b69b60f98cdce3.bindTooltip(
+                `<div>
+                     SV Sandhausen | Süd | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7e79548ee81af371947047a956793da0 = L.circleMarker(
+                [48.073611, 11.615556],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_16b62389d0101ad7062d9cca33097d97 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ccd3bb65c6cdc6b58085848729fd1269 = $(`<div id="html_ccd3bb65c6cdc6b58085848729fd1269" style="width: 100.0%; height: 100.0%;">SpVgg Unterhaching (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Sportpark Unterhaching<br>Quelle: wikidata.P115.Q158121->Q548113.P625</div>`)[0];
+                popup_16b62389d0101ad7062d9cca33097d97.setContent(html_ccd3bb65c6cdc6b58085848729fd1269);
+            
+        
+
+        circle_marker_7e79548ee81af371947047a956793da0.bindPopup(popup_16b62389d0101ad7062d9cca33097d97)
+        ;
+
+        
+    
+    
+            circle_marker_7e79548ee81af371947047a956793da0.bindTooltip(
+                `<div>
+                     SpVgg Unterhaching | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5998744390eb63519d386d8e4f29b02d = L.circleMarker(
+                [49.07861111111111, 11.385555555555555],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_c034da1ff0dfe926dcbd475c6977fb30 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_25dbe9470e891b48384256bfa42b5ddd = $(`<div id="html_25dbe9470e891b48384256bfa42b5ddd" style="width: 100.0%; height: 100.0%;">TSV Aubstadt (Süd)<br>RL-Herkunft: Bayern<br>Stadion: NGN-Arena<br>Quelle: override</div>`)[0];
+                popup_c034da1ff0dfe926dcbd475c6977fb30.setContent(html_25dbe9470e891b48384256bfa42b5ddd);
+            
+        
+
+        circle_marker_5998744390eb63519d386d8e4f29b02d.bindPopup(popup_c034da1ff0dfe926dcbd475c6977fb30)
+        ;
+
+        
+    
+    
+            circle_marker_5998744390eb63519d386d8e4f29b02d.bindTooltip(
+                `<div>
+                     TSV Aubstadt | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b35ed409416723780d6609db41226f16 = L.circleMarker(
+                [48.89194444, 11.18388889],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_93740dc61b1ac4fe8c7db617f64cff40 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_39b66244f2a8b4aafd263068b4d342b2 = $(`<div id="html_39b66244f2a8b4aafd263068b4d342b2" style="width: 100.0%; height: 100.0%;">VfB Eichstätt (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Eichstätt<br>Quelle: wikipedia.infobox.VfB Eichstätt->Eichstätt.wikipedia.coordinates</div>`)[0];
+                popup_93740dc61b1ac4fe8c7db617f64cff40.setContent(html_39b66244f2a8b4aafd263068b4d342b2);
+            
+        
+
+        circle_marker_b35ed409416723780d6609db41226f16.bindPopup(popup_93740dc61b1ac4fe8c7db617f64cff40)
+        ;
+
+        
+    
+    
+            circle_marker_b35ed409416723780d6609db41226f16.bindTooltip(
+                `<div>
+                     VfB Eichstätt | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4e03cbe3e56571506006c2309b84bb56 = L.circleMarker(
+                [48.178889, 12.836389],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_b0dd3e4724bfa19cc16cb4b66578088e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_240cf4d49075c8e09fb562c39dbaffec = $(`<div id="html_240cf4d49075c8e09fb562c39dbaffec" style="width: 100.0%; height: 100.0%;">Wacker Burghausen (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Wacker-Arena<br>Quelle: wikidata.P115.Q161034->Q473329.P625</div>`)[0];
+                popup_b0dd3e4724bfa19cc16cb4b66578088e.setContent(html_240cf4d49075c8e09fb562c39dbaffec);
+            
+        
+
+        circle_marker_4e03cbe3e56571506006c2309b84bb56.bindPopup(popup_b0dd3e4724bfa19cc16cb4b66578088e)
+        ;
+
+        
+    
+    
+            circle_marker_4e03cbe3e56571506006c2309b84bb56.bindTooltip(
+                `<div>
+                     Wacker Burghausen | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c63da266fe007bb298bffe650152ff6f = L.circleMarker(
+                [49.767194444444, 9.9329444444444],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_4c0d5b5c41b9dfd8e350124a514f5bdd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b51a89a556b5130b3dda2ecb4cdf955d = $(`<div id="html_b51a89a556b5130b3dda2ecb4cdf955d" style="width: 100.0%; height: 100.0%;">Würzburger Kickers (Süd)<br>RL-Herkunft: Bayern<br>Stadion: Flyeralarm Arena<br>Quelle: wikidata.P115.Q535785->Q1716424.P625</div>`)[0];
+                popup_4c0d5b5c41b9dfd8e350124a514f5bdd.setContent(html_b51a89a556b5130b3dda2ecb4cdf955d);
+            
+        
+
+        circle_marker_c63da266fe007bb298bffe650152ff6f.bindPopup(popup_4c0d5b5c41b9dfd8e350124a514f5bdd)
+        ;
+
+        
+    
+    
+            circle_marker_c63da266fe007bb298bffe650152ff6f.bindTooltip(
+                `<div>
+                     Würzburger Kickers | Süd | RL-Herkunft: Bayern
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_17ce4dfb167b2c261e21d0fe87ac4431 = L.circleMarker(
+                [50.933611, 6.875],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_ae0f5fc265a1f3edffdcb14541f71306 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8679d34856c3b72b9b91b37eff797ef9 = $(`<div id="html_8679d34856c3b72b9b91b37eff797ef9" style="width: 100.0%; height: 100.0%;">1. FC Köln (West)<br>Stadion: RheinEnergieStadion<br>Quelle: wikidata.P115.Q104770->Q151893.P625</div>`)[0];
+                popup_ae0f5fc265a1f3edffdcb14541f71306.setContent(html_8679d34856c3b72b9b91b37eff797ef9);
+            
+        
+
+        circle_marker_17ce4dfb167b2c261e21d0fe87ac4431.bindPopup(popup_ae0f5fc265a1f3edffdcb14541f71306)
+        ;
+
+        
+    
+    
+            circle_marker_17ce4dfb167b2c261e21d0fe87ac4431.bindTooltip(
+                `<div>
+                     1. FC Köln | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e55b742f66194bc6a218613868ae342c = L.circleMarker(
+                [51.174583333333, 6.3854638888889],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_51a33a458028cff3a95b3bbd0af17654 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_71b711c1f09c42eaeb0045d90912b1f4 = $(`<div id="html_71b711c1f09c42eaeb0045d90912b1f4" style="width: 100.0%; height: 100.0%;">Borussia Mönchengladbach (West)<br>Stadion: Borussia-Park<br>Quelle: wikidata.P115.Q101959->Q154074.P625</div>`)[0];
+                popup_51a33a458028cff3a95b3bbd0af17654.setContent(html_71b711c1f09c42eaeb0045d90912b1f4);
+            
+        
+
+        circle_marker_e55b742f66194bc6a218613868ae342c.bindPopup(popup_51a33a458028cff3a95b3bbd0af17654)
+        ;
+
+        
+    
+    
+            circle_marker_e55b742f66194bc6a218613868ae342c.bindTooltip(
+                `<div>
+                     Borussia Mönchengladbach | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8c6ac9dcb27fe363adf7c55fc3aa03b0 = L.circleMarker(
+                [49.32307, 7.35514],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_2773c1455e634d2b9bf344c3d2eded90 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7207734e8e93629a0429314da64f3b2b = $(`<div id="html_7207734e8e93629a0429314da64f3b2b" style="width: 100.0%; height: 100.0%;">FC 08 Homburg (West)<br>RL-Herkunft: Südwest<br>Stadion: Waldstadion Homburg<br>Quelle: override</div>`)[0];
+                popup_2773c1455e634d2b9bf344c3d2eded90.setContent(html_7207734e8e93629a0429314da64f3b2b);
+            
+        
+
+        circle_marker_8c6ac9dcb27fe363adf7c55fc3aa03b0.bindPopup(popup_2773c1455e634d2b9bf344c3d2eded90)
+        ;
+
+        
+    
+    
+            circle_marker_8c6ac9dcb27fe363adf7c55fc3aa03b0.bindTooltip(
+                `<div>
+                     FC 08 Homburg | West | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1598bee2ef7c8b16a9f6d6b77e0370b = L.circleMarker(
+                [51.554502777778, 7.0675888888889],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_63f8f0bdd2e16a16c3c50ebcb850cc54 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4a18b580496603119e6c36bff0a33eea = $(`<div id="html_4a18b580496603119e6c36bff0a33eea" style="width: 100.0%; height: 100.0%;">FC Schalke 04 (West)<br>Stadion: Veltins-Arena<br>Quelle: wikidata.P115.Q32494->Q150961.P625</div>`)[0];
+                popup_63f8f0bdd2e16a16c3c50ebcb850cc54.setContent(html_4a18b580496603119e6c36bff0a33eea);
+            
+        
+
+        circle_marker_a1598bee2ef7c8b16a9f6d6b77e0370b.bindPopup(popup_63f8f0bdd2e16a16c3c50ebcb850cc54)
+        ;
+
+        
+    
+    
+            circle_marker_a1598bee2ef7c8b16a9f6d6b77e0370b.bindTooltip(
+                `<div>
+                     FC Schalke 04 | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f8d14ded030c2b72e5b4efe7249a93e9 = L.circleMarker(
+                [50.128056, 8.723333],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_241495182eb176786e850caad4628a3f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c1ea918007f1ef5b5cdab4dcda612985 = $(`<div id="html_c1ea918007f1ef5b5cdab4dcda612985" style="width: 100.0%; height: 100.0%;">FSV Frankfurt (West)<br>RL-Herkunft: Südwest<br>Stadion: PSD Bank Arena<br>Quelle: wikidata.P115.Q157352->Q319774.P625</div>`)[0];
+                popup_241495182eb176786e850caad4628a3f.setContent(html_c1ea918007f1ef5b5cdab4dcda612985);
+            
+        
+
+        circle_marker_f8d14ded030c2b72e5b4efe7249a93e9.bindPopup(popup_241495182eb176786e850caad4628a3f)
+        ;
+
+        
+    
+    
+            circle_marker_f8d14ded030c2b72e5b4efe7249a93e9.bindTooltip(
+                `<div>
+                     FSV Frankfurt | West | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f4b27f4b7e0e76fe16de9aba91be83ae = L.circleMarker(
+                [49.984167, 8.224167],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_124fe9556a761dd7cdf383eda0e17be7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d12cd74425d9b5f68476d436b5dccab4 = $(`<div id="html_d12cd74425d9b5f68476d436b5dccab4" style="width: 100.0%; height: 100.0%;">FSV Mainz 05 (West)<br>RL-Herkunft: Südwest<br>Stadion: Mewa Arena<br>Quelle: wikidata.P115.Q105254->Q392494.P625</div>`)[0];
+                popup_124fe9556a761dd7cdf383eda0e17be7.setContent(html_d12cd74425d9b5f68476d436b5dccab4);
+            
+        
+
+        circle_marker_f4b27f4b7e0e76fe16de9aba91be83ae.bindPopup(popup_124fe9556a761dd7cdf383eda0e17be7)
+        ;
+
+        
+    
+    
+            circle_marker_f4b27f4b7e0e76fe16de9aba91be83ae.bindTooltip(
+                `<div>
+                     FSV Mainz 05 | West | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a6847e893ab707d4cb3dfd21d42e6c1d = L.circleMarker(
+                [51.493611, 6.854444],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_d83c218a71b3ac88aa6587108d767c1f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7320a5193c2309bd65803f090bc61bbe = $(`<div id="html_7320a5193c2309bd65803f090bc61bbe" style="width: 100.0%; height: 100.0%;">Rot-Weiß Oberhausen (West)<br>Stadion: Stadion Niederrhein<br>Quelle: override</div>`)[0];
+                popup_d83c218a71b3ac88aa6587108d767c1f.setContent(html_7320a5193c2309bd65803f090bc61bbe);
+            
+        
+
+        circle_marker_a6847e893ab707d4cb3dfd21d42e6c1d.bindPopup(popup_d83c218a71b3ac88aa6587108d767c1f)
+        ;
+
+        
+    
+    
+            circle_marker_a6847e893ab707d4cb3dfd21d42e6c1d.bindTooltip(
+                `<div>
+                     Rot-Weiß Oberhausen | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9c6b6f885a1def815c0593e7afcf356a = L.circleMarker(
+                [50.92245, 6.97423],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_b23820822d4271e7fd7c137739f55756 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e22c72d9e3f70a3c3f8e2fdf102450c3 = $(`<div id="html_e22c72d9e3f70a3c3f8e2fdf102450c3" style="width: 100.0%; height: 100.0%;">SC Fortuna Köln (West)<br>Stadion: Südstadion<br>Quelle: override</div>`)[0];
+                popup_b23820822d4271e7fd7c137739f55756.setContent(html_e22c72d9e3f70a3c3f8e2fdf102450c3);
+            
+        
+
+        circle_marker_9c6b6f885a1def815c0593e7afcf356a.bindPopup(popup_b23820822d4271e7fd7c137739f55756)
+        ;
+
+        
+    
+    
+            circle_marker_9c6b6f885a1def815c0593e7afcf356a.bindTooltip(
+                `<div>
+                     SC Fortuna Köln | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e9e28437d93d45be62ce44d035969457 = L.circleMarker(
+                [50.85222222, 8.02611111],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_6e47e34b972cf843b4c05a1f13d76d3e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_23b212d04146a6ece4511c5017995695 = $(`<div id="html_23b212d04146a6ece4511c5017995695" style="width: 100.0%; height: 100.0%;">Sportfreunde Siegen (West)<br>Stadion: Leimbachstadion<br>Quelle: override</div>`)[0];
+                popup_6e47e34b972cf843b4c05a1f13d76d3e.setContent(html_23b212d04146a6ece4511c5017995695);
+            
+        
+
+        circle_marker_e9e28437d93d45be62ce44d035969457.bindPopup(popup_6e47e34b972cf843b4c05a1f13d76d3e)
+        ;
+
+        
+    
+    
+            circle_marker_e9e28437d93d45be62ce44d035969457.bindTooltip(
+                `<div>
+                     Sportfreunde Siegen | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f349b1e11e31de2741e29694e5932e2c = L.circleMarker(
+                [50.7752801, 8.2129059],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_4ca89e67f227fb6565fb3583d00865b1);
+        
+    
+        var popup_0b22e9bfee5b73e0dae562b779695dfa = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bf3a4d94d0f11373e6e89719359016a0 = $(`<div id="html_bf3a4d94d0f11373e6e89719359016a0" style="width: 100.0%; height: 100.0%;">TSV Steinbach Haiger (West)<br>RL-Herkunft: Südwest<br>Stadion: SIBRE-Sportzentrum Haarwasen<br>Quelle: override</div>`)[0];
+                popup_0b22e9bfee5b73e0dae562b779695dfa.setContent(html_bf3a4d94d0f11373e6e89719359016a0);
+            
+        
+
+        circle_marker_f349b1e11e31de2741e29694e5932e2c.bindPopup(popup_0b22e9bfee5b73e0dae562b779695dfa)
+        ;
+
+        
+    
+    
+            circle_marker_f349b1e11e31de2741e29694e5932e2c.bindTooltip(
+                `<div>
+                     TSV Steinbach Haiger | West | RL-Herkunft: Südwest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
