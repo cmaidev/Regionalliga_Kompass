@@ -102,6 +102,7 @@ TEAM_NAME_NORMALIZATION_OVERRIDES = {
     "SV Stuttgarter Kickers": "Stuttgarter Kickers",
     "SSV Ulm 1846 Fußball": "SSV Ulm 1846",
     "SG Barockstadt Fulda Lehnerz": "SG Barockstadt Fulda-Lehnerz",
+    "Fortuna Düsseldorf": "Fortuna Düsseldorf II",
 }
 
 # Harte Koordinaten-Overrides fuer nachweislich fehlerhafte Treffer.
@@ -154,6 +155,8 @@ OUT_CSV_BAYERN_MEISTER = os.path.join(
     OUTPUT_CSV_DIR, "kompass_bayern_meisterrunde.csv")
 OUT_CSV_BAYERN_ABSTIEG = os.path.join(
     OUTPUT_CSV_DIR, "kompass_bayern_abstiegsrunde.csv")
+OUT_CSV_CURRENT_REGIONALLIGA = os.path.join(
+    OUTPUT_CSV_DIR, "kompass_current_regionalliga_after_transitions.csv")
 OUT_SOLUTIONS_RANKED_JSON = os.path.join(
     OUTPUT_JSON_DIR, "kompass_solutions_ranked.json")
 OUT_SOLUTION_DIFF_CSV = os.path.join(
@@ -387,6 +390,37 @@ REFORM_3LIGA_RELEGATED_SLOTS = 4
 REFORM_OBERLIGA_MASTER_SLOTS = 14
 REFORM_EXTRA_STARTPLACES = {"Bayern": 1, "Nordost": 1}
 REFORM_STRICT_QUOTA_ALLOW_RESERVES = True
+
+CURRENT_REGIONALLIGA_ORDER = ["Nord", "Nordost", "West", "Bayern", "Südwest"]
+
+# Bekannte Sonderfaelle, die nicht sauber aus der Tabelle allein ableitbar sind.
+FORCED_REGIONALLIGA_RELEGATIONS: Dict[str, List[str]] = {
+    "West": ["Fortuna Düsseldorf II"],
+}
+
+THIRD_LIGA_RELEGATED_REGIONALLIGA_OVERRIDES: Dict[str, str] = {
+    "TSV Havelse": "Nord",
+    "FC Erzgebirge Aue": "Nordost",
+    "SSV Ulm 1846": "Südwest",
+    "1. FC Schweinfurt 05": "Bayern",
+}
+
+OBERLIGA_COMPETITION_TO_CURRENT_REGIONALLIGA: Dict[str, str] = {
+    "Niedersachsen": "Nord",
+    "Schleswig-Holstein": "Nord",
+    "Hamburg": "Nord",
+    "Bremen": "Nord",
+    "Westfalen": "West",
+    "Niederrhein": "West",
+    "Mittelrhein": "West",
+    "NOFV Nord": "Nordost",
+    "NOFV Süd": "Nordost",
+    "Baden-Württemberg": "Südwest",
+    "Hessen": "Südwest",
+    "Rheinland-Pfalz/Saar": "Südwest",
+    "Bayernliga Nord": "Bayern",
+    "Bayernliga Süd": "Bayern",
+}
 
 TRANSITION_MODEL_KOMPASS = "kompass"
 TRANSITION_MODEL_REGIONEN = "regionenmodell"
@@ -1081,7 +1115,16 @@ def _pick_rl_champions_for_promotion(rl_rows_by_league: Dict[str, List[Dict]], s
 
 def _pick_relegations_per_staffel(rl_rows_by_league: Dict[str, List[Dict]], per_staffel: int, protected: set[str]) -> set[str]:
     rel: set[str] = set()
-    for _, rows in rl_rows_by_league.items():
+    for league_name, rows in rl_rows_by_league.items():
+        for r in rows:
+            t = clean_team_name(r.get("team", ""))
+            if (
+                t
+                and is_forced_regionalliga_relegation(league_name, t)
+                and t not in protected
+            ):
+                rel.add(t)
+
         marked = [
             r for r in rows
             if str(r.get("mark", "")).startswith("down") and not _is_filtered_out_row(r) and r["team"] not in protected
@@ -1255,6 +1298,10 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
     promoted_to_3liga: List[str] = []
     promoted_to_3liga_league: Dict[str, str] = {}
     relegated_from_regionalliga: List[str] = []
+    relegated_from_regionalliga_league: Dict[str, str] = {}
+    current_regionalliga_after_transitions: Dict[str, List[str]] = {
+        league: [] for league in CURRENT_REGIONALLIGA_ORDER
+    }
 
     # 1) 12 Vertreter je Regionalliga: exakt Platz 2-13
     rl_representatives: Dict[str, List[str]] = {}
@@ -1271,11 +1318,12 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
                 used_keys.add(team_key(top_team))
 
         picked: List[str] = []
-        for rk in range(2, 14):
+        max_rank = max(rank_map.keys(), default=0)
+        for rk in range(2, max_rank + 1):
             if rk not in rank_map:
                 continue
             t = clean_team_name(rank_map[rk]["team"])
-            if not t:
+            if not t or is_forced_regionalliga_relegation(league_name, t):
                 continue
             k = team_key(t)
             if k in used_keys:
@@ -1283,18 +1331,15 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
             used_keys.add(k)
             picked.append(t)
             pool.append(t)
+            append_current_regionalliga_assignment(
+                current_regionalliga_after_transitions, league_name, t
+            )
+            if len(picked) >= REFORM_RL_BASE_SLOTS:
+                break
         if len(picked) < REFORM_RL_BASE_SLOTS:
             raise RuntimeError(
                 f"Zu wenig Vertreter in {league_name}: {len(picked)} (erwartet 12)")
         rl_representatives[league_name] = picked
-
-        # Absteiger: Rest ab Platz 14
-        for rk in sorted(rank_map.keys()):
-            if rk <= 13:
-                continue
-            t = clean_team_name(rank_map[rk]["team"])
-            if t:
-                relegated_from_regionalliga.append(t)
 
     # 2) 4 Absteiger aus 3. Liga
     third_rows, third_src, third_src_info = extract_standings_rows_with_fallback(
@@ -1310,6 +1355,13 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         pool.append(t)
     if len(relegated_3liga) < REFORM_3LIGA_RELEGATED_SLOTS:
         raise RuntimeError("Zu wenig 3.-Liga-Absteiger gefunden.")
+    relegated_3liga_league = assign_3liga_relegated_to_current_regionalliga(
+        relegated_3liga
+    )
+    for team, league_name in relegated_3liga_league.items():
+        append_current_regionalliga_assignment(
+            current_regionalliga_after_transitions, league_name, team
+        )
 
     # 3) 14 Oberliga-Meister (ein Meister je definierter Oberliga)
     oberliga_masters: List[Tuple[str, str, str]] = []
@@ -1324,6 +1376,13 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         team = champ[0]
         pool.append(team)
         oberliga_masters.append((comp["name"], team, f"{src}:{src_info}"))
+        current_league = OBERLIGA_COMPETITION_TO_CURRENT_REGIONALLIGA.get(
+            comp["name"]
+        )
+        if current_league:
+            append_current_regionalliga_assignment(
+                current_regionalliga_after_transitions, current_league, team
+            )
         if len(oberliga_masters) >= REFORM_OBERLIGA_MASTER_SLOTS:
             break
     if len(oberliga_masters) < REFORM_OBERLIGA_MASTER_SLOTS:
@@ -1348,12 +1407,35 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
             used_keys.add(k)
             extra.append(t)
             pool.append(t)
+            append_current_regionalliga_assignment(
+                current_regionalliga_after_transitions, league_name, t
+            )
             if len(extra) >= slots:
                 break
         if len(extra) < slots:
             raise RuntimeError(
                 f"Zusatzplatz fuer {league_name} nicht vollstaendig.")
         extra_picks[league_name] = extra
+
+    selected_current_keys_by_league = {
+        league_name: {team_key(team) for team in teams}
+        for league_name, teams in current_regionalliga_after_transitions.items()
+    }
+    promoted_to_3liga_keys = {team_key(team) for team in promoted_to_3liga}
+    relegated_from_regionalliga_keys: set[str] = set()
+    for league_name, rows in rl_rows_by_league.items():
+        selected_keys = selected_current_keys_by_league.get(league_name, set())
+        for row in rows:
+            t = clean_team_name(row.get("team", ""))
+            if not t:
+                continue
+            k = team_key(t)
+            if k in promoted_to_3liga_keys or k in selected_keys:
+                continue
+            if k not in relegated_from_regionalliga_keys:
+                relegated_from_regionalliga.append(t)
+                relegated_from_regionalliga_keys.add(k)
+                relegated_from_regionalliga_league[t] = league_name
 
     # final dedupe safety
     deduped: List[str] = []
@@ -1375,8 +1457,9 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
     lines.append(
         f"- RL-Aufsteiger (Platz 1 je Staffel): {sorted(promoted_to_3liga)}")
     lines.append(
-        f"- RL-Absteiger (ab Platz 14): {len(relegated_from_regionalliga)}")
+        f"- RL-Absteiger (nicht ausgewaehlt plus Sonderfaelle): {len(relegated_from_regionalliga)}")
     lines.append(f"- 3. Liga Absteiger: {relegated_3liga}")
+    lines.append(f"- 3. Liga Zuordnung: {relegated_3liga_league}")
     lines.append(f"- Oberliga-Meister: {len(oberliga_masters)}")
     lines.append(f"- Zusatzplaetze: {extra_picks}")
     reserve_count = len([t for t in deduped if is_u23_or_reserve(t)])
@@ -1394,10 +1477,18 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         "promoted_to_3liga": sorted(promoted_to_3liga),
         "promoted_to_3liga_league": promoted_to_3liga_league,
         "relegated_from_regionalliga": sorted(set(relegated_from_regionalliga)),
+        "relegated_from_regionalliga_league": relegated_from_regionalliga_league,
         "relegated_from_3liga": sorted(relegated_3liga),
+        "relegated_from_3liga_league": relegated_3liga_league,
         "promoted_from_oberliga": [x[1] for x in oberliga_masters],
+        "current_regionalliga_after_transitions": {
+            league: sorted(teams, key=lambda x: normalize_text(x).lower())
+            for league, teams in current_regionalliga_after_transitions.items()
+            if teams
+        },
         "reform_rule": "12+4+14+2",
         "extra_startplaces": REFORM_EXTRA_STARTPLACES,
+        "forced_regionalliga_relegations": FORCED_REGIONALLIGA_RELEGATIONS,
     }
     with open(SEASON_TRANSITIONS_FILE, "w", encoding="utf-8") as f:
         json.dump(transitions, f, ensure_ascii=False, indent=2)
@@ -1452,6 +1543,9 @@ def build_rule_based_team_pool(target: int) -> List[str]:
         THIRD_LIGA_TABLE_URLS)
     from_3liga = set(_pick_3liga_relegated(
         third_rows, THIRD_LIGA_RELEGATION_SLOTS))
+    from_3liga_league = assign_3liga_relegated_to_current_regionalliga(
+        sorted(from_3liga)
+    )
     pool |= from_3liga
 
     slots = target - len(pool)
@@ -1487,6 +1581,7 @@ def build_rule_based_team_pool(target: int) -> List[str]:
     lines.append(f"- Aufsteiger in 3. Liga: {sorted(promoted_to_3)}")
     lines.append(f"- RL-Absteiger gesamt: {len(relegated_from_rl)}")
     lines.append(f"- Absteiger aus 3. Liga: {sorted(from_3liga)}")
+    lines.append(f"- 3. Liga Zuordnung: {from_3liga_league}")
     if added_with_source:
         lines.append("- Aufsteiger aus Oberligen:")
         for team, src in added_with_source:
@@ -1502,7 +1597,9 @@ def build_rule_based_team_pool(target: int) -> List[str]:
         "promoted_to_3liga": sorted(promoted_to_3),
         "relegated_from_regionalliga": sorted(relegated_from_rl),
         "relegated_from_3liga": sorted(from_3liga),
+        "relegated_from_3liga_league": from_3liga_league,
         "promoted_from_oberliga": [t for t, _ in added_with_source],
+        "forced_regionalliga_relegations": FORCED_REGIONALLIGA_RELEGATIONS,
     }
     with open(SEASON_TRANSITIONS_FILE, "w", encoding="utf-8") as f:
         json.dump(transitions, f, ensure_ascii=False, indent=2)
@@ -1513,6 +1610,61 @@ def build_rule_based_team_pool(target: int) -> List[str]:
             f"Regelbasierte Teamlogik ergibt {len(out)} Teams statt {target}."
         )
     return out
+
+
+def export_current_regionalliga_after_transitions(transitions: Dict[str, Any]) -> Optional[pd.DataFrame]:
+    groups_raw = transitions.get("current_regionalliga_after_transitions", {})
+    if not isinstance(groups_raw, dict) or not groups_raw:
+        return None
+
+    groups: Dict[str, List[str]] = {}
+    for league_name, teams in groups_raw.items():
+        if not isinstance(teams, list):
+            continue
+        league = normalize_text(league_name)
+        if not league:
+            continue
+        groups[league] = [clean_team_name(str(t)) for t in teams if clean_team_name(str(t))]
+    if not groups:
+        return None
+
+    all_teams = [
+        team
+        for league_name in CURRENT_REGIONALLIGA_ORDER
+        for team in groups.get(league_name, [])
+    ]
+    clubs = build_clubs(all_teams)
+    clubs_by_name = {team_key(club.name): club for club in clubs}
+
+    rows: List[Dict[str, Any]] = []
+    for league_name in CURRENT_REGIONALLIGA_ORDER:
+        league_clubs: List[Club] = []
+        for team in groups.get(league_name, []):
+            club = clubs_by_name.get(team_key(team))
+            if club is None:
+                raise RuntimeError(
+                    f"Aktuelle RL-Zuordnung: keine Koordinate fuer {team}"
+                )
+            league_clubs.append(club)
+        league_clubs.sort(key=lambda c: normalize_text(c.name).lower())
+        if not league_clubs:
+            continue
+        metrics = league_metrics(league_clubs)
+        print(
+            f"\n--- Aktuelle RL {league_name} ({len(league_clubs)} Teams) | "
+            f"Ø Paar-Distanz: {metrics['avg_pair_km']:.1f} km | "
+            f"Max: {metrics['max_pair_km']:.1f} km ---"
+        )
+        for club in league_clubs:
+            rows.append(
+                {"Liga": league_name, "Verein": club.name, "lat": club.lat, "lon": club.lon}
+            )
+
+    ensure_parent_dir(OUT_CSV_CURRENT_REGIONALLIGA)
+    df = pd.DataFrame(rows).sort_values(["Liga", "Verein"])
+    df.to_csv(OUT_CSV_CURRENT_REGIONALLIGA, index=False, encoding="utf-8")
+    print(f"\nCSV geschrieben: {OUT_CSV_CURRENT_REGIONALLIGA}")
+    return df
 
 
 def load_json_file(path: str) -> Dict[str, Any]:
@@ -1596,6 +1748,75 @@ def assign_teams_to_regionen_macros(team_names: List[str]) -> Dict[str, List[str
     return assigned
 
 
+def is_forced_regionalliga_relegation(league_name: str, team_name: str) -> bool:
+    forced = FORCED_REGIONALLIGA_RELEGATIONS.get(normalize_text(league_name), [])
+    team_k = team_key(team_name)
+    return any(team_key(t) == team_k for t in forced)
+
+
+_CURRENT_REGIONALLIGA_CENTROIDS_CACHE: Optional[Dict[str, Tuple[float, float]]] = None
+
+
+def build_current_regionalliga_centroids() -> Dict[str, Tuple[float, float]]:
+    global _CURRENT_REGIONALLIGA_CENTROIDS_CACHE
+    if _CURRENT_REGIONALLIGA_CENTROIDS_CACHE is not None:
+        return dict(_CURRENT_REGIONALLIGA_CENTROIDS_CACHE)
+
+    centroids: Dict[str, Tuple[float, float]] = {}
+    for league_name in CURRENT_REGIONALLIGA_ORDER:
+        clubs = build_clubs(REGIONALLIGA_TEAMS.get(league_name, []))
+        if not clubs:
+            raise RuntimeError(f"Keine Clubs fuer RL-Zentroid {league_name} bestimmbar.")
+        centroids[league_name] = (
+            float(np.mean([c.lat for c in clubs])),
+            float(np.mean([c.lon for c in clubs])),
+        )
+    _CURRENT_REGIONALLIGA_CENTROIDS_CACHE = dict(centroids)
+    return centroids
+
+
+def assign_3liga_relegated_to_current_regionalliga(team_names: List[str]) -> Dict[str, str]:
+    centroids: Optional[Dict[str, Tuple[float, float]]] = None
+    out: Dict[str, str] = {}
+    for team_name in team_names:
+        team = clean_team_name(team_name)
+        if not team:
+            continue
+        override = get_override(THIRD_LIGA_RELEGATED_REGIONALLIGA_OVERRIDES, team)
+        if override:
+            out[team] = override
+            continue
+
+        if centroids is None:
+            centroids = build_current_regionalliga_centroids()
+        club = build_clubs([team])[0]
+        out[team] = min(
+            centroids.keys(),
+            key=lambda key: haversine_km(
+                club.lat,
+                club.lon,
+                centroids[key][0],
+                centroids[key][1],
+            ),
+        )
+    return out
+
+
+def append_current_regionalliga_assignment(
+    assignments: Dict[str, List[str]],
+    league_name: str,
+    team_name: str,
+) -> None:
+    league = normalize_text(league_name)
+    team = clean_team_name(team_name)
+    if not league or not team:
+        return
+    bucket = assignments.setdefault(league, [])
+    team_k = team_key(team)
+    if all(team_key(existing) != team_k for existing in bucket):
+        bucket.append(team)
+
+
 def pick_carryover_rows_round_robin(
     rows_by_league: Dict[str, List[Dict]],
     slots: int,
@@ -1621,6 +1842,8 @@ def pick_carryover_rows_round_robin(
                 continue
             team = clean_team_name(row.get("team", ""))
             if not team:
+                continue
+            if is_forced_regionalliga_relegation(league_name, team):
                 continue
             team_k = team_key(team)
             if team_k in used_keys:
@@ -1779,6 +2002,9 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     if len(relegated_3liga) < REFORM_3LIGA_RELEGATED_SLOTS:
         raise RuntimeError("Zu wenig 3.-Liga-Absteiger fuer Regionenmodell gefunden.")
     relegated_3liga_by_macro = assign_teams_to_regionen_macros(relegated_3liga)
+    relegated_3liga_league = assign_3liga_relegated_to_current_regionalliga(
+        relegated_3liga
+    )
 
     oberliga_entries: List[Dict[str, str]] = []
     for comp in OBERLIGA_MASTER_COMPETITIONS:
@@ -1807,6 +2033,88 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
     }
     for entry in oberliga_entries:
         oberliga_by_macro[entry["macro"]].append(entry)
+
+    def rebuild_oberliga_by_macro() -> Dict[str, List[Dict[str, str]]]:
+        out = {macro: [] for macro in REGIONEN_MACRO_REGION_SLOTS}
+        for item in oberliga_entries:
+            out[item["macro"]].append(item)
+        return out
+
+    def available_carryover_count(rows_by_league: Dict[str, List[Dict]]) -> int:
+        seen: set[str] = set()
+        count = 0
+        for league_name, rows in rows_by_league.items():
+            for row in rows:
+                rk = row.get("rank")
+                try:
+                    if int(rk) < 2:
+                        continue
+                except Exception:
+                    continue
+                team = clean_team_name(row.get("team", ""))
+                if not team or is_forced_regionalliga_relegation(league_name, team):
+                    continue
+                key = team_key(team)
+                if key in seen:
+                    continue
+                seen.add(key)
+                count += 1
+        return count
+
+    def add_extra_oberliga_promotions_for_macro(macro: str, count: int) -> None:
+        if count <= 0:
+            return
+        used_keys = {team_key(entry["team"]) for entry in oberliga_entries}
+        added = 0
+        for comp in OBERLIGA_MASTER_COMPETITIONS:
+            if REGIONEN_OL_COMPETITION_TO_MACRO.get(comp["name"]) != macro:
+                continue
+            table_pick = int(comp.get("wikipedia_table_pick", 0))
+            rows, src, src_info = extract_standings_rows_with_fallback(
+                comp["sources"], table_pick=table_pick
+            )
+            for row in rows:
+                if _is_filtered_out_row(row):
+                    continue
+                team = clean_team_name(row.get("team", ""))
+                key = team_key(team)
+                if not team or key in used_keys:
+                    continue
+                used_keys.add(key)
+                oberliga_entries.append(
+                    {
+                        "competition": comp["name"],
+                        "team": team,
+                        "macro": macro,
+                        "source": f"{src}:{src_info}",
+                    }
+                )
+                added += 1
+                if added >= count:
+                    return
+        raise RuntimeError(
+            f"Zu wenig zusaetzliche Oberliga-Aufsteiger fuer {macro}: {added} von {count}."
+        )
+
+    macro_carryover_rows = {
+        "West": {"West": rl_rows_by_league["West"]},
+        "Südwest": {"Südwest": rl_rows_by_league["Südwest"]},
+        REGIONEN_BLOCK_NAME: {
+            "Nord": rl_rows_by_league["Nord"],
+            "Nordost": rl_rows_by_league["Nordost"],
+            "Bayern": rl_rows_by_league["Bayern"],
+        },
+    }
+    for macro_name, rows_by_league in macro_carryover_rows.items():
+        slots = (
+            REGIONEN_MACRO_REGION_SLOTS[macro_name]
+            - len(oberliga_by_macro.get(macro_name, []))
+            - len(relegated_3liga_by_macro.get(macro_name, []))
+        )
+        deficit = max(0, slots - available_carryover_count(rows_by_league))
+        if deficit:
+            add_extra_oberliga_promotions_for_macro(macro_name, deficit)
+            oberliga_by_macro = rebuild_oberliga_by_macro()
 
     selected_current_rl: List[Tuple[str, str]] = []
     west_slots = REGIONEN_MACRO_REGION_SLOTS["West"] - len(oberliga_by_macro["West"]) - len(relegated_3liga_by_macro.get("West", []))
@@ -1963,6 +2271,7 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
         "promoted_to_3liga_league": promoted_to_3liga_league,
         "relegated_from_regionalliga": relegated_from_regionalliga,
         "relegated_from_3liga": sorted(relegated_3liga),
+        "relegated_from_3liga_league": relegated_3liga_league,
         "promoted_from_oberliga": sorted([entry["team"] for entry in oberliga_entries]),
         "promoted_from_oberliga_details": oberliga_details,
         "reform_rule": (
@@ -4544,6 +4853,7 @@ def main() -> None:
     # 1) Teamliste bauen
     teams = select_teams_for_season(TARGET_TEAM_COUNT)
     kompass_transitions = load_json_file(SEASON_TRANSITIONS_FILE)
+    export_current_regionalliga_after_transitions(kompass_transitions)
 
     # 1b) Alternativmodell "Regionenmodell" als feste Vergleichsvariante erzeugen
     _, regionenmodell_transitions = build_regionenmodell_solution()

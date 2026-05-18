@@ -41,6 +41,7 @@ INPUT_CSV_WISH_WORST = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_wish_wors
 INPUT_CSV_REGIONENMODELL = str(OUTPUT_CSV_DIR / "kompass_regionalliga_4x20_regionenmodell.csv")
 INPUT_CSV_BAYERN_MEISTER = str(OUTPUT_CSV_DIR / "kompass_bayern_meisterrunde.csv")
 INPUT_CSV_BAYERN_ABSTIEG = str(OUTPUT_CSV_DIR / "kompass_bayern_abstiegsrunde.csv")
+INPUT_CSV_CURRENT_REGIONALLIGA = str(OUTPUT_CSV_DIR / "kompass_current_regionalliga_after_transitions.csv")
 MAP_HTML = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map.html")
 MAP_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial.html")
 MAP_HTML_INITIAL_AUTO = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_initial_auto.html")
@@ -54,6 +55,7 @@ MAP_HTML_WISH_BEST = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_b
 MAP_HTML_REGIONENMODELL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_regionenmodell.html")
 MAP_HTML_BAYERN_MEISTER = str(OUTPUT_HTML_DIR / "kompass_bayern_meisterrunde_map.html")
 MAP_HTML_BAYERN_ABSTIEG = str(OUTPUT_HTML_DIR / "kompass_bayern_abstiegsrunde_map.html")
+MAP_HTML_CURRENT_REGIONALLIGA = str(OUTPUT_HTML_DIR / "kompass_current_regionalliga_after_transitions_map.html")
 MAP_COMPARE_HTML_WISH = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_wish.html")
 MAP_COMPARE_HTML_RANK2 = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_rank2.html")
 MAP_COMPARE_HTML_INITIAL = str(OUTPUT_HTML_DIR / "kompass_regionalliga_compare_initial.html")
@@ -154,6 +156,16 @@ def load_transitions(path: str, model_name: Optional[str] = None) -> Dict:
         out["promoted_to_3liga_league"] = {
             normalize_text(k): normalize_text(v) for k, v in pmap.items()
         }
+    third_map = raw.get("relegated_from_3liga_league", {})
+    if isinstance(third_map, dict):
+        out["relegated_from_3liga_league"] = {
+            normalize_text(k): normalize_text(v) for k, v in third_map.items()
+        }
+    rl_down_map = raw.get("relegated_from_regionalliga_league", {})
+    if isinstance(rl_down_map, dict):
+        out["relegated_from_regionalliga_league"] = {
+            normalize_text(k): normalize_text(v) for k, v in rl_down_map.items()
+        }
     rule_text = raw.get("reform_rule")
     if isinstance(rule_text, str) and rule_text.strip():
         out["reform_rule"] = normalize_text(rule_text)
@@ -235,6 +247,15 @@ def resolve_map_color_mode(
             ("Südwest", "Südwest"),
         ]
         return origin_lookup, {}, RL_ORIGIN_COLORS, "Liga", legend_items
+    if variant == "current_regionalliga":
+        legend_items = [
+            ("Nord", "Nord"),
+            ("Nordost", "Nordost"),
+            ("West", "West"),
+            ("Bayern", "Bayern"),
+            ("Südwest", "Südwest"),
+        ]
+        return {}, {}, RL_ORIGIN_COLORS, "Liga", legend_items
     legend_items = [
         ("Nord", "Nord"),
         ("West", "West"),
@@ -844,11 +865,14 @@ def build_map(
             popup=f"{t} (Aufsteiger in 3. Liga)",
         ).add_to(m)
 
+    third_liga_assignment = transitions.get("relegated_from_3liga_league", {})
     for team in transitions.get("relegated_from_3liga", []):
         t = normalize_text(team)
         if t not in overlay_coords:
             continue
         lat, lon = overlay_coords[t]
+        assigned_league = normalize_text(third_liga_assignment.get(t, ""))
+        suffix = f" -> RL {assigned_league}" if assigned_league else ""
         folium.RegularPolygonMarker(
             location=[lat, lon],
             number_of_sides=4,
@@ -856,8 +880,8 @@ def build_map(
             color="#2f2f2f",
             fill_color="#ffffff",
             fill_opacity=0.0,
-            tooltip=f"{t} | Absteiger aus 3. Liga",
-            popup=f"{t} (Absteiger aus 3. Liga)",
+            tooltip=f"{t} | Absteiger aus 3. Liga{suffix}",
+            popup=f"{t} (Absteiger aus 3. Liga{suffix})",
         ).add_to(m)
 
     for team in transitions.get("promoted_from_oberliga", []):
@@ -1250,6 +1274,7 @@ def _short_variant_label(variant: Dict[str, Any]) -> str:
         "rank1": "Matrix",
         "wish_best": "Wunschliste",
         "regionenmodell": "Regionenmodell",
+        "current_regionalliga": "Aktuelle RL",
         "bayern_meisterrunde": "Bayern Meister",
         "bayern_abstiegsrunde": "Bayern Abstieg",
         "worst": "Worst-Case",
@@ -1288,6 +1313,7 @@ def build_model_cards(variants: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     rank1 = _variant_by_id(variants, "rank1")
     wish = _variant_by_id(variants, "wish_best")
     region = _variant_by_id(variants, "regionenmodell")
+    current_rl = _variant_by_id(variants, "current_regionalliga")
     bayern_meister = _variant_by_id(variants, "bayern_meisterrunde")
 
     cards: List[Dict[str, str]] = []
@@ -1319,6 +1345,16 @@ def build_model_cards(variants: List[Dict[str, Any]]) -> List[Dict[str, str]]:
                 "avg_label": _format_metric_km(region.get("overall_avg_km")),
                 "longest_label": _format_metric_km(region.get("longest_trip_km")),
                 "best_for": "stabile Regionalstruktur",
+            }
+        )
+    if current_rl:
+        cards.append(
+            {
+                "title": "Aktuelle RL",
+                "target_variant": "current_regionalliga",
+                "avg_label": _format_metric_km(current_rl.get("overall_avg_km")),
+                "longest_label": _format_metric_km(current_rl.get("longest_trip_km")),
+                "best_for": "5 Staffeln nach Auf-/Abstieg",
             }
         )
     if bayern_meister:
@@ -1400,7 +1436,7 @@ def build_wish_coverage_items(rank1_df: pd.DataFrame, variants: List[Dict[str, A
     max_score = len(base_teams) * (TEAMS_PER_LEAGUE - 1)
     items: List[Dict[str, Any]] = []
     for variant in variants:
-        if variant.get("id") in {"bayern_abstiegsrunde", "worst"}:
+        if variant.get("id") in {"current_regionalliga", "bayern_abstiegsrunde", "worst"}:
             continue
         assignment = _assignment_lookup(variant)
         if set(assignment) != base_teams:
@@ -1426,6 +1462,7 @@ def build_key_takeaways(variants: List[Dict[str, Any]]) -> List[str]:
     rank1 = _variant_by_id(variants, "rank1")
     wish = _variant_by_id(variants, "wish_best")
     region = _variant_by_id(variants, "regionenmodell")
+    current_rl = _variant_by_id(variants, "current_regionalliga")
     bayern_meister = _variant_by_id(variants, "bayern_meisterrunde")
     bayern_abstieg = _variant_by_id(variants, "bayern_abstiegsrunde")
     worst = _variant_by_id(variants, "worst")
@@ -1441,6 +1478,8 @@ def build_key_takeaways(variants: List[Dict[str, Any]]) -> List[str]:
         out.append(f"Das Regionenmodell ist strukturell stabiler, liegt aber bei Ø {diff:+.2f} km gegenüber Matrix.")
     if bayern_meister:
         out.append("Das Bayern-Modell bleibt oben als Meisterrunde sichtbar; die Abstiegsrunde ist wegen variabler Ligagrößen ein Benchmark.")
+    if current_rl:
+        out.append("Die aktuelle RL-Karte zeigt die 5 Herkunftsstaffeln des Reform-Pools nach Auf-/Abstieg inklusive 3.-Liga-Zuordnung.")
     if worst and rank1:
         diff = float(worst.get("overall_avg_km", 0.0)) - float(rank1.get("overall_avg_km", 0.0))
         out.append(f"Benchmark: Der Worst-Case liegt bei Ø {diff:+.2f} km gegenüber Matrix.")
@@ -1827,10 +1866,11 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
         <section class="selection">
           <h2>Wie die Auswahl erfolgt</h2>
           <ul>
-            <li>Je Regionalliga werden die Tabellenplätze 2-13 übernommen.</li>
+            <li>Je Regionalliga werden 12 Teams ab Platz 2 übernommen; erzwungene Absteiger werden übersprungen.</li>
             <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
             <li>Hinzu kommen 14 Oberliga-Meister.</li>
             <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
+            <li>Fortuna Düsseldorf II wird als Sonderfall 2026/27 als Regionalliga-Absteiger behandelt.</li>
             <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
           </ul>
         </section>
@@ -1997,6 +2037,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     function comparisonText(variant) {
       if (!variant) return "";
       if (variant.id === "rank1") return "Referenzmodell";
+      if (variant.id === "current_regionalliga") return "nicht direkt vergleichbar: 5 Herkunftsstaffeln mit variabler Größe";
       if (variant.id === "bayern_meisterrunde") return "nicht direkt vergleichbar: 9 Gegner statt 19";
       if (variant.id === "bayern_abstiegsrunde") return "Benchmark: variable Ligagrößen nach dem Split";
       if (variant.id === "worst") return "Benchmark: maximale gefundene Distanz";
@@ -2147,7 +2188,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       const info = (activeVariant.club_lookup || {})[team];
       const missed = (activeVariant.closest_cross_by_club || {})[team];
       const assignments = variants
-        .filter(variant => ["rank1", "wish_best", "regionenmodell", "bayern_meisterrunde"].includes(variant.id))
+        .filter(variant => ["rank1", "wish_best", "regionenmodell", "current_regionalliga", "bayern_meisterrunde"].includes(variant.id))
         .map(variant => (
           `<tr><td>${esc(variant.title)}</td><td>${esc(leagueForTeam(variant, team))}</td></tr>`
         ))
@@ -2379,6 +2420,17 @@ def main() -> None:
             bayern_abstieg_data = {"df": df_bayern_abstieg, "csv": str(bayern_abstieg_csv_path)}
         except Exception:
             bayern_abstieg_data = None
+    current_regionalliga_data: Optional[Dict[str, Any]] = None
+    current_regionalliga_csv_path = Path(INPUT_CSV_CURRENT_REGIONALLIGA)
+    if current_regionalliga_csv_path.exists():
+        try:
+            df_current_regionalliga = load_solution_csv(current_regionalliga_csv_path)
+            current_regionalliga_data = {
+                "df": df_current_regionalliga,
+                "csv": str(current_regionalliga_csv_path),
+            }
+        except Exception:
+            current_regionalliga_data = None
 
     df_map_rank1, map_coord_stats = resolve_map_coordinates(rank_data[1]["df"])
     changed_vs_rank2 = (
@@ -2514,6 +2566,42 @@ def main() -> None:
         )
         print(f"Kartenvergleich: {MAP_COMPARE_HTML_INITIAL_AUTO_MANUAL}")
         print(f"Sichtbare Unterschiede Initial-Auto/Initial-Manuell: {len(changed_auto_manual)}")
+
+    current_regionalliga_score: Optional[float] = None
+    if current_regionalliga_data is not None:
+        df_current_regionalliga_map, _ = resolve_map_coordinates(current_regionalliga_data["df"])
+        build_map(
+            df_current_regionalliga_map,
+            MAP_HTML_CURRENT_REGIONALLIGA,
+            transitions,
+            changed_teams=None,
+            variant="current_regionalliga",
+        )
+        club_df_crl, league_df_crl, trips_df_crl, cross_trips_df_crl = compute_metrics(
+            current_regionalliga_data["df"]
+        )
+        current_regionalliga_score = float(club_df_crl["Durchschnitt_Auswaerts_km"].mean())
+        variants.append(
+            build_variant_payload(
+                "current_regionalliga",
+                "Aktuelle Regionalligen nach Auf-/Abstieg",
+                html_asset_name(MAP_HTML_CURRENT_REGIONALLIGA),
+                current_regionalliga_data["df"],
+                club_df_crl,
+                league_df_crl,
+                trips_df_crl,
+                cross_trips_df_crl,
+                rank_info={
+                    "rank": 0,
+                    "rank_label": "Aktuelle Regionalligen",
+                    "score_avg_away_km": current_regionalliga_score,
+                    "gap_to_best_km": 0.0,
+                },
+                show_club_list=False,
+                note="5 bisherige Regionalligen als Herkunfts-/Zielstaffeln des 80er-Reform-Pools nach Auf-/Abstieg.",
+            )
+        )
+        print(f"Karte (Aktuelle Regionalligen): {MAP_HTML_CURRENT_REGIONALLIGA}")
 
     if regionenmodell_data is not None:
         changed_regionenmodell = compute_changed_teams(rank_data[1]["df"], regionenmodell_data["df"])
@@ -2767,6 +2855,8 @@ def main() -> None:
     worst_score = worst_score_computed if worst_data is not None else None
     if wish_best_data is None:
         wish_best_score_computed = None
+    if current_regionalliga_data is None:
+        current_regionalliga_score = None
     if regionenmodell_data is None:
         regionenmodell_score = None
     if bayern_meister_data is None:
@@ -2781,9 +2871,10 @@ def main() -> None:
         gap_text = "-"
 
     page_data = {
-        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, Regionenmodell, Bayern-Vorrunden-Split und Wunschlisten-Optimierung.",
+        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, aktuelle Regionalligen, Regionenmodell, Bayern-Vorrunden-Split und Wunschlisten-Optimierung.",
         "simple_explanation": (
             "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
+            "Die aktuelle RL-Karte zeigt, welcher bisherigen Regionalliga die Teams nach Auf-/Abstieg zugeordnet sind. "
             "Das Regionenmodell hält West und Südwest stabil und teilt den Block aus Nord, Nordost und Bayern "
             "in zwei 20er-Staffeln. "
             "Der Bayern-Vorrunden-Split teilt jede der 5 bestehenden "
@@ -2810,6 +2901,15 @@ def main() -> None:
                     "Für jeden Verein wird eine Wunschliste der 19 geografisch nächsten Nachbarn gebaut. "
                     "Optimiert wird nicht direkt die Gesamtdistanz, sondern wie viele dieser Wunschgegner "
                     "in derselben 20er-Staffel landen."
+                ),
+            },
+            {
+                "title": "Aktuelle Regionalligen",
+                "target_variant": "current_regionalliga",
+                "text": (
+                    "Diese Karte gruppiert den 80er-Reform-Pool nach den bisherigen fünf Regionalligen. "
+                    "Absteiger aus der 3. Liga werden explizit ihrer Ziel-Regionalliga zugeordnet; "
+                    "Fortuna Düsseldorf II wird trotz Tabellenplatz als RL-Absteiger behandelt."
                 ),
             },
             {
@@ -2851,6 +2951,10 @@ def main() -> None:
             {
                 "label": "Regionenmodell",
                 "value": f"{regionenmodell_score:.2f} km" if regionenmodell_score is not None else "-",
+            },
+            {
+                "label": "Aktuelle Regionalligen",
+                "value": f"{current_regionalliga_score:.2f} km" if current_regionalliga_score is not None else "-",
             },
             {
                 "label": "Bayern-Meisterrunde (4x10)",

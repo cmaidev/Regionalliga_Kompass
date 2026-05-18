@@ -16,6 +16,12 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
   - 2 Zusatzplätze (aktuell Bayern + Nordost)
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
 - Quellenpriorität: `FuPa -> Wikipedia`
+- Drittliga-Absteiger werden für die Referenzkarte explizit einer Ziel-Regionalliga zugeordnet:
+  - `TSV Havelse -> Nord`
+  - `FC Erzgebirge Aue -> Nordost`
+  - `SSV Ulm 1846 -> Südwest`
+  - `1. FC Schweinfurt 05 -> Bayern`
+- Sonderfall 2026/27: `Fortuna Düsseldorf II` wird trotz Tabellenplatz als Regionalliga-Absteiger behandelt.
 
 ## Vergleichsmodelle
 - `Kompassmodell` bleibt das Standardmodell des Repos.
@@ -28,6 +34,7 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
     - `West`: Westfalen, Niederrhein, Mittelrhein
     - `Südwest`: Baden-Württemberg, Hessen, Rheinland-Pfalz/Saar
     - `Nord/Nordost/Bayern`: Niedersachsen, Schleswig-Holstein, Hamburg, Bremen, NOFV Nord, NOFV Süd, Bayernliga Nord, Bayernliga Süd
+  - Erzwungene RL-Absteiger werden auch hier übersprungen; fehlende Makroplätze werden mit dem nächsten Oberliga-Kandidaten derselben Makroregion aufgefüllt.
   - Projektannahme für stabile Folgejahre: `4` Direktaufsteiger in die 3. Liga, RL-Abstieg `West=3`, `Südwest=3`, `Nord/Nordost/Bayern-Block=8`.
 - `Bayern-Vorrunden-Split`:
   - Jede der 5 bestehenden Regionalligen spielt eine gemeinsame Vorrunde.
@@ -83,6 +90,7 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 ## Ausgaben
 ### CSV (`outputs/csv/`)
 - `kompass_regionalliga_4x20.csv` — Rank 1 (Hauptausgabe)
+- `kompass_current_regionalliga_after_transitions.csv` — bisherige 5 Regionalligen nach Auf-/Abstieg als Referenzkarte
 - `kompass_regionalliga_4x20_regionenmodell.csv` — feste Regionenmodell-Variante
 - `kompass_bayern_meisterrunde.csv` — Bayern-Vorrunden-Split: Meisterrunde (4×10, geografisch optimiert)
 - `kompass_bayern_abstiegsrunde.csv` — Bayern-Vorrunden-Split: Abstiegsrunde (5 RL, variable Größe)
@@ -100,6 +108,7 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 ### HTML (`outputs/html/`)
 - `index.html` — Übersichtsseite mit Kartenschalten
 - `kompass_regionalliga_4x20_map.html` — Rank 1 Karte
+- `kompass_current_regionalliga_after_transitions_map.html` — bisherige 5 Regionalligen nach Auf-/Abstieg
 - `kompass_regionalliga_4x20_map_regionenmodell.html` — Regionenmodell-Karte
 - `kompass_bayern_meisterrunde_map.html` — Bayern-Vorrunden-Split: Meisterrunde
 - `kompass_bayern_abstiegsrunde_map.html` — Bayern-Vorrunden-Split: Abstiegsrunde
