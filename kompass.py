@@ -8,7 +8,7 @@ Was das Script macht:
    - 14 Oberliga-Meister
    - 2 Zusatzplaetze (aktuell Bayern + Nordost)
 2) Reserve-/U-Teams sind im Reformmodus erlaubt.
-3) Holt Team-Koordinaten primaer ueber FuPa, dann Wikipedia
+3) Holt Team-Koordinaten primaer ueber Wikipedia/Wikidata
    (mit Cache/Overrides und optionalem Nominatim-Fallback).
 4) Optimiert die 4 Ligen mit Multi-Start + Distanzmatrix
    (Rank 1 ist Hauptausgabe).
@@ -30,7 +30,7 @@ import itertools
 import os
 import re
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -38,18 +38,21 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 import requests
+from requests.adapters import HTTPAdapter
 from sklearn.cluster import KMeans
+from urllib3.util.retry import Retry
 
-from kompass_utils import Club, ensure_parent_dir, haversine_km, normalize_text
+from kompass_utils import Club, ensure_parent_dir, haversine_km, load_verified_stadiums, normalize_text
 
 
 # -------------------------
 # Konfiguration
 # -------------------------
 
-# Saison (Format "JJJJ/JJ") – einzige Stelle, die bei Saisonwechsel angepasst werden muss.
-SEASON: str = os.getenv("KOMPASS_SEASON", "2025/26")
-SEASON_SLUG: str = SEASON.replace("/", "_")  # "2025_26" (fuer Dateinamen)
+# Quellsaison (Format "JJJJ/JJ"). Laufende Tabellen ergeben eine Projektion
+# fuer die folgende Saison.
+SEASON: str = os.getenv("KOMPASS_SEASON", "2026/27")
+SEASON_SLUG: str = SEASON.replace("/", "_")
 
 N_LEAGUES = 4
 TEAMS_PER_LEAGUE = 20
@@ -103,6 +106,10 @@ TEAM_NAME_NORMALIZATION_OVERRIDES = {
     "SSV Ulm 1846 Fußball": "SSV Ulm 1846",
     "SG Barockstadt Fulda Lehnerz": "SG Barockstadt Fulda-Lehnerz",
     "Fortuna Düsseldorf": "Fortuna Düsseldorf II",
+    "FC Eintracht Norderstedt": "Eintracht Norderstedt",
+    "SV Werder Bremen II": "Werder Bremen II",
+    "FSV Mainz 05 II": "1. FSV Mainz 05 II",
+    "Eintr. Stadtallendorf": "TSV Eintracht Stadtallendorf",
 }
 
 # Harte Koordinaten-Overrides fuer nachweislich fehlerhafte Treffer.
@@ -113,6 +120,11 @@ CLUB_COORD_OVERRIDES: Dict[str, Tuple[float, float]] = {
     "SC Fortuna Köln": (50.92245, 6.97423),
     "SG Barockstadt Fulda Lehnerz": (50.555809, 9.680845),
     "SG Barockstadt Fulda-Lehnerz": (50.555809, 9.680845),
+    # Franz-Kremer-Stadion (Wikidata Q1445872), Heimspielstaette der U21
+    "1. FC Köln II": (50.908305555556, 6.905611111111),
+    # Heimspielstaetten 2026/27, Koordinaten aus den Wikipedia-Stadionartikeln.
+    "SGV Heilbronn-Freiberg": (49.134918, 9.203432),
+    "1. FC Kaiserslautern II": (49.434697, 7.776466),
 }
 
 
@@ -163,7 +175,7 @@ OUT_SOLUTION_DIFF_CSV = os.path.join(
     OUTPUT_CSV_DIR, "kompass_solution_diff.csv")
 WIKIPEDIA_API = "https://de.wikipedia.org/w/api.php"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
-USER_AGENT = "CompassRegionalligaBot/1.0 (your_email_or_github_here)"
+USER_AGENT = "CompassRegionalligaBot/1.0 (https://github.com/cmaidev/Regionalliga_Kompass)"
 
 # Multi-Start: viele eingeschraenkte lokale Durchlaeufe fuer robustere "best-of"-Suche.
 ENABLE_MULTI_START_SEARCH = True
@@ -245,7 +257,7 @@ INITIAL_CSV_OVERRIDE = os.getenv("KOMPASS_INITIAL_CSV_OVERRIDE", "").strip()
 
 
 # -------------------------
-# Daten: Regionalligen 2025/26 (aus den Wikipedia-Saisonartikeln)
+# Daten: Teilnehmer der konfigurierten Regionalliga-Quellsaison
 # -------------------------
 REGIONALLIGA_DATA_FILE = Path(f"data/regionalliga_{SEASON_SLUG}.json")
 
@@ -298,6 +310,23 @@ TIER5_WIKI_URLS: List[str] = [
 
 TABLE_SOURCE_PRIORITY: List[str] = ["fupa", "wikipedia"]
 
+
+def current_football_season(today: Optional[date] = None) -> str:
+    """Return the German football season currently shown by FuPa standings URLs."""
+    today = today or datetime.now(timezone.utc).date()
+    start_year = today.year if today.month >= 7 else today.year - 1
+    return f"{start_year}/{str(start_year + 1)[-2:]}"
+
+
+def table_source_priority_for_season(
+    season: str = SEASON,
+    today: Optional[date] = None,
+) -> List[str]:
+    """Keep FuPa first, but never use its current-only standings for old seasons."""
+    if season == current_football_season(today):
+        return list(TABLE_SOURCE_PRIORITY)
+    return [source for source in TABLE_SOURCE_PRIORITY if source != "fupa"]
+
 REGIONALLIGA_TABLE_URLS: Dict[str, Dict[str, str]] = {
     "Nord": {
         "fupa": "https://www.fupa.net/league/regionalliga-nord/standing",
@@ -347,35 +376,35 @@ TIER5_TABLE_URLS: Dict[str, List[str]] = {
 
 OBERLIGA_MASTER_COMPETITIONS: List[Dict] = [
     {"name": "Niedersachsen", "sources": {"fupa": "https://www.fupa.net/league/oberliga-niedersachsen/standing",
-                                          "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_2025/26"}},
+                                          "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niedersachsen_{SEASON}"}},
     {"name": "Schleswig-Holstein", "sources": {"fupa": "https://www.fupa.net/league/oberliga-schleswig-holstein/standing",
-                                               "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_2025/26"}},
+                                               "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Schleswig-Holstein_{SEASON}"}},
     {"name": "Hamburg", "sources": {"fupa": "https://www.fupa.net/league/oberliga-hamburg/standing",
-                                    "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_2025/26"}},
+                                    "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Hamburg_{SEASON}"}},
     {"name": "Bremen", "sources": {"fupa": "https://www.fupa.net/league/bremen-liga/standing",
-                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_2025/26"}},
+                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bremen-Liga_{SEASON}"}},
     {"name": "Westfalen", "sources": {"fupa": "https://www.fupa.net/league/oberliga-westfalen/standing",
-                                      "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_2025/26"}},
+                                      "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Westfalen_{SEASON}"}},
     {"name": "Niederrhein", "sources": {"fupa": "https://www.fupa.net/league/oberliga-niederrhein/standing",
-                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_2025/26"}},
+                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Niederrhein_{SEASON}"}},
     {"name": "Mittelrhein", "sources": {"fupa": "https://www.fupa.net/league/mittelrheinliga/standing",
-                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_2025/26"}},
+                                        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Mittelrheinliga_{SEASON}"}},
     {"name": "NOFV Nord", "sources": {
         "fupa": "https://www.fupa.net/league/nofv-oberliga-nord/standing",
-        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 0},
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_{SEASON}"}, "wikipedia_table_pick": 0},
     {"name": "NOFV Süd", "sources": {
         "fupa": "https://www.fupa.net/league/nofv-oberliga-sued/standing",
-        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_2025/26"}, "wikipedia_table_pick": 1},
+        "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Nordost_{SEASON}"}, "wikipedia_table_pick": 1},
     {"name": "Baden-Württemberg", "sources": {"fupa": "https://www.fupa.net/league/oberliga-baden-wuerttemberg/standing",
-                                              "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_2025/26"}},
+                                              "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Baden-W%C3%BCrttemberg_{SEASON}"}},
     {"name": "Hessen", "sources": {"fupa": "https://www.fupa.net/league/hessenliga/standing",
-                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_2025/26"}},
+                                   "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Hessenliga_{SEASON}"}},
     {"name": "Rheinland-Pfalz/Saar", "sources": {"fupa": "https://www.fupa.net/league/oberliga-rheinland-pfalz-saar/standing",
-                                                 "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_2025/26"}},
+                                                 "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Oberliga_Rheinland-Pfalz/Saar_{SEASON}"}},
     {"name": "Bayernliga Nord", "sources": {"fupa": "https://www.fupa.net/league/bayernliga-nord/standing",
-                                            "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 0},
+                                            "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_{SEASON}"}, "wikipedia_table_pick": 0},
     {"name": "Bayernliga Süd", "sources": {"fupa": "https://www.fupa.net/league/bayernliga-sued/standing",
-                                           "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_2025/26"}, "wikipedia_table_pick": 1},
+                                           "wikipedia": f"https://de.wikipedia.org/wiki/Fu%C3%9Fball-Bayernliga_{SEASON}"}, "wikipedia_table_pick": 1},
 ]
 
 # Modellannahmen fuer die Saisonlogik
@@ -394,9 +423,10 @@ REFORM_STRICT_QUOTA_ALLOW_RESERVES = True
 CURRENT_REGIONALLIGA_ORDER = ["Nord", "Nordost", "West", "Bayern", "Südwest"]
 
 # Bekannte Sonderfaelle, die nicht sauber aus der Tabelle allein ableitbar sind.
-FORCED_REGIONALLIGA_RELEGATIONS: Dict[str, List[str]] = {
-    "West": ["Fortuna Düsseldorf II"],
+FORCED_REGIONALLIGA_RELEGATIONS_BY_SEASON: Dict[str, Dict[str, List[str]]] = {
+    "2025/26": {"West": ["Fortuna Düsseldorf II"]},
 }
+FORCED_REGIONALLIGA_RELEGATIONS = FORCED_REGIONALLIGA_RELEGATIONS_BY_SEASON.get(SEASON, {})
 
 THIRD_LIGA_RELEGATED_REGIONALLIGA_OVERRIDES: Dict[str, str] = {
     "TSV Havelse": "Nord",
@@ -549,6 +579,14 @@ def clean_team_name(name: str) -> str:
     s = re.sub(r"\s*\([^)]*\)\s*$", "", s).strip()
     # entferne Hochstellungen/Footnote-ähnliche Marker
     s = re.sub(r"\[[0-9]+\]", "", s).strip()
+    # Wikipedia labels reserve teams as e.g. "Hannover 96 II U23" and may
+    # append a slash/footnote number. Keep the canonical "II" club name.
+    s = re.sub(
+        r"(\b(?:II|III)\b)\s+U(?:19|21|23)\b(?:\s*/\s*\d*|\s+\d+)?$",
+        r"\1",
+        s,
+        flags=re.IGNORECASE,
+    )
     # entferne Tabellenstatus-Suffixe wie "L" am Ende
     s = re.sub(r"\s+[A-ZÄÖÜ]$", "", s).strip()
     # Mehrfachspaces
@@ -561,6 +599,27 @@ def clean_team_name(name: str) -> str:
 # -------------------------
 # Wikipedia Koordinaten
 # -------------------------
+
+class WikimediaSession(requests.Session):
+    _last_request_at = 0.0
+
+    def request(self, method: str, url: str, **kwargs):
+        if url.startswith(("https://de.wikipedia.org/", "https://www.wikidata.org/")):
+            time.sleep(max(0.0, 0.4 - (time.monotonic() - self._last_request_at)))
+            WikimediaSession._last_request_at = time.monotonic()
+        return super().request(method, url, **kwargs)
+
+
+def create_wikimedia_session() -> requests.Session:
+    session = WikimediaSession()
+    session.headers.update({"User-Agent": USER_AGENT})
+    retries = Retry(
+        total=3, backoff_factor=5, status_forcelist=(429, 503),
+        allowed_methods=frozenset({"GET"}), respect_retry_after_header=True,
+    )
+    for base_url in ("https://de.wikipedia.org/", "https://www.wikidata.org/"):
+        session.mount(base_url, HTTPAdapter(max_retries=retries))
+    return session
 def load_cache(path: str) -> Dict[str, Tuple[float, float]]:
     if not os.path.exists(path):
         return {}
@@ -791,81 +850,21 @@ def nominatim_fallback_geocode(name: str) -> Optional[Tuple[float, float]]:
 
 
 def build_clubs(team_names: List[str]) -> List[Club]:
-    """
-    Mappt Teamnamen -> Koordinaten (Wikipedia API, optional Nominatim), mit Cache.
-    """
-    cache = load_cache(CACHE_FILE)
-    session = requests.Session()
-    session.headers.update({"User-Agent": USER_AGENT})
-
-    clubs: List[Club] = []
-    missing: List[str] = []
-
-    for name in team_names:
-        override_coords = get_coord_override(CLUB_COORD_OVERRIDES, name)
-        if override_coords is not None:
-            cache[name] = (float(override_coords[0]),
-                           float(override_coords[1]))
-            save_cache(CACHE_FILE, cache)
-            clubs.append(Club(name=name, lat=float(
-                override_coords[0]), lon=float(override_coords[1])))
-            continue
-
-        if name in cache:
-            lat, lon = cache[name]
-            if is_plausible_germany_coord(lat, lon):
-                clubs.append(Club(name=name, lat=lat, lon=lon))
-                continue
-            del cache[name]
-            save_cache(CACHE_FILE, cache)
-
-        # Wikipedia -> Wikidata
-        coords = None
-        resolved_title = name
-        title_source = "direct"
-        stage = "init"
-        try:
-            resolved_title, title_source = resolve_wikipedia_title(
-                session, name)
-            coords, stage = wiki_get_coords_with_stage(session, resolved_title)
-        except Exception as exc:
-            stage = f"wiki_exception:{type(exc).__name__}"
-            coords = None
-
-        # Fallback
-        if coords is None and USE_NOMINATIM_FALLBACK:
-            coords = nominatim_fallback_geocode(name)
-            if coords is not None:
-                stage = "nominatim.fallback"
-            else:
-                stage = f"{stage}->nominatim_missing"
-
-        if coords is None:
-            missing.append(
-                f"{name} | title={resolved_title} ({title_source}) | fail_stage={stage}"
-            )
-            continue
-
-        if not is_plausible_germany_coord(coords[0], coords[1]):
-            missing.append(
-                f"{name} | title={resolved_title} ({title_source}) | fail_stage={stage}->out_of_germany_bbox"
-            )
-            continue
-
-        cache[name] = coords
-        save_cache(CACHE_FILE, cache)
-        clubs.append(Club(name=name, lat=coords[0], lon=coords[1]))
-
-        # freundlich drosseln (Wikipedia-API)
-        time.sleep(0.2)
-
+    """Use the checked source-season home grounds for every calculation."""
+    grounds = load_verified_stadiums(SEASON)
+    missing = [name for name in team_names if normalize_text(name) not in grounds]
     if missing:
         raise RuntimeError(
-            "Fuer diese Teams konnten keine Koordinaten ermittelt werden:\n- "
-            + "\n- ".join(missing)
-            + "\n\nTipp: WIKI_TITLE_OVERRIDES/GEOCODE_QUERY_OVERRIDES erweitern."
+            f"Missing verified home grounds for {SEASON}: " + ", ".join(missing)
+            + ". Check the venues and add season-specific records to stadium_overrides.json."
         )
-
+    cache = load_cache(CACHE_FILE)
+    clubs = []
+    for name in team_names:
+        ground = grounds[normalize_text(name)]
+        cache[name] = (ground["lat"], ground["lon"])
+        clubs.append(Club(name=name, lat=ground["lat"], lon=ground["lon"]))
+    save_cache(CACHE_FILE, cache)
     return clubs
 
 
@@ -1017,6 +1016,9 @@ def _extract_standings_rows_fupa(url: str) -> List[Dict]:
     rows: List[Dict] = []
     for entry in standings:
         team_obj = entry.get("team", {})
+        slug_season = re.search(r"(\d{4}-\d{2})$", team_obj.get("slug", ""))
+        if slug_season and slug_season.group(1) != SEASON.replace("/", "-"):
+            raise RuntimeError(f"FuPa-Tabelle gehoert nicht zur Quellsaison {SEASON}: {url}")
         team_name = (
             team_obj.get("name", {}).get("full")
             or team_obj.get("name", {}).get("middle")
@@ -1026,6 +1028,13 @@ def _extract_standings_rows_fupa(url: str) -> List[Dict]:
         team = clean_team_name(team_name)
         if not team:
             continue
+        reserve_suffix = {"2": "II", "3": "III"}.get(str(team_obj.get("level")))
+        if reserve_suffix and not re.search(r"\b(?:II|III)$", team):
+            team = re.sub(
+                rf"\s+(?:U(?:19|21|23)|{team_obj.get('level')})$",
+                "", team, flags=re.IGNORECASE,
+            )
+            team = clean_team_name(f"{team} {reserve_suffix}")
         points = entry.get("points")
         games = entry.get("matches")
         ppg = None
@@ -1062,7 +1071,7 @@ def extract_standings_rows(url: str, source: Optional[str] = None, table_pick: i
 
 def extract_standings_rows_with_fallback(source_urls: Dict[str, str], table_pick: int = 0) -> Tuple[List[Dict], str, str]:
     errors: List[str] = []
-    for src in TABLE_SOURCE_PRIORITY:
+    for src in table_source_priority_for_season():
         url = source_urls.get(src)
         if not url:
             continue
@@ -1147,12 +1156,12 @@ def _pick_relegations_per_staffel(rl_rows_by_league: Dict[str, List[Dict]], per_
     return rel
 
 
-def _pick_3liga_relegated(rows: List[Dict], slots: int) -> List[str]:
+def _pick_3liga_relegated(rows: List[Dict], slots: int, allow_reserves: bool = False) -> List[str]:
     out: List[str] = []
     marked = [r for r in rows if str(r.get("mark", "")).startswith("down")]
     for r in marked:
         t = r["team"]
-        if _is_filtered_out_row(r):
+        if _is_filtered_out_row(r) and not allow_reserves:
             continue
         if t not in out:
             out.append(t)
@@ -1160,7 +1169,7 @@ def _pick_3liga_relegated(rows: List[Dict], slots: int) -> List[str]:
             return out
     for r in reversed(rows):
         t = r["team"]
-        if _is_filtered_out_row(r):
+        if _is_filtered_out_row(r) and not allow_reserves:
             continue
         if t not in out:
             out.append(t)
@@ -1172,7 +1181,7 @@ def _pick_3liga_relegated(rows: List[Dict], slots: int) -> List[str]:
 def _pick_oberliga_promotions(slots: int, exclude: set[str]) -> List[Tuple[str, str]]:
     candidates: List[Dict] = []
     exclude_keys = {team_key(x) for x in exclude}
-    for src in TABLE_SOURCE_PRIORITY:
+    for src in table_source_priority_for_season():
         for url in TIER5_TABLE_URLS.get(src, []):
             try:
                 rows = extract_standings_rows(url, source=src)
@@ -1237,12 +1246,13 @@ def _pick_top_n_from_rows(
     n: int,
     used_keys: Optional[set[str]] = None,
     allow_filtered_fallback: bool = False,
+    allow_reserves: bool = False,
 ) -> List[str]:
     if used_keys is None:
         used_keys = set()
     out: List[str] = []
     for r in rows:
-        if _is_filtered_out_row(r):
+        if _is_filtered_out_row(r) and not allow_reserves:
             continue
         t = clean_team_name(r["team"])
         k = team_key(t)
@@ -1346,7 +1356,10 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         THIRD_LIGA_TABLE_URLS
     )
     relegated_3liga = []
-    for t in _pick_3liga_relegated(third_rows, REFORM_3LIGA_RELEGATED_SLOTS):
+    for t in _pick_3liga_relegated(
+        third_rows, REFORM_3LIGA_RELEGATED_SLOTS,
+        allow_reserves=REFORM_STRICT_QUOTA_ALLOW_RESERVES,
+    ):
         k = team_key(t)
         if k in used_keys:
             continue
@@ -1370,7 +1383,9 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         rows, src, src_info = extract_standings_rows_with_fallback(
             comp["sources"], table_pick=table_pick
         )
-        champ = _pick_top_n_from_rows(rows, 1, used_keys)
+        champ = _pick_top_n_from_rows(
+            rows, 1, used_keys, allow_reserves=REFORM_STRICT_QUOTA_ALLOW_RESERVES,
+        )
         if not champ:
             continue
         team = champ[0]
@@ -1449,7 +1464,7 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
 
     lines = []
     lines.append("Reformregel 12+4+14+2:")
-    lines.append(f"- Quellen-Prioritaet: {TABLE_SOURCE_PRIORITY}")
+    lines.append(f"- Quellen-Prioritaet: {table_source_priority_for_season()}")
     lines.append(f"- RL-Quellen: {rl_source_info}")
     lines.append(f"- 3. Liga Quelle: {third_src}:{third_src_info}")
     lines.append(
@@ -1489,6 +1504,11 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         "reform_rule": "12+4+14+2",
         "extra_startplaces": REFORM_EXTRA_STARTPLACES,
         "forced_regionalliga_relegations": FORCED_REGIONALLIGA_RELEGATIONS,
+        "table_sources": {
+            "regionalliga": rl_source_info,
+            "third_liga": f"{third_src}:{third_src_info}",
+            "oberliga": {name: source for name, _, source in oberliga_masters},
+        },
     }
     with open(SEASON_TRANSITIONS_FILE, "w", encoding="utf-8") as f:
         json.dump(transitions, f, ensure_ascii=False, indent=2)
@@ -1574,7 +1594,7 @@ def build_rule_based_team_pool(target: int) -> List[str]:
 
     lines = []
     lines.append("Regelbasierte Saisonentscheidung:")
-    lines.append(f"- Quellen-Prioritaet: {TABLE_SOURCE_PRIORITY}")
+    lines.append(f"- Quellen-Prioritaet: {table_source_priority_for_season()}")
     lines.append(f"- 3. Liga Quelle: {third_src}:{third_src_info}")
     lines.append(f"- Regionalliga Quellen: {rl_source_info}")
     lines.append(f"- RL-Teams (eligible): {len(current_rl_set)}")
@@ -1682,6 +1702,15 @@ def write_combined_transitions_file(
     default_model: str,
     model_payloads: Dict[str, Dict[str, Any]],
 ) -> None:
+    start_year = int(SEASON.split("/")[0])
+    for payload in model_payloads.values():
+        payload.update({
+            "source_season": SEASON,
+            "target_season": f"{start_year + 1}/{str(start_year + 2)[-2:]}",
+            "is_projection": SEASON == current_football_season(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "source_priority": table_source_priority_for_season(),
+        })
     default_payload = dict(model_payloads.get(default_model, {}))
     default_payload["active_model"] = default_model
     default_payload["models"] = model_payloads
@@ -1997,7 +2026,8 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
         THIRD_LIGA_TABLE_URLS
     )
     relegated_3liga = _pick_3liga_relegated(
-        third_rows, REFORM_3LIGA_RELEGATED_SLOTS
+        third_rows, REFORM_3LIGA_RELEGATED_SLOTS,
+        allow_reserves=REFORM_STRICT_QUOTA_ALLOW_RESERVES,
     )
     if len(relegated_3liga) < REFORM_3LIGA_RELEGATED_SLOTS:
         raise RuntimeError("Zu wenig 3.-Liga-Absteiger fuer Regionenmodell gefunden.")
@@ -2012,7 +2042,7 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
         rows, src, src_info = extract_standings_rows_with_fallback(
             comp["sources"], table_pick=table_pick
         )
-        champ = _pick_top_n_from_rows(rows, 1)
+        champ = _pick_top_n_from_rows(rows, 1, allow_reserves=REFORM_STRICT_QUOTA_ALLOW_RESERVES)
         if not champ:
             raise RuntimeError(f"Kein Oberliga-Meister fuer {comp['name']} gefunden.")
         team = champ[0]
@@ -2074,7 +2104,7 @@ def build_regionenmodell_solution() -> Tuple[pd.DataFrame, Dict[str, Any]]:
                 comp["sources"], table_pick=table_pick
             )
             for row in rows:
-                if _is_filtered_out_row(row):
+                if _is_filtered_out_row(row) and not REFORM_STRICT_QUOTA_ALLOW_RESERVES:
                     continue
                 team = clean_team_name(row.get("team", ""))
                 key = team_key(team)
@@ -3968,7 +3998,7 @@ CPSAT_TIME_LIMIT: int = int(os.getenv("KOMPASS_CPSAT_TIME_LIMIT", "120"))
 # -------------------------
 # Wunschlisten-Optimierung (Wish Coverage SA)
 # -------------------------
-WISH_SA_ENABLED: bool = os.getenv("KOMPASS_WISH_SA_ENABLED", "1") == "1"
+WISH_SA_ENABLED: bool = os.getenv("KOMPASS_WISH_SA_ENABLED", "0") == "1"
 WISH_SA_PHASE1_ITERS: int = int(os.getenv("KOMPASS_WISH_SA_PHASE1_ITERS", "50000"))
 WISH_SA_ITERS: int = int(os.getenv("KOMPASS_WISH_SA_ITERS", "300000"))
 WISH_SA_ANNEAL_START: float = float(os.getenv("KOMPASS_WISH_SA_ANNEAL_START", "8.0"))
@@ -4196,6 +4226,36 @@ def wish_coverage_score(labels: np.ndarray, wish_table: List[List[int]]) -> int:
             if int(labels[j]) == li:
                 total += 1
     return total
+
+
+def wish_solution_is_acceptable(
+    labels: np.ndarray,
+    reference_labels: np.ndarray,
+    dist_matrix: np.ndarray,
+    wish_table: List[List[int]],
+) -> bool:
+    if len(labels) != len(reference_labels) or np.any(labels < 0):
+        return False
+    counts = np.unique(labels, return_counts=True)[1]
+    reference_counts = np.unique(reference_labels, return_counts=True)[1]
+    if not np.array_equal(np.sort(counts), np.sort(reference_counts)):
+        return False
+    if wish_coverage_score(labels, wish_table) <= wish_coverage_score(reference_labels, wish_table):
+        return False
+
+    def travel_limits(assignment: np.ndarray) -> Tuple[float, float]:
+        same_league = assignment[:, None] == assignment[None, :]
+        trips = dist_matrix * same_league
+        opponents = same_league.sum(axis=1) - 1
+        averages = np.divide(
+            trips.sum(axis=1), opponents,
+            out=np.zeros(len(assignment)), where=opponents > 0,
+        )
+        return float(trips.max()), float(averages.max())
+
+    candidate_limits = travel_limits(labels)
+    reference_limits = travel_limits(reference_labels)
+    return all(candidate <= reference + 1e-8 for candidate, reference in zip(candidate_limits, reference_limits))
 
 
 def run_wish_coverage_sa(
@@ -5159,6 +5219,8 @@ def main() -> None:
     # -------------------------
     # Wunschlisten- und Worst-Case-Optimierung
     # -------------------------
+    if not WISH_SA_ENABLED:
+        Path(OUT_CSV_WISH_BEST).unlink(missing_ok=True)
     if WISH_SA_ENABLED or WORST_SA_ENABLED:
         wish_table = build_wish_table(dist_matrix)
         n_wishes = len(clubs) * len(wish_table[0]) if wish_table else 0
@@ -5233,12 +5295,16 @@ def main() -> None:
                 f"(+{final_wish - initial_wish} vs. Heuristik-Start) | "
                 f"Oe Distanz: {wish_dist:.2f} km"
             )
-            export_solution(
-                clubs,
-                wish_labels,
-                OUT_CSV_WISH_BEST,
-                "4 Kompass-Ligen (Wunschlisten-Optimierung, Beste Coverage)",
-            )
+            if wish_solution_is_acceptable(wish_labels, best_labels_found, dist_matrix, wish_table):
+                export_solution(
+                    clubs,
+                    wish_labels,
+                    OUT_CSV_WISH_BEST,
+                    "4 Kompass-Ligen (Wunschlisten-Optimierung, Beste Coverage)",
+                )
+            else:
+                Path(OUT_CSV_WISH_BEST).unlink(missing_ok=True)
+                print("Wunschlisten-Ausgabe verworfen: keine bessere Coverage innerhalb der Matrix-Reisegrenzen.")
 
         if WORST_SA_ENABLED:
             worst_start = build_random_balanced_labels(len(clubs), seed=99991)

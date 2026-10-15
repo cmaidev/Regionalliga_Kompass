@@ -15,13 +15,23 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
   - 14 Oberliga-Meister
   - 2 Zusatzplätze (aktuell Bayern + Nordost)
 - Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt
+- Das gilt auch für Oberliga-Meister und Drittliga-Absteiger; ein Reserve-Meister wird nicht zugunsten des nächsten Erstteams übersprungen.
 - Quellenpriorität: `FuPa -> Wikipedia`
-- Drittliga-Absteiger werden für die Referenzkarte explizit einer Ziel-Regionalliga zugeordnet:
+- Drittliga-Absteiger werden für die Referenzkarte geografisch zugeordnet. Bestehende Zuordnungs-Overrides bleiben erhalten:
   - `TSV Havelse -> Nord`
   - `FC Erzgebirge Aue -> Nordost`
   - `SSV Ulm 1846 -> Südwest`
   - `1. FC Schweinfurt 05 -> Bayern`
-- Sonderfall 2026/27: `Fortuna Düsseldorf II` wird trotz Tabellenplatz als Regionalliga-Absteiger behandelt.
+- Sonderfall für die Quellsaison 2025/26 (Reform 2026/27): `Fortuna Düsseldorf II` wird trotz Tabellenplatz als Regionalliga-Absteiger behandelt. Dieser Override gilt nicht für die Quellsaison 2026/27.
+- Neue Spielstätten 2026/27: SGV Heilbronn-Freiberg im [Frankenstadion Heilbronn](https://www.heilbronn.de/kommunikation/pressemitteilungen/details/artikel/ins-frankenstadion.html), Kaiserslautern II im [Fritz-Walter-Stadion](https://fck.de/fussball/u21/). Club- und Stadion-Overrides verwenden die Koordinaten der jeweiligen Wikipedia-Stadionartikel.
+
+## Stadionkoordinaten
+- Clustering, Distanzmetriken, CSVs, Karten und Übergangsmarker verwenden dieselben geprüften Heimspielstätten aus `stadium_overrides.json` für die Quellsaison. Ungeprüfte Stadt-/Club-Caches und alte Overrides gelten nicht als Stadionnachweis.
+- Stand 14.10.2026 sind alle 109 angezeigten Vereine der Quellsaison 2026/27 geprüft. Der [Koordinaten-Audit](data/stadium_coordinate_audit_2026_27.csv) enthält alte und neue Punkte, Verschiebung, Quellen und Sonderfälle. 42 Punkte wurden um mehr als 500 Meter korrigiert.
+- Heimspielstätten: FuPa → Wikipedia; widersprüchliche Angaben und temporäre Einzelspielorte werden mit Vereins-/Verbandsseiten abgeglichen. Reserve-Teams werden separat geprüft und nicht automatisch dem Stadion der ersten Mannschaft zugeordnet.
+- Koordinaten: direkte Stadionpunkte aus Wikipedia/Wikidata zuerst; bei fehlenden Punkten veröffentlichte Vereinskoordinaten oder Nominatim/OpenStreetMap als Fallback. Straßen, Gebäude, Tennisanlagen und Ortsmittelpunkte werden nicht als Fußballstadion akzeptiert. `coordinate_precision` unterscheidet Stadion-/Spielfeldpunkte von Punkten innerhalb einer größeren Sportanlage.
+- Verwendet wird die aktuelle reguläre Heimspielstätte, keine noch unbestätigte Spielstätte nach einem möglichen Aufstieg. Sonderfälle stehen im jeweiligen Datensatz, etwa Havelse (zusätzlich zugelassenes Eilenriedestadion), Cham und Eichstätt (Einzelspiele an anderen Orten).
+- Fehlende Saisonprüfung stoppt `kompass.py` mit einer Vereinsliste. Ein Report mit veralteten CSV-Koordinaten verlangt einen erneuten Lauf von `kompass.py`. Für historische oder neue Saisons müssen die entsprechenden Heimspielstätten zuerst geprüft werden; nicht aktuelle Override-Einträge bleiben erhalten.
 
 ## Vergleichsmodelle
 - `Kompassmodell` bleibt das Standardmodell des Repos.
@@ -44,13 +54,19 @@ Dieses Projekt berechnet eine geografisch optimierte 4x20-Regionalliga auf Basis
 
 ## Optimierung
 
+### Wunschlisten-Optimierung
+- Standardmäßig deaktiviert (`KOMPASS_WISH_SA_ENABLED=0`) und nicht im Report angeboten.
+- Die reine Summe erfüllter Top-19-Wünsche ignoriert die Entfernung zu den übrigen Gegnern. Im Lauf für 2026/27 brachte die Variante nur 13 zusätzliche Wünsche, erhöhte aber die längste Reise von rund 500 auf 780 km und verlegte Freiburg II, Oberachern und Mechtersheim in die Ost-Staffel.
+- Acht Neustarts mit Reisegrenzen aus der Matrix-Lösung und ein 120-Sekunden-Solverlauf fanden keine bessere zulässige Coverage. Das ist keine Optimalitätsgarantie.
+- Bei experimenteller Aktivierung mit `KOMPASS_WISH_SA_ENABLED=1` werden nur Ergebnisse exportiert und angezeigt, die mehr Wünsche erfüllen und weder die längste Reise noch den höchsten Vereinsdurchschnitt der Matrix-Lösung überschreiten. Alte oder verworfene Wunschlisten-Karten werden aus dem Report und `docs/` entfernt.
+
 ### Metriken
 - **Durchschnittliche Auswärtsreise (km)**: Für jeden Club der Durchschnitt der Entfernungen zu allen 19 Ligagegnern, dann Mittelwert über alle 80 Clubs. Die intuitive Kennzahl — z.B. "ein Club fährt im Schnitt 141 km pro Auswärtsfahrt".
 - **Intra-Pair-Summe (km)**: Summe aller paarweisen Distanzen innerhalb jeder Liga (4 x 190 = 760 Paare). Das ist die Zielfunktion, die der Optimierer minimiert. Zusammenhang: `Ø Auswärtsreise = Intra-Pair-Summe / 760`.
 
 ### 3-Phasen-Heuristik
 
-**Phase 1 — Multi-Start-Suche** (Standard: 2000 Runs)
+**Phase 1 — Multi-Start-Suche** (Standard: 500 Runs)
 - KMeans-Initialisierung + Simulated Annealing mit 2er/3er/4er-Tausch
 - Stagnation-Shake zur Diversifikation
 
@@ -83,9 +99,9 @@ Neben KMeans werden 10 verschiedene Start-Seeds verwendet, um lokale Optima zu v
 - `kompass.py` — Datenbeschaffung, Saisonlogik, Optimierung, CSV/JSON-Export
 - `kompass_report.py` — Karten (Folium), Distanzmetriken, `index.html`, GitHub-Pages-Sync
 - `kompass_utils.py` — Shared Utilities (normalize_text, haversine_km, Club-Klasse)
-- `data/regionalliga_2025_26.json` — statische RL-Teilnehmerliste 2025/26
+- `data/regionalliga_2026_27.json` — RL-Teilnehmerliste 2026/27 aus FuPa, einschließlich Reserve-Teamnummern; die historische Liste 2025/26 bleibt erhalten
 - `season_transitions.json` — Auf-/Abstiegsmarker, inkl. modellbezogener Transition-Daten
-- `tests/test_utils.py` — 42 Offline-Tests
+- `tests/test_utils.py` — Offline-Tests für Hilfsfunktionen, Saison- und Quellenlogik
 
 ## Ausgaben
 ### CSV (`outputs/csv/`)
@@ -133,10 +149,13 @@ python -m pytest tests/ -v
 ## Konfiguration (Umgebungsvariablen)
 
 ### Saison
-- `KOMPASS_SEASON` (Default `2025/26`)
+- `KOMPASS_SEASON` is the source season (Default `2026/27`); current tables build a provisional 2027/28 reform pool. Promotion/relegation markers are model projections, not confirmed season results. The report and `season_transitions.json` record both seasons and the projection status.
+- FuPa remains the preferred source for the active season. Its configured standing URLs do not select historical seasons, so historical runs use the season-specific Wikipedia tables instead; this prevents mixed-season pools after a season rollover.
+- FuPa team levels are preserved as `II`/`III` suffixes, and tables with a different season in their team slugs are rejected before falling back to Wikipedia.
+- Wikipedia/Wikidata coordinate requests use a contact URL in the User-Agent, paced requests, and retries for HTTP 429/503 that respect `Retry-After`, following the [Wikimedia rate-limit guidance](https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits).
 
 ### Phase 1
-- `KOMPASS_MULTI_START_RUNS` (Default `2000`)
+- `KOMPASS_MULTI_START_RUNS` (Default `500`)
 - `KOMPASS_MULTI_START_KMEANS_N_INIT` (Default `5`)
 - `KOMPASS_MULTI_START_CENTROID_ITERS` (Default `2000`)
 - `KOMPASS_MULTI_START_MATRIX_ITERS` (Default `9000`)
@@ -162,7 +181,7 @@ python -m pytest tests/ -v
 - `KOMPASS_LNS_DESTROY_FRACTION` (Default `0.35`)
 
 ### Phase 4 (CP-SAT, optional)
-- `KOMPASS_CPSAT_ENABLED` (Default `0`, aktivieren mit `1`)
+- `KOMPASS_CPSAT_ENABLED` (Default `1`, deaktivieren mit `0`; wird ohne installiertes `ortools` übersprungen)
 - `KOMPASS_CPSAT_TIME_LIMIT` (Default `120`, in Sekunden)
 
 ### Sonstiges

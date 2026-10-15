@@ -4,7 +4,9 @@ Offline-Tests fuer Kern-Hilfsfunktionen (kein Netzwerkzugriff noetig).
 Ausfuehren mit: python -m pytest tests/ -v
 """
 import math
+import json
 import sys
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -155,8 +157,16 @@ class TestCleanTeamName:
     def test_removes_status_suffix_A(self):
         assert kompass.clean_team_name("SC Freiburg (A)") == "SC Freiburg"
 
+    def test_normalizes_wikipedia_reserve_labels(self):
+        assert kompass.clean_team_name("Hannover 96 II U23") == "Hannover 96 II"
+        assert kompass.clean_team_name("FC Bayern München II U23 / 2") == "FC Bayern München II"
+
     def test_plain_name_unchanged(self):
         assert kompass.clean_team_name("Werder Bremen") == "Werder Bremen"
+
+    def test_new_season_fupa_aliases(self):
+        assert kompass.clean_team_name("FSV Mainz 05 II") == "1. FSV Mainz 05 II"
+        assert kompass.clean_team_name("Eintr. Stadtallendorf") == "TSV Eintracht Stadtallendorf"
 
 
 # ---------------------------------------------------------------------------
@@ -186,21 +196,75 @@ class TestLabelCompassNames:
 # ---------------------------------------------------------------------------
 class TestSeasonConfig:
     def test_default_season(self):
-        assert kompass.SEASON == "2025/26"
+        assert kompass.SEASON == "2026/27"
 
     def test_season_slug(self):
-        assert kompass.SEASON_SLUG == "2025_26"
+        assert kompass.SEASON_SLUG == "2026_27"
 
     def test_data_file_uses_slug(self):
-        assert "2025_26" in str(kompass.REGIONALLIGA_DATA_FILE)
+        assert "2026_27" in str(kompass.REGIONALLIGA_DATA_FILE)
 
     def test_urls_contain_season(self):
-        # Mindestens eine Wikipedia-URL in OBERLIGA_MASTER_COMPETITIONS muss die Saison enthalten
+        # Alle Wikipedia-URLs der Oberliga-Meister muessen die Quellsaison verwenden.
         urls = [
             comp["sources"].get("wikipedia", "")
             for comp in kompass.OBERLIGA_MASTER_COMPETITIONS
         ]
-        assert any("2025/26" in u for u in urls), "SEASON nicht in URLs interpoliert"
+        assert all(kompass.SEASON in u for u in urls), "SEASON nicht in URLs interpoliert"
+
+    def test_historical_seasons_skip_current_only_fupa_urls(self):
+        today = date(2026, 8, 18)
+        assert kompass.table_source_priority_for_season("2025/26", today) == ["wikipedia"]
+        assert kompass.table_source_priority_for_season("2026/27", today) == ["fupa", "wikipedia"]
+
+    def test_forced_relegations_are_season_specific(self):
+        assert not kompass.is_forced_regionalliga_relegation("West", "Fortuna Düsseldorf II")
+        assert kompass.FORCED_REGIONALLIGA_RELEGATIONS_BY_SEASON["2025/26"]["West"] == ["Fortuna Düsseldorf II"]
+
+    def test_report_preserves_projection_metadata(self, tmp_path, monkeypatch):
+        path = tmp_path / "transitions.json"
+        monkeypatch.setattr(kompass, "SEASON_TRANSITIONS_FILE", str(path))
+        kompass.write_combined_transitions_file("kompass", {"kompass": {}})
+        transitions = kompass_report.load_transitions(str(path))
+        assert transitions["source_season"] == "2026/27"
+        assert transitions["target_season"] == "2027/28"
+        assert "is_projection" in transitions
+
+
+class TestFupaStandings:
+    def test_reserve_team_level_is_preserved(self, monkeypatch):
+        entries = [
+            {"rank": 1, "team": {"name": {"full": "Hannover 96"}, "level": 2, "slug": "hannover-96-m2-2026-27"}},
+            {"rank": 2, "team": {"name": {"full": "FC Bayern München II"}, "level": 2}},
+            {"rank": 3, "team": {"name": {"full": "Club"}, "level": 3}},
+            {"rank": 4, "team": {"name": {"full": "Holstein Kiel U23"}, "level": 2}},
+        ]
+        payload = {"dataHistory": [{"LeagueStandingPage": {"total": {"data": {"standings": entries}}}}]}
+        response = type("Response", (), {"text": f"<script>window.REDUX_DATA = {json.dumps(payload)}</script>", "raise_for_status": lambda self: None})()
+        monkeypatch.setattr(kompass.requests, "get", lambda *args, **kwargs: response)
+        rows = kompass._extract_standings_rows_fupa("https://www.fupa.net/league/test/standing")
+        assert [row["team"] for row in rows] == ["Hannover 96 II", "FC Bayern München II", "Club III", "Holstein Kiel II"]
+
+    def test_wrong_season_is_rejected(self, monkeypatch):
+        import pytest
+        entries = [{"rank": 1, "team": {"name": {"full": "Club"}, "slug": "club-m1-2025-26"}}]
+        payload = {"dataHistory": [{"LeagueStandingPage": {"total": {"data": {"standings": entries}}}}]}
+        response = type("Response", (), {"text": f"<script>window.REDUX_DATA = {json.dumps(payload)}</script>", "raise_for_status": lambda self: None})()
+        monkeypatch.setattr(kompass.requests, "get", lambda *args, **kwargs: response)
+        with pytest.raises(RuntimeError, match="Quellsaison"):
+            kompass._extract_standings_rows_fupa("https://www.fupa.net/league/test/standing")
+
+    def test_reform_selects_reserve_champion(self):
+        rows = [
+            {"rank": 1, "team": "Holstein Kiel II", "fupa_team_level": 2},
+            {"rank": 2, "team": "FC Kilia Kiel"},
+        ]
+        assert kompass._pick_top_n_from_rows(rows, 1, allow_reserves=True) == ["Holstein Kiel II"]
+        assert kompass._pick_top_n_from_rows(rows, 1) == ["FC Kilia Kiel"]
+
+    def test_reform_selects_relegated_reserves(self):
+        rows = [{"team": "Club II", "fupa_team_level": 2}]
+        assert kompass._pick_3liga_relegated(rows, 1, allow_reserves=True) == ["Club II"]
 
 
 class TestDataFiles:
@@ -264,6 +328,41 @@ class TestDiverseInitializations:
 # ---------------------------------------------------------------------------
 # LNS (Ruin & Recreate)
 # ---------------------------------------------------------------------------
+class TestWishPublication:
+    def test_rejects_long_detours_despite_higher_coverage(self):
+        positions = np.array([0.0, 1.0, 10.0, 11.0])
+        distances = np.abs(positions[:, None] - positions[None, :])
+        reference = np.array([0, 0, 1, 1])
+        candidate = np.array([0, 1, 0, 1])
+        wishes = [[2], [3], [0], [1]]
+        assert kompass.wish_coverage_score(candidate, wishes) > kompass.wish_coverage_score(reference, wishes)
+        assert not kompass.wish_solution_is_acceptable(candidate, reference, distances, wishes)
+
+    def test_rejects_worse_club_average_even_with_same_longest_trip(self):
+        positions = np.array([0.0, 5.0, 10.0, 1.0, 2.0, 9.0])
+        distances = np.abs(positions[:, None] - positions[None, :])
+        reference = np.array([0, 0, 0, 1, 1, 1])
+        candidate = np.array([0, 1, 0, 1, 1, 0])
+        wishes = kompass.build_wish_table(distances, n_neighbors=2)
+        assert kompass.wish_coverage_score(candidate, wishes) > kompass.wish_coverage_score(reference, wishes)
+        assert not kompass.wish_solution_is_acceptable(candidate, reference, distances, wishes)
+
+    def test_accepts_compact_coverage_improvement(self):
+        positions = np.array([0.0, 1.0, 10.0, 11.0])
+        distances = np.abs(positions[:, None] - positions[None, :])
+        reference = np.array([0, 1, 0, 1])
+        candidate = np.array([0, 0, 1, 1])
+        wishes = kompass.build_wish_table(distances, n_neighbors=1)
+        assert kompass.wish_solution_is_acceptable(candidate, reference, distances, wishes)
+
+    def test_rejects_duplicate_or_unbalanced_output(self):
+        distances = np.ones((4, 4)) - np.eye(4)
+        reference = np.array([0, 0, 1, 1])
+        wishes = [[1], [0], [3], [2]]
+        assert not kompass.wish_solution_is_acceptable(1 - reference, reference, distances, wishes)
+        assert not kompass.wish_solution_is_acceptable(np.array([0, 0, 0, 1]), reference, distances, wishes)
+
+
 class TestLNS:
     def test_lns_preserves_balance(self):
         import numpy as np

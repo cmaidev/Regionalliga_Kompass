@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 from datetime import datetime, timezone
+from html import escape
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
@@ -12,7 +13,7 @@ import pandas as pd
 import requests
 from lxml import html
 
-from kompass_utils import ensure_parent_dir, haversine_km, normalize_text
+from kompass_utils import ensure_parent_dir, haversine_km, load_verified_stadiums, normalize_text
 
 try:
     import folium
@@ -144,6 +145,9 @@ def load_transitions(path: str, model_name: Optional[str] = None) -> Dict:
         else:
             raw = {}
     out: Dict = {}
+    for key in ("source_season", "target_season", "is_projection", "source_priority", "forced_regionalliga_relegations"):
+        if key in raw:
+            out[key] = raw[key]
     for k in (
         "promoted_to_3liga",
         "relegated_from_regionalliga",
@@ -350,23 +354,8 @@ def save_stadium_cache(path: str, cache: Dict[str, Dict]) -> None:
 
 
 def load_stadium_overrides(path: str) -> Dict[str, Dict]:
-    p = Path(path)
-    if not p.exists():
-        return {}
-    raw = json.loads(p.read_text(encoding="utf-8-sig"))
-    out: Dict[str, Dict] = {}
-    for k, v in raw.items():
-        if isinstance(v, dict) and "lat" in v and "lon" in v:
-            out[normalize_text(k)] = {
-                "lat": float(v["lat"]),
-                "lon": float(v["lon"]),
-                "stadium": normalize_text(v.get("stadium", "")),
-                "address": normalize_text(v.get("address", "")),
-                "source": "override",
-                "source_url": normalize_text(v.get("source_url", "")),
-                "updated_at": normalize_text(v.get("updated_at", "")),
-            }
-    return out
+    from kompass import SEASON
+    return load_verified_stadiums(SEASON, path)
 
 
 def _extract_q_coords(href: str) -> Optional[Tuple[float, float]]:
@@ -644,112 +633,36 @@ def resolve_stadium_from_wikidata(session: requests.Session, team: str) -> Optio
 
 
 def resolve_map_coordinates(df: pd.DataFrame) -> Tuple[pd.DataFrame, Dict[str, int]]:
-    if not USE_STADIUM_COORDS_FOR_MAP:
-        return df.copy(), {"total": len(df), "stadium": 0, "fallback_club": len(df)}
-
-    cache = load_stadium_cache(STADIUM_CACHE_FILE)
-    overrides = load_stadium_overrides(STADIUM_OVERRIDES_FILE)
-    session = requests.Session()
-    session.headers.update({"User-Agent": "KompassRegionalliga/1.0"})
-
-    europlan_index: Dict[str, Dict] = {}
-    if USE_EUROPLAN_STADIUM_SOURCE:
-        try:
-            europlan_index = fetch_europlan_stadium_index(session)
-        except Exception:
-            europlan_index = {}
-
-    stadium_hits = 0
-    rows: List[Dict] = []
+    grounds = load_stadium_overrides(STADIUM_OVERRIDES_FILE)
+    rows = []
     for _, row in df.iterrows():
         team = normalize_text(row["Verein"])
-        coord = None
-        if team in overrides:
-            coord = overrides[team]
-        elif team in cache:
-            coord = cache[team]
-        else:
-            wiki = resolve_stadium_from_wikipedia_infobox(session, team)
-            if wiki:
-                coord = wiki
-                cache[team] = wiki
-            else:
-                wiki_links = resolve_stadium_from_wikipedia_links(session, team)
-                if wiki_links:
-                    coord = wiki_links
-                    cache[team] = wiki_links
-                else:
-                    wd = resolve_stadium_from_wikidata(session, team)
-                    if wd:
-                        coord = wd
-                        cache[team] = wd
-                    elif team in europlan_index:
-                        coord = europlan_index[team]
-                        cache[team] = coord
-
-        out_row = dict(row)
-        if coord:
-            out_row["lat"] = float(coord["lat"])
-            out_row["lon"] = float(coord["lon"])
-            out_row["stadium"] = coord.get("stadium", "")
-            out_row["stadium_address"] = coord.get("address", "")
-            out_row["coord_source"] = coord.get("source", "")
-            stadium_hits += 1
-        else:
-            out_row["stadium"] = ""
-            out_row["stadium_address"] = ""
-            out_row["coord_source"] = "club_fallback"
-        rows.append(out_row)
-
-    save_stadium_cache(STADIUM_CACHE_FILE, cache)
-    out_df = pd.DataFrame(rows)
-    return out_df, {
-        "total": len(out_df),
-        "stadium": stadium_hits,
-        "fallback_club": len(out_df) - stadium_hits,
-        "europlan_index_size": len(europlan_index),
-    }
+        ground = grounds.get(team)
+        if ground is None:
+            raise RuntimeError(f"Missing verified home ground: {team}")
+        if haversine_km(float(row["lat"]), float(row["lon"]), ground["lat"], ground["lon"]) > 0.001:
+            raise RuntimeError(f"Stale CSV coordinates for {team}; run kompass.py before kompass_report.py.")
+        rows.append(dict(row, lat=ground["lat"], lon=ground["lon"],
+                         stadium=ground["stadium"], stadium_address=ground.get("address", ""),
+                         coord_source=ground["source"], stadium_source_url=ground["source_url"],
+                         stadium_venue_source_url=ground["venue_source_url"],
+                         stadium_verified_at=ground["verified_at"],
+                         coordinate_precision=ground.get("coordinate_precision", "")))
+    return pd.DataFrame(rows), {"total": len(rows), "stadium": len(rows), "fallback_club": 0}
 
 
 def resolve_overlay_coords(df: pd.DataFrame, teams: List[str]) -> Tuple[Dict[str, Tuple[float, float]], List[str]]:
-    coords: Dict[str, Tuple[float, float]] = {}
-    missing: List[str] = []
-    by_csv = {
-        normalize_text(row["Verein"]): (float(row["lat"]), float(row["lon"]))
-        for _, row in df.iterrows()
-    }
-    by_cache = load_cache_coords(CACHE_FILE)
-
-    # Fuer Transition-Overlays zuerst aktiv ueber kompass aufloesen
-    # (beruecksichtigt harte Club-Overrides und aktualisiert Cache).
-    try:
-        import kompass
-        for team in teams:
-            t = normalize_text(team)
-            if t in by_csv:
-                continue
-            try:
-                clubs = kompass.build_clubs([t])
-                if clubs:
-                    coords[t] = (float(clubs[0].lat), float(clubs[0].lon))
-            except Exception:
-                continue
-    except Exception:
-        pass
-
+    grounds = load_stadium_overrides(STADIUM_OVERRIDES_FILE)
+    coords = {}
+    missing = []
     for team in teams:
-        t = normalize_text(team)
-        if t in coords:
-            continue
-        if t in by_csv:
-            coords[t] = by_csv[t]
-        elif t in by_cache:
-            coords[t] = by_cache[t]
+        name = normalize_text(team)
+        ground = grounds.get(name)
+        if ground is None:
+            missing.append(name)
         else:
-            missing.append(t)
-
-    unresolved = [t for t in teams if normalize_text(t) not in coords]
-    return coords, unresolved
+            coords[name] = (ground["lat"], ground["lon"])
+    return coords, missing
 
 
 def build_map(
@@ -779,12 +692,18 @@ def build_map(
         color = league_colors.get(color_key, "gray")
         info_value = team_info_lookup.get(team, "")
         stadium = normalize_text(row.get("stadium", ""))
-        source = normalize_text(row.get("coord_source", "club"))
         popup = f"{row['Verein']} ({liga})"
         if info_value and info_value != liga:
             popup += f"<br>{info_label}: {info_value}"
         if stadium:
-            popup += f"<br>Stadion: {stadium}<br>Quelle: {source}"
+            popup += f"<br>Stadion: {escape(stadium)}"
+            for field, label in (("stadium_venue_source_url", "Heimspielstätte"), ("stadium_source_url", "Koordinaten")):
+                if row.get(field):
+                    popup += f'<br><a href="{escape(str(row[field]), quote=True)}" target="_blank" rel="noopener">Quelle: {label}</a>'
+            if row.get("coordinate_precision") == "ground_complex":
+                popup += "<br>Punkt innerhalb der Sportanlage"
+            if row.get("stadium_verified_at"):
+                popup += f'<br>Geprüft: {escape(str(row["stadium_verified_at"]))}'
         folium.CircleMarker(
             location=[float(row["lat"]), float(row["lon"])],
             radius=6,
@@ -905,6 +824,8 @@ def build_map(
     m.get_root().html.add_child(folium.Element(legend_html))
     ensure_parent_dir(out_html)
     m.save(out_html)
+    map_path = Path(out_html)
+    map_path.write_text("\n".join(line.rstrip() for line in map_path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     return unresolved
 
 
@@ -1102,14 +1023,13 @@ def compute_changed_teams(df_left: pd.DataFrame, df_right: pd.DataFrame) -> Dict
 
 
 def write_stadium_snapshot(df_map: pd.DataFrame, out_json: str) -> None:
-    cache = load_stadium_cache(STADIUM_CACHE_FILE)
     overrides = load_stadium_overrides(STADIUM_OVERRIDES_FILE)
 
     teams: List[Dict[str, Any]] = []
     for _, row in df_map.sort_values(["Liga", "Verein"]).iterrows():
         team = normalize_text(row["Verein"])
         source_from_row = normalize_text(row.get("coord_source", ""))
-        source_data = overrides.get(team) or cache.get(team) or {}
+        source_data = overrides.get(team) or {}
         stadium = normalize_text(row.get("stadium", "")) or normalize_text(source_data.get("stadium", ""))
         address = normalize_text(row.get("stadium_address", "")) or normalize_text(source_data.get("address", ""))
         source = source_from_row or normalize_text(source_data.get("source", ""))
@@ -1123,7 +1043,9 @@ def write_stadium_snapshot(df_map: pd.DataFrame, out_json: str) -> None:
                 "address": address,
                 "source": source,
                 "source_url": normalize_text(source_data.get("source_url", "")),
-                "updated_at": normalize_text(source_data.get("updated_at", "")),
+                "venue_source_url": source_data.get("venue_source_url", ""),
+                "verified_season": source_data.get("verified_season", ""),
+                "verified_at": source_data.get("verified_at", ""),
             }
         )
 
@@ -1404,7 +1326,7 @@ def build_chart_groups(rank1_df: pd.DataFrame, variants: List[Dict[str, Any]]) -
     return [
         {"title": "Ø Auswärts-km", "unit": "km", "items": avg_items},
         {"title": "Längste Reise", "unit": "km", "items": longest_items},
-        {"title": "Wunschlisten-Coverage", "unit": "%", "items": coverage_items},
+        {"title": "Anteil der 19 nächsten Gegner", "unit": "%", "items": coverage_items},
     ]
 
 
@@ -1870,7 +1792,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
             <li>Hinzu kommen 4 Absteiger aus der 3. Liga.</li>
             <li>Hinzu kommen 14 Oberliga-Meister.</li>
             <li>2 Zusatzplätze gehen aktuell an Bayern und Nordost.</li>
-            <li>Fortuna Düsseldorf II wird als Sonderfall 2026/27 als Regionalliga-Absteiger behandelt.</li>
+            <li id="forced-relegations" hidden></li>
             <li>Reserve-/U-Teams sind im aktuellen Reformmodus erlaubt.</li>
           </ul>
         </section>
@@ -2244,6 +2166,11 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     (function bootstrap() {
       const subtitle = document.getElementById("subtitle");
       if (subtitle) subtitle.textContent = PAGE_DATA.subtitle || "";
+      const forcedRelegations = document.getElementById("forced-relegations");
+      if (forcedRelegations && PAGE_DATA.forced_relegations_note) {
+        forcedRelegations.textContent = PAGE_DATA.forced_relegations_note;
+        forcedRelegations.hidden = false;
+      }
       const simpleExplanation = document.getElementById("simple-explanation");
       if (simpleExplanation) simpleExplanation.textContent = PAGE_DATA.simple_explanation || "";
       renderModelCards(PAGE_DATA.model_cards || []);
@@ -2313,6 +2240,7 @@ def main() -> None:
     OUTPUT_CSV_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_HTML_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_JSON_DIR.mkdir(parents=True, exist_ok=True)
+    (OUTPUT_HTML_DIR / "kompass_regionalliga_4x20_map_wish_worst.html").unlink(missing_ok=True)
 
     def load_solution_csv(path: Path) -> pd.DataFrame:
         data = pd.read_csv(path)
@@ -2365,13 +2293,29 @@ def main() -> None:
         except Exception:
             worst_data = None
     wish_best_data: Optional[Dict[str, Any]] = None
+    from kompass import (
+        WISH_SA_ENABLED, Club, build_wish_table, compute_distance_matrix_km,
+        wish_solution_is_acceptable,
+    )
     wish_best_csv_path = Path(INPUT_CSV_WISH_BEST)
-    if wish_best_csv_path.exists():
+    if WISH_SA_ENABLED and wish_best_csv_path.exists():
         try:
             df_wish_best = load_solution_csv(wish_best_csv_path)
-            wish_best_data = {"df": df_wish_best, "csv": str(wish_best_csv_path)}
+            if set(df_wish_best["Verein"]) == set(df_rank1["Verein"]):
+                df_wish_best = df_wish_best.set_index("Verein").loc[df_rank1["Verein"]].reset_index()
+                clubs = [Club(row.Verein, row.lat, row.lon) for row in df_rank1.itertuples()]
+                distances = compute_distance_matrix_km(clubs)
+                if wish_solution_is_acceptable(
+                    pd.factorize(df_wish_best["Liga"])[0],
+                    pd.factorize(df_rank1["Liga"])[0],
+                    distances, build_wish_table(distances),
+                ):
+                    wish_best_data = {"df": df_wish_best, "csv": str(wish_best_csv_path)}
         except Exception:
             wish_best_data = None
+    if wish_best_data is None:
+        for path in (MAP_HTML_WISH_BEST, MAP_COMPARE_HTML_WISH):
+            Path(path).unlink(missing_ok=True)
     initial_data: Optional[Dict[str, Any]] = None
     initial_csv_path = Path(INPUT_CSV_INITIAL)
     if initial_csv_path.exists():
@@ -2870,8 +2814,22 @@ def main() -> None:
     except Exception:
         gap_text = "-"
 
+    source_season = transitions.get("source_season", "-")
+    target_season = transitions.get("target_season", "-")
+    season_note = f"Quellsaison {source_season} → Reform {target_season}."
+    if transitions.get("is_projection"):
+        season_note += " Vorläufige Projektion aus laufenden Tabellen; Auf-/Abstiege sind Modellannahmen."
+    forced_teams = [
+        team for teams in transitions.get("forced_regionalliga_relegations", {}).values()
+        for team in teams
+    ]
     page_data = {
-        "subtitle": "Interaktiver Vergleich: Distanz-Optimierung, aktuelle Regionalligen, Regionenmodell, Bayern-Vorrunden-Split und Wunschlisten-Optimierung.",
+        "subtitle": season_note + " Interaktiver Vergleich: Distanz-Optimierung, aktuelle Regionalligen, Regionenmodell und Bayern-Vorrunden-Split."
+        + (" Zusätzlich: Wunschlisten-Optimierung." if wish_best_data is not None else ""),
+        "forced_relegations_note": (
+            f"Sonderfälle der Quellsaison {source_season}: {', '.join(forced_teams)} werden als Regionalliga-Absteiger behandelt."
+            if forced_teams else ""
+        ),
         "simple_explanation": (
             "Die Distanzmatrix-Optimierung sucht die Aufteilung mit den kürzesten Auswärtsfahrten (Rank 1). "
             "Die aktuelle RL-Karte zeigt, welcher bisherigen Regionalliga die Teams nach Auf-/Abstieg zugeordnet sind. "
@@ -2880,8 +2838,6 @@ def main() -> None:
             "Der Bayern-Vorrunden-Split teilt jede der 5 bestehenden "
             "Regionalligen nach der Hinrunde: Top-8 je Liga (40 Teams) bilden 4 geografisch optimierte "
             "Meisterrunden-Staffeln à 10. Die Abstiegsrunde bleibt als Benchmark im Karten-Switch. "
-            "Die Wunschlisten-Optimierung maximiert stattdessen, wie viele der 19 geografisch nächsten "
-            "Nachbarn eines Vereins tatsächlich in derselben Liga landen. "
             "Der Worst-Case bleibt als Benchmark für die schlechtestmögliche Aufteilung verfügbar."
         ),
         "model_explanations": [
@@ -2900,7 +2856,8 @@ def main() -> None:
                 "text": (
                     "Für jeden Verein wird eine Wunschliste der 19 geografisch nächsten Nachbarn gebaut. "
                     "Optimiert wird nicht direkt die Gesamtdistanz, sondern wie viele dieser Wunschgegner "
-                    "in derselben 20er-Staffel landen."
+                    "in derselben 20er-Staffel landen. Die längste Reise und der höchste Vereinsdurchschnitt "
+                    "dürfen die Matrix-Lösung nicht überschreiten."
                 ),
             },
             {
@@ -2908,8 +2865,8 @@ def main() -> None:
                 "target_variant": "current_regionalliga",
                 "text": (
                     "Diese Karte gruppiert den 80er-Reform-Pool nach den bisherigen fünf Regionalligen. "
-                    "Absteiger aus der 3. Liga werden explizit ihrer Ziel-Regionalliga zugeordnet; "
-                    "Fortuna Düsseldorf II wird trotz Tabellenplatz als RL-Absteiger behandelt."
+                    "Absteiger aus der 3. Liga werden ihrer Ziel-Regionalliga zugeordnet. "
+                    "Sonderfälle gelten nur für die jeweilige Quellsaison."
                 ),
             },
             {
@@ -2938,9 +2895,11 @@ def main() -> None:
         "takeaways": build_key_takeaways(variants),
         "meta_cards": [
             {"label": "Letzter Lauf", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
+            {"label": "Quellsaison", "value": source_season},
+            {"label": "Reformsaison", "value": target_season},
             {"label": "Modus", "value": "Reformregel 12+4+14+2"},
             {"label": "Derby-Regel", "value": "Deaktiviert (ENFORCE_DERBY_SAME_LEAGUE = False)"},
-            {"label": "Quellen-Priorität", "value": "FuPa -> Wikipedia"},
+            {"label": "Quellen-Priorität", "value": " -> ".join(transitions.get("source_priority", ["fupa", "wikipedia"]))},
         ],
         "search_cards": [
             {"label": "Multi-Start Läufe", "value": str(requested_runs) if requested_runs is not None else "-"},
@@ -2982,6 +2941,16 @@ def main() -> None:
         ],
         "variants": variants,
     }
+    variant_ids = {variant["id"] for variant in variants}
+    page_data["model_explanations"] = [
+        explanation for explanation in page_data["model_explanations"]
+        if explanation["target_variant"] in variant_ids
+    ]
+    if wish_best_data is None:
+        page_data["search_cards"] = [
+            card for card in page_data["search_cards"]
+            if card["label"] != "Wunschlisten-Best"
+        ]
     create_index_html(page_data, INDEX_HTML)
     docs_count = sync_pages_docs(OUTPUT_HTML_DIR, PAGES_DOCS_DIR)
 
@@ -2990,8 +2959,7 @@ def main() -> None:
     print(
         "Kartenkoordinaten: "
         f"{map_coord_stats['stadium']}/{map_coord_stats['total']} Stadion-Koordinaten, "
-        f"{map_coord_stats['fallback_club']} Club-Fallbacks, "
-        f"Europlan-Index={map_coord_stats.get('europlan_index_size', 0)}"
+        f"{map_coord_stats['fallback_club']} Club-Fallbacks"
     )
     print(f"Map-Koordinaten (Debug): {MAP_COORDS_CSV}")
     print(f"Stadion-Snapshot: {STADIUM_SNAPSHOT_JSON}")

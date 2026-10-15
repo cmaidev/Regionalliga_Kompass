@@ -6,9 +6,28 @@ Kein Netzwerkzugriff, keine externen Abhaengigkeiten (nur stdlib).
 from __future__ import annotations
 
 import math
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
+
+
+STADIUM_OVERRIDES_FILE = Path(__file__).resolve().with_name("stadium_overrides.json")
+
+
+def load_verified_stadiums(season: str, path: str | Path = STADIUM_OVERRIDES_FILE) -> dict[str, dict]:
+    raw = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    verified = {}
+    for team, record in raw.items():
+        if not isinstance(record, dict) or record.get("verified_season") != season:
+            continue
+        if not all(record.get(key) for key in ("stadium", "venue_source_url", "source_url", "coordinate_source", "verified_at")):
+            raise ValueError(f"Incomplete stadium verification: {team}")
+        lat, lon = float(record["lat"]), float(record["lon"])
+        if not (math.isfinite(lat) and math.isfinite(lon) and 47.0 <= lat <= 55.2 and 5.5 <= lon <= 15.5):
+            raise ValueError(f"Invalid stadium coordinates: {team}")
+        verified[normalize_text(team)] = dict(record, lat=lat, lon=lon, source="verified." + record["coordinate_source"])
+    return verified
 
 
 def normalize_text(text: str) -> str:

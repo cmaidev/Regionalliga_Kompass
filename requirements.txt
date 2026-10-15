@@ -4,6 +4,7 @@ numpy
 scikit-learn
 lxml
 folium
+pytest
 # Optional fallback geocoding:
 # geopy
 # Optional exakter Solver (MILP):
