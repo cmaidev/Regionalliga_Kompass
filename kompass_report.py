@@ -14,6 +14,8 @@ import requests
 from lxml import html
 
 from kompass_utils import ensure_parent_dir, haversine_km, load_verified_stadiums, normalize_text
+from kompass_history import build_history_report, export_history_report
+from kompass_weekly import export_weekly_metrics, load_weekly_projections
 
 try:
     import folium
@@ -673,6 +675,7 @@ def build_map(
     variant: str = "std",
     changed_left_label: str = "STD",
     changed_right_label: str = "MATRIX",
+    as_of_note: str = "",
 ) -> List[str]:
     team_color_lookup, team_info_lookup, league_colors, info_label, legend_items = resolve_map_color_mode(
         variant, transitions
@@ -680,6 +683,12 @@ def build_map(
     center_lat = float(df["lat"].mean())
     center_lon = float(df["lon"].mean())
     m = folium.Map(location=[center_lat, center_lon], zoom_start=6, tiles=None)
+    if as_of_note:
+        m.get_root().html.add_child(folium.Element(
+            '<div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000;'
+            'max-width:70%;padding:8px 12px;background:white;border:1px solid #ccc;border-radius:6px;'
+            f'font:13px sans-serif;text-align:center;">{escape(as_of_note)}</div>'
+        ))
     folium.TileLayer(
         tiles="https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
         attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -1410,8 +1419,196 @@ def build_key_takeaways(variants: List[Dict[str, Any]]) -> List[str]:
     return out
 
 
+def render_recalculation_history(report: Dict[str, Any]) -> str:
+    title = '<section class="card" id="projection-history"><h2>Archiv einzelner Berechnungsläufe</h2>'
+    if not report.get("available"):
+        message = (
+            "Für die angezeigte Lösung liegt noch kein passender Verlauf vor."
+            if report.get("reason") == "stale" else
+            "Der erste erfolgreiche Berechnungslauf legt den Ausgangsstand für den Verlauf an."
+        )
+        return title + f"<p>{message} Ab dem nächsten Lauf werden Änderungen verglichen.</p></section>"
+
+    def timestamp(value):
+        return f'<time class="history-time" datetime="{escape(value)}">{escape(value)}</time>'
+
+    def table(headers, rows, date_column=False):
+        head = "".join(f"<th>{escape(header)}</th>" for header in headers)
+        body = "".join(
+            "<tr>" + "".join(
+                f"<td>{timestamp(str(value)) if date_column and index == 0 else escape(str(value))}</td>"
+                for index, value in enumerate(row)
+            ) + "</tr>" for row in rows
+        )
+        return f'<div class="history-scroll"><table class="league-table history-table"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+
+    intro = (
+        f'<p>Kompassmodell (Rank 1), Quellsaison {escape(report["source_season"])} → '
+        f'Reform {escape(report["target_season"])}. Aufzeichnung seit {timestamp(report["baseline_at"])}.</p>'
+    )
+    latest = report.get("latest")
+    if latest is None:
+        return title + intro + (
+            "<p>Erster gespeicherter Lauf: Ausgangsstand festgehalten. "
+            "Wechsel lassen sich ab der nächsten erfolgreichen Neuberechnung zählen; frühere Wochen sind nicht erfasst.</p></section>"
+        )
+    percent = str(latest["switch_percent"]).replace(".", ",") if latest["switch_percent"] is not None else "–"
+    cards = [
+        ("Gespeicherte Läufe", report["snapshot_count"]),
+        ("Wechsel seit letztem Lauf", f'{latest["switch_count"]} / {latest["shared_count"]} ({percent} %)'),
+        ("Wechsel insgesamt", report["switch_total"]),
+        ("Veränderte Aufteilungen", f'{report["allocation_changes"]} / {report["comparison_count"]} Vergleiche'),
+    ]
+    summary = '<div class="meta">' + "".join(
+        f"<div><strong>{escape(label)}</strong>{escape(str(value))}</div>" for label, value in cards
+    ) + "</div>"
+    latest_text = (
+        f'<p>Letzter Vergleich: {timestamp(latest["previous_at"])} → {timestamp(latest["captured_at"])}. '
+        f'Unverändert zugeordnet: {latest["shared_count"] - latest["switch_count"]}; '
+        f'neu im Pool: {len(latest["entered"])}; aus dem Pool: {len(latest["left"])}.</p>'
+    )
+    notes = (
+        "<p>Wechsel zählen nur für Vereine, die in beiden Läufen im Pool stehen. "
+        "Staffeln werden nach größter Mitgliederüberschneidung zugeordnet; reine Umbenennungen zählen nicht als Wechsel. "
+        "Auch bei gleichen Tabellen kann eine andere gefundene Optimierung die Aufteilung ändern.</p>"
+    )
+    moves = table(["Verein", "Vorher", "Nachher"], [
+        [row["team"], row["from_league"], row["to_league"] + (
+            f' (zuvor {row["to_previous_league"]})' if row["to_league"] != row["to_previous_league"] else ""
+        )] for row in latest["switched"]
+    ]) if latest["switched"] else "<p>Keine Staffelwechsel im letzten Vergleich.</p>"
+    for key, label in (("entered", "Neu im Pool"), ("left", "Aus dem Pool")):
+        if latest[key]:
+            moves += f'<p><strong>{label}:</strong> {escape(", ".join(latest[key]))}</p>'
+    leagues = table(["Staffel", "Vergleichsstaffel zuvor", "Zugänge", "Abgänge"], [
+        [row["league"], row["previous_league"], row["added"], row["removed"]]
+        for row in latest["league_changes"]
+    ])
+    comparison_rows = []
+    for row in reversed(report["comparisons"]):
+        status = {True: "Tabellen geändert", False: "Tabellen gleich", None: "Tabellenstand unbekannt"}[row["tables_changed"]]
+        if row["settings_changed"]:
+            status += "; Einstellungen geändert"
+        comparison_rows.append([row["captured_at"], status, row["shared_count"], row["switch_count"],
+                                len(row["entered"]), len(row["left"])])
+    comparisons = table(["Berechnung", "Datenvergleich", "Gemeinsame Vereine", "Wechsel", "Neu", "Raus"],
+                        comparison_rows, date_column=True)
+    teams = table(["Verein", "Staffel aktuell", "Wechsel", "Läufe im Pool", "Pool-Eintritte", "Pool-Austritte"], [
+        [row["team"], row["current_league"], row["switch_count"], row["appearances"], row["entries"], row["exits"]]
+        for row in report["teams"]
+    ])
+    details = "".join(f'<details><summary>{label}</summary>{content}</details>' for label, content in (
+        ("Änderungen beim letzten Lauf", moves + leagues),
+        ("Verlauf der Neuberechnungen", comparisons), ("Wechsel je Verein", teams),
+    ))
+    return title + intro + summary + latest_text + notes + details + "</section>"
+
+
+def render_weekly_history(payload: Dict[str, Any]) -> str:
+    if not payload:
+        return ('<section class="card" id="weekly-history"><h2>Stabilität der Prognose</h2>'
+                '<p>Sobald alle 20 Quellligen gestartet sind, beginnt der Vergleich abgeschlossener Sonntage. '
+                'Der nächste reguläre Berechnungslauf holt fehlende Wochen nach.</p></section>')
+    snapshots, summary = payload["snapshots"], payload["summary"]
+    dates = [snapshot["as_of"] for snapshot in snapshots]
+    latest = summary["latest"]
+    stable = f'{100 - latest["switch_percent"]:.1f} %'.replace(".", ",") if latest and latest["switch_percent"] is not None else "–"
+    metrics = render_stat_cards([
+        ("Zuordnung beibehalten", stable, "der Vereine in beiden Wochen"),
+        ("Staffelwechsel", latest["switch_count"] if latest else "–", f'von {latest["shared_count"]} gemeinsamen Vereinen' if latest else "Erste Woche ist der Ausgangsstand"),
+        ("Neu im Pool", len(latest["entered"]) if latest else "–", "gegenüber dem vorherigen Sonntag"),
+        ("Wochenstände", len(snapshots), f'seit {format_week_date(dates[0])}'),
+    ])
+    rows = []
+    chart = []
+    maximum = max([change["switch_count"] for change in summary["comparisons"]] + [1])
+    for index, snapshot in enumerate(snapshots):
+        change = summary["comparisons"][index - 1] if index else None
+        values = ([change["switch_count"], len(change["entered"]), len(change["left"])] if change else ["–", "–", "–"])
+        cells = "".join(f"<td>{value}</td>" for value in values)
+        rows.append(f'<tr><td><button type="button" class="weekly-date" data-week="{escape(snapshot["as_of"])}">'
+                    f'{format_week_date(snapshot["as_of"])}</button></td>{cells}<td>{snapshot["score_avg_away_km"]:.2f} km</td></tr>')
+        count = change["switch_count"] if change else 0
+        title = f'{format_week_date(snapshot["as_of"])}: {count} Staffelwechsel' if change else "Ausgangsstand"
+        chart.append(f'<button type="button" class="week-bar" data-week="{snapshot["as_of"]}" '
+                     f'aria-label="{title}" title="{title}"><strong>{count if change else "–"}</strong>'
+                     f'<span class="week-bar-track"><span style="height:{max(3, count / maximum * 100):.1f}%"></span></span>'
+                     f'<span>{format_week_date(snapshot["as_of"])[:5]}</span></button>')
+    options = "".join(f'<option value="{value}"{" selected" if value == dates[-1] else ""}>Sonntag, {format_week_date(value)}</option>' for value in dates)
+    leagues = "".join(f'<option value="{escape(table["name"])}">{escape(table["name"])}</option>' for table in snapshots[0]["tables"])
+    team_rows = "".join(f'<tr><td>{escape(row["team"])}</td><td>{row["switch_count"]}</td>'
+                        f'<td>{row["entries"]}</td><td>{row["exits"]}</td></tr>' for row in summary["teams"])
+    return (
+        '<section id="weekly-history"><div class="section-heading"><div><p class="eyebrow">WOCHENVERGLEICH</p>'
+        '<h2>Stabilität der Prognose</h2></div>'
+        f'<span class="status-pill">Bis Sonntag, {format_week_date(dates[-1])}</span></div>'
+        '<p class="section-intro">Verglichen werden rekonstruierte Tabellenstände abgeschlossener Sonntage, jeweils 23:59 Uhr in Berlin. '
+        'Fehlende Wochen werden beim nächsten Lauf nachgeholt – auch wenn du erst unter der Woche startest.</p>'
+        + metrics + '<div class="card"><div class="section-heading"><div><h3>Staffelwechsel im Verlauf</h3>'
+        '<p>Ein Klick auf eine Woche öffnet ihren Stand.</p></div>'
+        f'<span class="status-pill">{summary["switch_total"]} Wechsel insgesamt</span></div>'
+        '<div class="weekly-chart" aria-label="Staffelwechsel pro Woche">' + "".join(chart) + '</div>'
+        '<p class="caption">Gezählt werden Vereine, die in beiden Wochen im Pool sind. Neue und ausgeschiedene Vereine zählen separat.</p>'
+        '<details><summary>Alle Wochen als Tabelle</summary><div class="history-scroll"><table class="league-table history-table"><thead><tr><th>Sonntag</th>'
+        '<th>Staffelwechsel</th><th>Neu im Pool</th><th>Aus dem Pool</th><th>Ø Auswärtsfahrt</th></tr></thead>'
+        '<tbody>' + "".join(rows) + '</tbody></table></div></details></div>'
+        '<section class="card" id="weekly-explorer"><div class="weekly-controls">'
+        '<button type="button" class="step-button" id="weekly-prev" aria-label="Vorheriger Sonntag">Zurück</button>'
+        '<label>Wochenstand <select id="weekly-date">' + options + '</select></label>'
+        '<button type="button" class="step-button" id="weekly-next" aria-label="Nächster Sonntag">Weiter</button></div>'
+        '<p id="weekly-description" aria-live="polite"></p>'
+        '<div class="switch" aria-label="Ansicht der Woche"><button type="button" data-week-panel="map" class="active">Karte</button>'
+        '<button type="button" data-week-panel="source">Quelltabellen</button>'
+        '<button type="button" data-week-panel="assignment">80-Team-Zuordnung</button></div>'
+        '<div data-week-content="map"><p><a id="weekly-map-link" href="#" target="_blank" rel="noopener">Wochenkarte öffnen</a></p>'
+        '<iframe id="weekly-map" class="map-frame" src="" loading="lazy" title="Rekonstruierte Wochenkarte"></iframe></div>'
+        '<div data-week-content="source" hidden><div class="weekly-controls"><label>Quellliga <select id="weekly-league">' + leagues + '</select></label>'
+        '<a id="weekly-source-link" href="#" target="_blank" rel="noopener">FuPa-Ergebnisquelle</a></div>'
+        '<div class="history-scroll table-window"><table class="league-table history-table" id="weekly-source-table"></table></div></div>'
+        '<div data-week-content="assignment" hidden><div class="history-scroll table-window"><table class="league-table history-table" id="weekly-assignment-table"></table></div></div>'
+        '<div class="weekly-changes" id="weekly-changes"></div></section>'
+        '<details class="details-section"><summary>Wechsel je Verein über alle Wochen</summary><div class="details-body history-scroll"><table class="league-table history-table">'
+        '<thead><tr><th>Verein</th><th>Staffelwechsel</th><th>Pool-Eintritte</th><th>Pool-Austritte</th></tr></thead><tbody>'
+        + team_rows + '</tbody></table></div></details>'
+        '<details class="details-section"><summary>Datengrundlage und Vergleichsmethode</summary><div class="details-body">'
+        f'<p>Beginn am {format_week_date(dates[0])}, nachdem alle 20 Quellligen mindestens ein Spiel abgeschlossen hatten. '
+        f'Einheitliches Suchprofil: {payload["search_profile"]["phase1_runs"]} Startläufe je Woche mit gleichen Startwerten.</p>'
+        f'<p>{escape(payload["valuation_note"])}</p>'
+        '<p>Staffeln werden nach größter Mitgliederüberschneidung verglichen. Vollständig gleiche Tabellenwerte '
+        'werden alphabetisch geordnet und markiert. Die Live-Projektion kann ein anderes Suchbudget verwenden.</p>'
+        '</div></details></section>'
+    )
+
+
+def format_week_date(value: str) -> str:
+    return datetime.fromisoformat(value).strftime("%d.%m.%Y")
+
+
+def render_stat_cards(cards) -> str:
+    return '<div class="summary-grid">' + "".join(
+        f'<div class="summary-card"><span>{escape(str(label))}</span><strong>{escape(str(value))}</strong>'
+        f'<small>{escape(str(note))}</small></div>' for label, value, note in cards
+    ) + '</div>'
+
+
+def render_overview(page_data: Dict[str, Any]) -> str:
+    variant = next((value for value in page_data.get("variants", []) if value["id"] == "rank1"), {})
+    weekly = page_data.get("weekly_history", {})
+    latest = weekly.get("summary", {}).get("latest")
+    date_label = format_week_date(weekly["snapshots"][-1]["as_of"]) if weekly else "Noch kein Wochenstand"
+    cards = render_stat_cards([
+        ("Reformmodell", "4 × 20", "Vier Staffeln mit je 20 Vereinen"),
+        ("Ø Auswärtsfahrt", f'{variant["overall_avg_km"]:.1f} km'.replace(".", ",") if variant else "–", "Beste gefundene Live-Aufteilung"),
+        ("Letzter Wochenwechsel", f'{latest["switch_count"]} / {latest["shared_count"]}' if latest else "–", "Staffelwechsel / gemeinsame Vereine"),
+        ("Wochenvergleich bis", date_label, "Berechneter Sonntagsstand"),
+    ])
+    return cards + ('<div class="weekly-callout"><div><strong>Wie stabil bleibt die Aufteilung?</strong>'
+                    '<p>Der Wochenverlauf vergleicht feste Sonntagsstände. Dein Ausführungstag spielt dafür keine Rolle.</p></div>'
+                    '<a class="button-link" href="#weekly">Wochenverlauf ansehen</a></div>')
+
+
 def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
-    payload = json.dumps(page_data, ensure_ascii=False)
+    payload = json.dumps(page_data, ensure_ascii=False).replace("<", "\\u003c")
     html = """<!doctype html>
 <html lang="de">
 <head>
@@ -1420,39 +1617,41 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
   <title>Kompass-Regionalliga 4x20</title>
   <style>
     :root {
-      --bg: #f6f7fb;
+      --bg: #f3f5f4;
       --card: #ffffff;
-      --text: #1c2530;
-      --muted: #536375;
-      --accent: #005ecb;
-      --border: #d9e1eb;
+      --text: #182e30;
+      --muted: #526667;
+      --accent: #146454;
+      --border: #dce5e1;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      background: radial-gradient(circle at 10% 0%, #e9f2ff 0%, var(--bg) 38%);
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.45;
+      line-height: 1.6;
     }
     main {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 24px 16px 36px;
+      padding: 40px 28px 36px;
     }
     h1, h2, h3 {
       margin: 0 0 10px;
       line-height: 1.2;
     }
-    h1 { font-size: clamp(1.7rem, 3.2vw, 2.2rem); }
-    h2 { margin-top: 22px; font-size: 1.25rem; }
+    h1 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.045em; }
+    h2 { font-size: 1.45rem; letter-spacing: -0.025em; }
+    h3 { font-size: 1.05rem; }
     p { margin: 0 0 14px; color: var(--muted); }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 14px;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 16px #182e3004;
     }
     .score-grid {
       display: grid;
@@ -1477,7 +1676,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     .score-card.active,
     .model-item.active {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(0, 94, 203, 0.12);
+      box-shadow: 0 0 0 2px #14645418;
     }
     .score-card h3 {
       font-size: 1rem;
@@ -1503,7 +1702,9 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     }
     .map-frame {
       width: 100%;
-      min-height: 70vh;
+      height: 65vh;
+      min-height: 440px;
+      max-height: 760px;
       border: 1px solid var(--border);
       border-radius: 10px;
       background: #fff;
@@ -1590,12 +1791,12 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     }
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
       gap: 12px;
     }
     .chart-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 12px;
     }
     .chart-row {
@@ -1661,7 +1862,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     }
     .clubs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 12px;
     }
     .details-section {
@@ -1693,7 +1894,7 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     .league-table th,
     .league-table td {
       border-bottom: 1px solid var(--border);
-      padding: 6px 4px;
+      padding: 10px 12px;
       text-align: left;
       color: var(--muted);
       vertical-align: top;
@@ -1706,15 +1907,103 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
     .league-table th:first-child {
       width: 34px;
     }
+    .history-scroll { overflow-x: auto; margin: 10px 0 16px; }
+    .history-table td:first-child,
+    .history-table th:first-child { width: auto; min-width: 170px; }
+    #projection-history details { margin-top: 12px; }
+    #projection-history summary { cursor: pointer; font-weight: 600; }
+    #projection-history .meta { margin-bottom: 14px; }
+    #weekly-history details { margin-top: 12px; }
+    #weekly-history summary { cursor: pointer; font-weight: 600; }
+    #weekly-history .meta { margin-bottom: 14px; }
+    .weekly-controls { display: flex; flex-wrap: wrap; gap: 18px; margin: 14px 0; }
+    .weekly-controls select { display: block; padding: 9px 12px; font: inherit; max-width: 100%; border: 1px solid var(--border); border-radius: 9px; background: white; color: var(--text); }
+    .weekly-date { border: 0; background: none; color: var(--accent); cursor: pointer; font: inherit; padding: 0; }
+    .weekly-picked { background: #edf5f1; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    button, input, select, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid #d28c40; outline-offset: 3px;
+    }
+    button { touch-action: manipulation; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; margin-bottom: 28px; }
+    .page-header #subtitle { max-width: 680px; margin: 12px 0 0; }
+    .eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 10px; }
+    .season-badge { border-left: 3px solid var(--accent); padding: 8px 0 8px 18px; white-space: nowrap; }
+    .season-badge strong { display: block; font-size: 1.15rem; }
+    .season-badge small { color: var(--muted); }
+    .page-nav { position: sticky; top: 10px; z-index: 1001; display: flex; gap: 5px; width: fit-content; max-width: 100%; margin: 0 0 28px; padding: 5px; border: 1px solid var(--border); border-radius: 12px; background: #fffffff5; box-shadow: 0 5px 20px #182e3008; }
+    .page-nav a { padding: 9px 20px; border-radius: 8px; color: var(--muted); font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+    .page-nav a[aria-current="page"] { background: var(--text); color: white; }
+    .page-nav a:hover { text-decoration: none; background: #eaf0ed; }
+    .page-nav a[aria-current="page"]:hover { background: var(--text); }
+    .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .section-heading h2, .section-heading h3, .section-heading p { margin-bottom: 0; }
+    .section-heading .eyebrow { margin-bottom: 6px; }
+    .section-intro { max-width: 800px; margin-bottom: 24px; }
+    .status-pill { display: inline-block; border-radius: 7px; padding: 5px 10px; background: #e8f1ed; color: var(--accent); font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .summary-card { display: flex; flex-direction: column; gap: 9px; background: white; border: 1px solid var(--border); border-radius: 14px; padding: 21px; }
+    .summary-card > span { color: var(--muted); font-size: 0.82rem; font-weight: 600; }
+    .summary-card > strong { font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 1.2; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+    .summary-card > small { color: var(--muted); font-size: 0.76rem; margin-top: auto; }
+    .weekly-callout { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 24px; background: #e8f0ec; border-radius: 14px; margin-bottom: 28px; }
+    .weekly-callout p { margin: 3px 0 0; font-size: 0.88rem; }
+    .button-link, .step-button { display: inline-block; padding: 9px 14px; border: 1px solid var(--border); border-radius: 9px; background: white; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .button-link:hover, .step-button:hover { background: #f4f8f5; text-decoration: none; }
+    .step-button:disabled { opacity: 0.4; cursor: default; }
+    .caption { font-size: 0.82rem; margin-top: 12px; }
+    .weekly-chart { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; padding: 12px 0; }
+    .week-bar { flex: 1 0 62px; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid transparent; border-radius: 10px; padding: 8px; background: transparent; color: var(--muted); font: inherit; font-size: 0.78rem; cursor: pointer; }
+    .week-bar strong { font-size: 1rem; color: var(--text); }
+    .week-bar:hover, .week-bar[aria-pressed="true"] { border-color: var(--border); background: #eff5f1; }
+    .week-bar-track { height: 110px; width: 28px; display: flex; align-items: end; border-radius: 6px; background: #edf2ef; }
+    .week-bar-track > span { width: 100%; border-radius: 5px; background: #70a695; min-height: 3px; }
+    .week-bar[aria-pressed="true"] .week-bar-track > span { background: var(--accent); }
+    .weekly-controls { align-items: end; gap: 12px; }
+    .weekly-controls label { color: var(--muted); font-size: 0.8rem; font-weight: 600; min-width: 0; }
+    #weekly-source-table td:first-child, #weekly-source-table th:first-child { min-width: 48px; width: 48px; }
+    #weekly-source-table td:nth-child(2) { min-width: 180px; }
+    .table-window { max-height: 560px; }
+    .table-window thead th { position: sticky; top: 0; background: #f4f7f5; z-index: 1; }
+    .weekly-changes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 22px; }
+    .change-list { background: #f5f8f6; border-radius: 10px; padding: 16px; font-size: 0.85rem; }
+    .change-list ul { margin: 8px 0 0; padding-left: 17px; color: var(--muted); }
+    .change-list small { display: block; color: var(--muted); }
+    .details-section { margin-bottom: 20px; }
+    .details-section > summary { padding: 18px 22px; }
+    .details-body { padding: 16px 22px 22px; }
+    details summary { cursor: pointer; font-weight: 600; }
+    .model-intro { margin-bottom: 22px; }
+    .map-heading a { font-size: 0.86rem; white-space: nowrap; }
+    .note { background: transparent; border: 0; padding: 12px 0 0; font-size: 0.76rem; }
+    @media (max-width: 980px) { .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 720px) {
+      main { padding: 24px 14px; }
+      .card { padding: 18px; }
+      .page-header { display: block; }
+      .season-badge { margin-top: 20px; }
+      .page-nav { width: 100%; justify-content: stretch; top: 4px; }
+      .page-nav a { flex: 1; min-width: 0; white-space: normal; text-align: center; padding: 9px 8px; font-size: 0.8rem; }
+      .summary-card { padding: 16px; }
+      .weekly-callout { align-items: flex-start; flex-direction: column; }
+      .section-heading { flex-wrap: wrap; }
+      .weekly-changes { grid-template-columns: 1fr; }
+      .weekly-controls select { font-size: 0.9rem; }
+      .week-bar { flex-basis: 54px; padding: 6px; }
+      .map-frame { height: 58vh; min-height: 380px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
     .repo-link { margin-top: 8px; font-size: 0.95rem; }
     .note {
       margin-top: 18px;
-      padding: 12px;
-      border: 1px solid var(--border);
+      padding: 12px 0 0;
+      border: 0;
       border-radius: 10px;
-      background: #fff;
+      background: transparent;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.76rem;
     }
     a {
       color: var(--accent);
@@ -1739,30 +2028,24 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 </head>
 <body>
   <main>
-    <h1>Kompass-Regionalliga 4x20</h1>
-    <p id="subtitle"></p>
-    <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
-
-    <section>
-      <h2>Modellvergleich</h2>
-      <div class="score-grid" id="model-score-grid"></div>
-    </section>
-
-    <section class="card">
-      <h2>Modell-Erklärungen</h2>
-      <div class="model-grid" id="model-explanations"></div>
-    </section>
-
-    <section class="card takeaways">
-      <h2>Key Takeaways</h2>
-      <ul id="takeaways-list"></ul>
-    </section>
-
+    <header class="page-header"><div>
+      <p class="eyebrow">4 STAFFELN · 80 VEREINE</p>
+      <h1>Regionalliga-Kompass</h1>
+      <p id="subtitle"></p>
+    </div><div class="season-badge">__SEASON_BADGE__</div></header>
+    <nav class="page-nav" aria-label="Bereiche">
+      <a href="#overview" data-view-link="overview" aria-current="page">Übersicht</a>
+      <a href="#weekly" data-view-link="weekly">Wochenverlauf</a>
+      <a href="#models" data-view-link="models">Modelle &amp; Details</a>
+    </nav>
+    <noscript><p>Bitte JavaScript aktivieren, um Karten und Tabellen auszuwählen.</p></noscript>
+    <section id="overview" data-view-panel aria-label="Übersicht">
+    __OVERVIEW__
     <section class="card" id="map-section">
-      <h2>Karte</h2>
+      <div class="section-heading map-heading"><div><p class="eyebrow">AKTUELLE LIVE-PROJEKTION</p>
+      <h2>Die Aufteilung auf der Karte</h2></div><a id="map-link" href="#" target="_blank" rel="noopener">Karte separat öffnen</a></div>
       <div class="switch" id="variant-switch"></div>
       <p id="variant-note"></p>
-      <p>Direktlink: <a id="map-link" href="#">Karte öffnen</a></p>
       <iframe id="map-frame" class="map-frame" src="" title="Kompass-Regionalliga Karte"></iframe>
     </section>
 
@@ -1770,15 +2053,41 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       <h2>Vereinssuche</h2>
       <div class="club-search">
         <div>
-          <input id="club-search-input" list="club-options" type="search" placeholder="Verein suchen">
+          <label for="club-search-input" class="eyebrow">VEREIN FINDEN</label>
+          <input id="club-search-input" list="club-options" type="search" placeholder="Zum Beispiel: SV Meppen">
           <datalist id="club-options"></datalist>
         </div>
         <div class="club-result" id="club-result">Verein eingeben, um Modellzuordnung und Wege zu sehen.</div>
       </div>
     </section>
 
+    <details class="details-section" id="clubs-section">
+      <summary>Alle Vereine nach Staffel</summary>
+      <div class="details-body"><div class="clubs-grid" id="clubs-grid"></div></div>
+    </details>
+    </section>
+
+    <section id="weekly" data-view-panel aria-label="Wochenverlauf" hidden>
+      __WEEKLY_HISTORY__
+    </section>
+
+    <section id="models" data-view-panel aria-label="Modelle und Details" hidden>
+    <div class="model-intro"><p class="eyebrow">ALTERNATIVEN VERGLEICHEN</p><h2>Modelle &amp; Details</h2>
+      <p>Wähle ein Modell, um seine Karte zu öffnen. Datengrundlage und Suchparameter stehen weiter unten.</p></div>
+    <section class="card">
+      <h2>Modellvergleich</h2>
+      <div class="score-grid" id="model-score-grid"></div>
+    </section>
+    <section class="card">
+      <h2>So funktionieren die Modelle</h2>
+      <div class="model-grid" id="model-explanations"></div>
+    </section>
+    <section class="card takeaways">
+      <h2>Was die Ergebnisse zeigen</h2>
+      <ul id="takeaways-list"></ul>
+    </section>
     <details class="details-section">
-      <summary>Analyse-Details</summary>
+      <summary>Daten, Regeln und Analyse</summary>
       <div class="details-body">
         <section>
           <h2>Datenstand</h2>
@@ -1836,13 +2145,15 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       </div>
     </details>
 
-    <details class="details-section" id="clubs-section">
-      <summary>Vereinsliste</summary>
-      <div class="details-body">
-        <div class="clubs-grid" id="clubs-grid"></div>
+    <details class="details-section">
+      <summary>Archiv einzelner Berechnungsläufe</summary>
+      <div class="details-body"><p>Dieses Archiv dokumentiert persönliche Neuberechnungen. Die Stabilitätskennzahlen im Wochenverlauf beziehen sich auf feste Sonntagsstände.</p>
+        __RECALCULATION_HISTORY__
       </div>
     </details>
+    </section>
 
+    <p class="repo-link"><a id="repo-link" href="#" hidden>Zum GitHub-Repository</a></p>
     <p class="note">
       Dieses Projekt wurde mit Hilfe von <strong>GPT-5.3-Codex</strong> erstellt und weiterentwickelt.
     </p>
@@ -1850,6 +2161,24 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 
   <script>
     const PAGE_DATA = __PAGE_DATA__;
+
+    function showView(id) {
+      const name = ["overview", "weekly", "models"].includes(id) ? id : "overview";
+      document.querySelectorAll("[data-view-panel]").forEach(panel => { panel.hidden = panel.id !== name; });
+      document.querySelectorAll("[data-view-link]").forEach(link => {
+        if (link.dataset.viewLink === name) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    }
+
+    function setupViews() {
+      const update = () => {
+        showView(window.location.hash.slice(1));
+        window.scrollTo(0, 0);
+      };
+      window.addEventListener("hashchange", update);
+      update();
+    }
 
     function esc(value) {
       return String(value ?? "")
@@ -1971,6 +2300,8 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 
     function navigateToVariant(id, scrollToMap) {
       if (!id || !findVariant(id)) return;
+      showView("overview");
+      window.history.replaceState(null, "", "#overview");
       activeId = id;
       renderSwitch();
       renderModelCards(PAGE_DATA.model_cards || []);
@@ -2163,7 +2494,84 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
       });
     }
 
+    function setupWeeklyHistory() {
+      const history = PAGE_DATA.weekly_history;
+      const dateSelect = document.getElementById("weekly-date");
+      const leagueSelect = document.getElementById("weekly-league");
+      if (!history || !dateSelect || !leagueSelect) return;
+      const previousButton = document.getElementById("weekly-prev");
+      const nextButton = document.getElementById("weekly-next");
+      const dateLabel = value => value.split("-").reverse().join(".");
+      const table = (headers, rows) => '<thead><tr>' + headers.map(h => `<th>${esc(h)}</th>`).join("") +
+        '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map(value => `<td>${esc(value)}</td>`).join("") + '</tr>').join("") + '</tbody>';
+      function render() {
+        const index = history.snapshots.findIndex(week => week.as_of === dateSelect.value);
+        const week = history.snapshots[index];
+        if (!week) return;
+        const source = week.tables.find(league => league.name === leagueSelect.value) || week.tables[0];
+        const change = index > 0 ? history.summary.comparisons[index - 1] : null;
+        const selected = new Set(week.teams);
+        document.getElementById("weekly-description").textContent = `Sonntag, ${dateLabel(week.as_of)}, 23:59 Uhr. ` +
+          (change ? `Vergleich mit ${dateLabel(history.snapshots[index - 1].as_of)}: ${change.switch_count} Staffelwechsel bei ${change.shared_count} gemeinsamen Vereinen.` : "Erster Wochenstand – Ausgangspunkt für den Vergleich.") +
+          (week.selection_ties.length ? " Gleichstand an einer Auswahlgrenze; alphabetische Zuordnung verwendet." : "");
+        previousButton.disabled = index === 0;
+        nextButton.disabled = index === history.snapshots.length - 1;
+        document.querySelectorAll("button[data-week]").forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.week === week.as_of));
+        });
+        document.getElementById("weekly-map-link").href = week.map_href;
+        document.getElementById("weekly-source-link").href = source.source_url;
+        const frame = document.getElementById("weekly-map");
+        if (frame.getAttribute("src") !== week.map_href) frame.src = week.map_href;
+        document.getElementById("weekly-source-table").innerHTML = table(
+          ["Platz", "Verein", "Spiele", "Tore", "Diff.", "Punkte", "Im Pool", "Gleichstand"],
+          source.rows.map(row => [row.rank, row.team, row.games, `${row.goals_for}:${row.goals_against}`,
+            row.goal_difference, row.points, selected.has(row.team) ? "Ja" : "", row.ranking_tie.length ? "Ja" : ""]));
+        document.getElementById("weekly-assignment-table").innerHTML = table(["Verein", "Staffel"],
+          Object.entries(week.assignments).sort((a, b) => a[0].localeCompare(b[0], "de")).map(([team, league]) => [team, league]));
+        const list = (title, items, empty) => '<div class="change-list"><h3>' + esc(title) + '</h3>' +
+          (items.length ? '<ul>' + items.map(value => '<li>' + esc(value) + '</li>').join("") + '</ul>' : '<small>' + esc(empty) + '</small>') + '</div>';
+        document.getElementById("weekly-changes").innerHTML = change ?
+          list(`${change.switch_count} Staffelwechsel`, change.switched.map(row => `${row.team}: ${row.from_league} → ${row.to_league}`), "Keine Staffelwechsel.") +
+          list(`${change.entered.length} neu im Pool`, change.entered, "Keine neuen Vereine.") +
+          list(`${change.left.length} aus dem Pool`, change.left, "Keine ausgeschiedenen Vereine.") :
+          '<p class="caption">Der Ausgangsstand hat noch keinen Wochenvergleich.</p>';
+      }
+      dateSelect.addEventListener("change", render);
+      leagueSelect.addEventListener("change", render);
+      document.querySelectorAll("button[data-week]").forEach(button => button.addEventListener("click", () => {
+        dateSelect.value = button.dataset.week;
+        render();
+        document.getElementById("weekly-explorer").scrollIntoView({behavior: "smooth", block: "start"});
+      }));
+      previousButton.addEventListener("click", () => {
+        const index = history.snapshots.findIndex(week => week.as_of === dateSelect.value);
+        if (index > 0) { dateSelect.value = history.snapshots[index - 1].as_of; render(); }
+      });
+      nextButton.addEventListener("click", () => {
+        const index = history.snapshots.findIndex(week => week.as_of === dateSelect.value);
+        if (index < history.snapshots.length - 1) { dateSelect.value = history.snapshots[index + 1].as_of; render(); }
+      });
+      document.querySelectorAll("[data-week-panel]").forEach(button => button.addEventListener("click", () => {
+        document.querySelectorAll("[data-week-content]").forEach(panel => { panel.hidden = panel.dataset.weekContent !== button.dataset.weekPanel; });
+        document.querySelectorAll("[data-week-panel]").forEach(item => {
+          const selected = item === button;
+          item.classList.toggle("active", selected);
+          item.setAttribute("aria-pressed", String(selected));
+        });
+      }));
+      render();
+    }
+
     (function bootstrap() {
+      setupViews();
+      setupWeeklyHistory();
+      document.querySelectorAll(".history-time").forEach(el => {
+        const date = new Date(el.dateTime);
+        if (Number.isFinite(date.getTime())) {
+          el.textContent = date.toLocaleString("de-DE", { timeZone: "Europe/Berlin", dateStyle: "short", timeStyle: "short" });
+        }
+      });
       const subtitle = document.getElementById("subtitle");
       if (subtitle) subtitle.textContent = PAGE_DATA.subtitle || "";
       const forcedRelegations = document.getElementById("forced-relegations");
@@ -2196,6 +2604,11 @@ def create_index_html(page_data: Dict[str, Any], out_html: str) -> None:
 </body>
 </html>"""
     ensure_parent_dir(out_html)
+    html = html.replace("__OVERVIEW__", render_overview(page_data))
+    html = html.replace("__SEASON_BADGE__", f'<small>Reformsaison</small><strong>{escape(page_data.get("target_season", "–"))}</strong>'
+                        f'<small>Quellsaison {escape(page_data.get("source_season", "–"))}</small>')
+    html = html.replace("__RECALCULATION_HISTORY__", render_recalculation_history(page_data.get("recalculation_history", {})))
+    html = html.replace("__WEEKLY_HISTORY__", render_weekly_history(page_data.get("weekly_history", {})))
     Path(out_html).write_text(html.replace("__PAGE_DATA__", payload), encoding="utf-8")
 
 
@@ -2816,6 +3229,32 @@ def main() -> None:
 
     source_season = transitions.get("source_season", "-")
     target_season = transitions.get("target_season", "-")
+    history_report = build_history_report(
+        source_season, target_season,
+        dict(zip(df_rank1["Verein"], df_rank1["Liga"])), ranked_payload.get("generated_at"),
+    ) if source_season != "-" and target_season != "-" else {"available": False}
+    export_history_report(history_report, OUTPUT_JSON_DIR / "recalculation_changes.json",
+                          OUTPUT_CSV_DIR / "kompass_recalculation_changes_per_club.csv")
+    weekly_history = load_weekly_projections(source_season, target_season) if source_season != "-" and target_season != "-" else {}
+    if weekly_history:
+        grounds = load_verified_stadiums(source_season)
+        for index, week in enumerate(weekly_history["snapshots"]):
+            frame = pd.DataFrame([{"Verein": team, "Liga": league,
+                                   "lat": grounds[team]["lat"], "lon": grounds[team]["lon"]}
+                                  for team, league in week["assignments"].items()])
+            mapped, _ = resolve_map_coordinates(frame)
+            filename = f'kompass_weekly_{week["as_of"].replace("-", "_")}.html'
+            comparison = weekly_history["summary"]["comparisons"][index - 1] if index else {}
+            changes = {row["team"]: (row["from_league"], row["to_league"])
+                       for row in comparison.get("switched", [])}
+            unresolved = build_map(mapped, str(OUTPUT_HTML_DIR / filename), week.get("transitions", {}),
+                                   changed_teams=changes, variant="matrix", changed_left_label="Vorwoche",
+                                   changed_right_label=week["as_of"],
+                                   as_of_note=f'Rekonstruierte Projektion zum {week["as_of"]} – heutiger Spielwertungsstand')
+            if unresolved:
+                raise RuntimeError("Missing weekly map coordinates: " + ", ".join(unresolved))
+            week["map_href"] = filename
+        export_weekly_metrics(weekly_history)
     season_note = f"Quellsaison {source_season} → Reform {target_season}."
     if transitions.get("is_projection"):
         season_note += " Vorläufige Projektion aus laufenden Tabellen; Auf-/Abstiege sind Modellannahmen."
@@ -2824,8 +3263,12 @@ def main() -> None:
         for team in teams
     ]
     page_data = {
-        "subtitle": season_note + " Interaktiver Vergleich: Distanz-Optimierung, aktuelle Regionalligen, Regionenmodell und Bayern-Vorrunden-Split."
-        + (" Zusätzlich: Wunschlisten-Optimierung." if wish_best_data is not None else ""),
+        "source_season": source_season,
+        "target_season": target_season,
+        "recalculation_history": history_report,
+        "weekly_history": weekly_history,
+        "subtitle": "Geografisch optimierte Staffeln, kurze Auswärtswege und ein fester Wochenvergleich. "
+        + ("Vorläufige Projektion aus den laufenden Tabellen." if transitions.get("is_projection") else season_note),
         "forced_relegations_note": (
             f"Sonderfälle der Quellsaison {source_season}: {', '.join(forced_teams)} werden als Regionalliga-Absteiger behandelt."
             if forced_teams else ""

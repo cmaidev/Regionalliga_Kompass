@@ -1,0 +1,4707 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_90ee71c37f75181b02e3f4f6b75a60ed {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-dvf/0.3.0/leaflet-dvf.markers.min.js"></script>
+</head>
+<body>
+
+    <div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1000;max-width:70%;padding:8px 12px;background:white;border:1px solid #ccc;border-radius:6px;font:13px sans-serif;text-align:center;">Rekonstruierte Projektion zum 2026-08-30 – heutiger Spielwertungsstand</div>
+
+    <div style="
+      position: fixed;
+      bottom: 20px; left: 20px; z-index: 9999;
+      max-width: 260px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #d9e1eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.35;">
+      <b>Farben: Liga</b><br>
+      <span style="color:#2563eb;">●</span> Nord<br><span style="color:#dc2626;">●</span> West<br><span style="color:#16a34a;">●</span> Ost<br><span style="color:#f59e0b;">●</span> Süd / Südwest<br>
+      <hr style="border:0;border-top:1px solid #d9e1eb;margin:8px 0;">
+      <span style="color:gray;">◯</span> Absteiger RL<br>
+      <span style="color:#ffd700;">▲</span> Aufsteiger in 3. Liga<br>
+      <span style="color:#2f2f2f;">□</span> Absteiger aus 3. Liga (nur Form)<br>
+      <span style="color:#2f2f2f;">⬟</span> Aufsteiger aus Oberliga (nur Form)<br>
+      <span style="color:#111;">◯</span> Unterschied STD/MATRIX
+    </div>
+
+
+            <div class="folium-map" id="map_90ee71c37f75181b02e3f4f6b75a60ed" ></div>
+
+</body>
+<script>
+
+
+            var map_90ee71c37f75181b02e3f4f6b75a60ed = L.map(
+                "map_90ee71c37f75181b02e3f4f6b75a60ed",
+                {
+                    center: [51.04555364853125, 9.803388015312501],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+
+
+
+
+            var tile_layer_44e6087f5c6bf0ca2e1b6aa0094f0b9c = L.tileLayer(
+                "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+
+
+            tile_layer_44e6087f5c6bf0ca2e1b6aa0094f0b9c.addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+            var circle_marker_06636c317b7446e9adb550387a7471e7 = L.circleMarker(
+                [51.85734, 6.609713],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_442b3d0ebd862213841d32e482c1ad9e = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_7ec762367f4743e96bc9e87e3abca430 = $(`<div id="html_7ec762367f4743e96bc9e87e3abca430" style="width: 100.0%; height: 100.0%;">1. FC Bocholt (West)<br>Stadion: Stadion am Hünting<br><a href="https://www.fupa.net/match/1-fc-bocholt-m1-sportfreunde-lotte-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_am_Hünting" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_442b3d0ebd862213841d32e482c1ad9e.setContent(html_7ec762367f4743e96bc9e87e3abca430);
+
+
+
+        circle_marker_06636c317b7446e9adb550387a7471e7.bindPopup(popup_442b3d0ebd862213841d32e482c1ad9e)
+        ;
+
+
+
+
+            circle_marker_06636c317b7446e9adb550387a7471e7.bindTooltip(
+                `<div>
+                     1. FC Bocholt | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_90eae58efeb26a0a16d6d413ce154ffe = L.circleMarker(
+                [50.90833333, 6.90555556],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_c6902f5914bb55bd782d1fb0a28677d9 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_fcca0f6859635e0d997546438a5efa8d = $(`<div id="html_fcca0f6859635e0d997546438a5efa8d" style="width: 100.0%; height: 100.0%;">1. FC Köln II (West)<br>Stadion: Franz-Kremer-Stadion<br><a href="https://www.fupa.net/match/1-fc-koeln-m2-borussia-moenchengladbach-m2-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/RheinEnergieSportpark" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_c6902f5914bb55bd782d1fb0a28677d9.setContent(html_fcca0f6859635e0d997546438a5efa8d);
+
+
+
+        circle_marker_90eae58efeb26a0a16d6d413ce154ffe.bindPopup(popup_c6902f5914bb55bd782d1fb0a28677d9)
+        ;
+
+
+
+
+            circle_marker_90eae58efeb26a0a16d6d413ce154ffe.bindTooltip(
+                `<div>
+                     1. FC Köln II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_75fe29df37ea3f7be7b39a6c1266544d = L.circleMarker(
+                [51.30290278, 12.41924167],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8e94ac964feede502ed2370ff34c3acb = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_3304de459776f5d38c2bfa63c05eae9b = $(`<div id="html_3304de459776f5d38c2bfa63c05eae9b" style="width: 100.0%; height: 100.0%;">1. FC Lokomotive Leipzig (Ost)<br>Stadion: Bruno-Plache-Stadion<br><a href="https://www.fupa.net/match/1-fc-lokomotive-leipzig-m1-bsg-chemie-leipzig-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Bruno-Plache-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_8e94ac964feede502ed2370ff34c3acb.setContent(html_3304de459776f5d38c2bfa63c05eae9b);
+
+
+
+        circle_marker_75fe29df37ea3f7be7b39a6c1266544d.bindPopup(popup_8e94ac964feede502ed2370ff34c3acb)
+        ;
+
+
+
+
+            circle_marker_75fe29df37ea3f7be7b39a6c1266544d.bindTooltip(
+                `<div>
+                     1. FC Lokomotive Leipzig | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_7c2fc794e43d7937f2a1ddde53b667ab = L.circleMarker(
+                [52.1251, 11.67079],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_2a6b91b8126f0fb9cfa304a750e03995 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_156a153410e7a49dbf456037fb68d6d0 = $(`<div id="html_156a153410e7a49dbf456037fb68d6d0" style="width: 100.0%; height: 100.0%;">1. FC Magdeburg II (Ost)<br>Stadion: Avnet Arena<br><a href="https://1.fc-magdeburg.de/news/u23" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Avnet_Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_2a6b91b8126f0fb9cfa304a750e03995.setContent(html_156a153410e7a49dbf456037fb68d6d0);
+
+
+
+        circle_marker_7c2fc794e43d7937f2a1ddde53b667ab.bindPopup(popup_2a6b91b8126f0fb9cfa304a750e03995)
+        ;
+
+
+
+
+            circle_marker_7c2fc794e43d7937f2a1ddde53b667ab.bindTooltip(
+                `<div>
+                     1. FC Magdeburg II | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_1c8a800770386b51cbfc8403ff70f9a2 = L.circleMarker(
+                [53.85827778, 10.68133333],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4ffc1c828847d8fb9688985e3f8e38a7 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_0c55ed425edb04c58c0263f745b82474 = $(`<div id="html_0c55ed425edb04c58c0263f745b82474" style="width: 100.0%; height: 100.0%;">1. FC Phönix Lübeck (Nord)<br>Stadion: Buniamshof<br><a href="https://www.fussball.de/mannschaft/1fc-phoenix-luebeck-1-fc-phoenix-luebeck-schleswig-holstein/-/saison/2627/team-id/011MIETO5K000000VTVG0001VTR8C1K7" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Buniamshof" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_4ffc1c828847d8fb9688985e3f8e38a7.setContent(html_0c55ed425edb04c58c0263f745b82474);
+
+
+
+        circle_marker_1c8a800770386b51cbfc8403ff70f9a2.bindPopup(popup_4ffc1c828847d8fb9688985e3f8e38a7)
+        ;
+
+
+
+
+            circle_marker_1c8a800770386b51cbfc8403ff70f9a2.bindTooltip(
+                `<div>
+                     1. FC Phönix Lübeck | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_5a16d823133c51691a77065bf761fb90 = L.circleMarker(
+                [50.05133, 10.202978],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_28344c438b549bd2f7d62e38037101a0 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_d4c49bee9653cf4ff606f6dcdbf191f2 = $(`<div id="html_d4c49bee9653cf4ff606f6dcdbf191f2" style="width: 100.0%; height: 100.0%;">1. FC Schweinfurt 05 (Ost)<br>Stadion: Sachs-Stadion<br><a href="https://www.fupa.net/match/1-fc-schweinfurt-05-m1-spvgg-ansbach-m1-261013/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Sachs-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_28344c438b549bd2f7d62e38037101a0.setContent(html_d4c49bee9653cf4ff606f6dcdbf191f2);
+
+
+
+        circle_marker_5a16d823133c51691a77065bf761fb90.bindPopup(popup_28344c438b549bd2f7d62e38037101a0)
+        ;
+
+
+
+
+            circle_marker_5a16d823133c51691a77065bf761fb90.bindTooltip(
+                `<div>
+                     1. FC Schweinfurt 05 | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_ee7c47f4089f83a731c2653f4a977e08 = L.circleMarker(
+                [49.2330876, 12.6778489],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_358ed9c15346da22ff1b37742cc836a8 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_750ce784b7b6bcb931a67c69c717f6b7 = $(`<div id="html_750ce784b7b6bcb931a67c69c717f6b7" style="width: 100.0%; height: 100.0%;">ASV Cham (Süd)<br>Stadion: Kappenberger Sportzentrum im Quader<br><a href="https://www.asv-cham.de/sportstaetten-vereinsheim/" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/483294346" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_358ed9c15346da22ff1b37742cc836a8.setContent(html_750ce784b7b6bcb931a67c69c717f6b7);
+
+
+
+        circle_marker_ee7c47f4089f83a731c2653f4a977e08.bindPopup(popup_358ed9c15346da22ff1b37742cc836a8)
+        ;
+
+
+
+
+            circle_marker_ee7c47f4089f83a731c2653f4a977e08.bindTooltip(
+                `<div>
+                     ASV Cham | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_91cdc9c7c43bd46fac2159d2b2a13170 = L.circleMarker(
+                [52.54, 13.4764],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_14f821dcacbdfed706506e73272decd2 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_805df8f43c5b8b4e8f73c8ad496ada47 = $(`<div id="html_805df8f43c5b8b4e8f73c8ad496ada47" style="width: 100.0%; height: 100.0%;">BFC Dynamo (Ost)<br>Stadion: Stadion im Sportforum<br><a href="https://www.fupa.net/match/bfc-dynamo-m1-chemnitzer-fc-m1-261018/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.wikidata.org/wiki/Q551837" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_14f821dcacbdfed706506e73272decd2.setContent(html_805df8f43c5b8b4e8f73c8ad496ada47);
+
+
+
+        circle_marker_91cdc9c7c43bd46fac2159d2b2a13170.bindPopup(popup_14f821dcacbdfed706506e73272decd2)
+        ;
+
+
+
+
+            circle_marker_91cdc9c7c43bd46fac2159d2b2a13170.bindTooltip(
+                `<div>
+                     BFC Dynamo | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_647327599e3a5ff40d720987c0b88ee6 = L.circleMarker(
+                [52.53, 13.35944444],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_de647439857dd3b0dd78abc3ed61bbc4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_bb4299faa364126d3896d47ca8f2dee5 = $(`<div id="html_bb4299faa364126d3896d47ca8f2dee5" style="width: 100.0%; height: 100.0%;">Berliner AK (Ost)<br>Stadion: Poststadion<br><a href="https://www.bak07.de/stadion/" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Poststadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_de647439857dd3b0dd78abc3ed61bbc4.setContent(html_bb4299faa364126d3896d47ca8f2dee5);
+
+
+
+        circle_marker_647327599e3a5ff40d720987c0b88ee6.bindPopup(popup_de647439857dd3b0dd78abc3ed61bbc4)
+        ;
+
+
+
+
+            circle_marker_647327599e3a5ff40d720987c0b88ee6.bindTooltip(
+                `<div>
+                     Berliner AK | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d38158b14775a30fee57abc9251ec477 = L.circleMarker(
+                [53.188195, 8.583559],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_db9ddbfa187787c66d8b1f7e0a1f0d7e = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_a3f48efca64859082d73b919a2b43432 = $(`<div id="html_a3f48efca64859082d73b919a2b43432" style="width: 100.0%; height: 100.0%;">Blumenthaler SV (Nord)<br>Stadion: Burgwall-Stadion<br><a href="https://www.fupa.net/club/blumenthaler-sv" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Burgwall-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_db9ddbfa187787c66d8b1f7e0a1f0d7e.setContent(html_a3f48efca64859082d73b919a2b43432);
+
+
+
+        circle_marker_d38158b14775a30fee57abc9251ec477.bindPopup(popup_db9ddbfa187787c66d8b1f7e0a1f0d7e)
+        ;
+
+
+
+
+            circle_marker_d38158b14775a30fee57abc9251ec477.bindTooltip(
+                `<div>
+                     Blumenthaler SV | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c0ef1d569a21b1e6a48ea02735e79e93 = L.circleMarker(
+                [51.4925, 7.45444444],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_c574df91369aa4c9d3fb5ebf14a7b30f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_5801b6faac4ea3615529b717a4d9152f = $(`<div id="html_5801b6faac4ea3615529b717a4d9152f" style="width: 100.0%; height: 100.0%;">Borussia Dortmund II (West)<br>Stadion: Stadion Rote Erde<br><a href="https://www.fupa.net/match/borussia-dortmund-m2-sg-wattenscheid-09-m1-261010/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_Rote_Erde" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_c574df91369aa4c9d3fb5ebf14a7b30f.setContent(html_5801b6faac4ea3615529b717a4d9152f);
+
+
+
+        circle_marker_c0ef1d569a21b1e6a48ea02735e79e93.bindPopup(popup_c574df91369aa4c9d3fb5ebf14a7b30f)
+        ;
+
+
+
+
+            circle_marker_c0ef1d569a21b1e6a48ea02735e79e93.bindTooltip(
+                `<div>
+                     Borussia Dortmund II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_7a2d8fa60533928fb18310db10661fd8 = L.circleMarker(
+                [51.176594, 6.449062],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_469f4c63dd17c64ea4a0b89784d07287 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9e419862d913d83880819cc843717398 = $(`<div id="html_9e419862d913d83880819cc843717398" style="width: 100.0%; height: 100.0%;">Borussia Mönchengladbach II (West)<br>Stadion: Grenzlandstadion<br><a href="https://www.fupa.net/match/borussia-moenchengladbach-m2-sv-bergisch-gladbach-09-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Grenzlandstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_469f4c63dd17c64ea4a0b89784d07287.setContent(html_9e419862d913d83880819cc843717398);
+
+
+
+        circle_marker_7a2d8fa60533928fb18310db10661fd8.bindPopup(popup_469f4c63dd17c64ea4a0b89784d07287)
+        ;
+
+
+
+
+            circle_marker_7a2d8fa60533928fb18310db10661fd8.bindTooltip(
+                `<div>
+                     Borussia Mönchengladbach II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_3a4f6d415ef1a7668fd0926787fbf3fc = L.circleMarker(
+                [50.84218611, 12.94566944],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_653f90714bbbba7aaa67780cfe995c85 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_05bc24b92d4d5a2a05d3c8cf7f35dd78 = $(`<div id="html_05bc24b92d4d5a2a05d3c8cf7f35dd78" style="width: 100.0%; height: 100.0%;">Chemnitzer FC (Ost)<br>Stadion: eins-Stadion an der Gellertstraße<br><a href="https://www.fupa.net/match/chemnitzer-fc-m1-fc-rot-weiss-erfurt-m1-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_an_der_Gellertstraße" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_653f90714bbbba7aaa67780cfe995c85.setContent(html_05bc24b92d4d5a2a05d3c8cf7f35dd78);
+
+
+
+        circle_marker_3a4f6d415ef1a7668fd0926787fbf3fc.bindPopup(popup_653f90714bbbba7aaa67780cfe995c85)
+        ;
+
+
+
+
+            circle_marker_3a4f6d415ef1a7668fd0926787fbf3fc.bindTooltip(
+                `<div>
+                     Chemnitzer FC | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_f85a7b19d3bfafde9a1907c5c44dbb6d = L.circleMarker(
+                [49.175929, 12.6691265],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_f8a169c5631b357e87de248b73b76e17 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_74ccf15dfa2ee57e1e501dcacfaadd28 = $(`<div id="html_74ccf15dfa2ee57e1e501dcacfaadd28" style="width: 100.0%; height: 100.0%;">DJK Vilzing (Süd)<br>Stadion: Manfred-Zollner-Stadion<br><a href="https://www.fupa.net/match/djk-vilzing-m1-spvgg-unterhaching-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/node/13043406139" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_f8a169c5631b357e87de248b73b76e17.setContent(html_74ccf15dfa2ee57e1e501dcacfaadd28);
+
+
+
+        circle_marker_f85a7b19d3bfafde9a1907c5c44dbb6d.bindPopup(popup_f8a169c5631b357e87de248b73b76e17)
+        ;
+
+
+
+
+            circle_marker_f85a7b19d3bfafde9a1907c5c44dbb6d.bindTooltip(
+                `<div>
+                     DJK Vilzing | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a46d7745f754285c09347702b2345012 = L.circleMarker(
+                [53.5811796, 10.0988441],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3e161ae1bd765de246b629afe8174bed = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_2e45b050e5ac2bdcef39c60a523cbbac = $(`<div id="html_2e45b050e5ac2bdcef39c60a523cbbac" style="width: 100.0%; height: 100.0%;">Eimsbütteler TV (Nord)<br>Stadion: Sportpark Hinschenfelde<br><a href="https://www.fussball.de/mannschaft/eimsbuetteler-tv-eimsbuettel-hamburg/-/saison/2627/team-id/011MIB2PMK000000VTVG0001VTR8C1K7" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/relation/1106317" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_3e161ae1bd765de246b629afe8174bed.setContent(html_2e45b050e5ac2bdcef39c60a523cbbac);
+
+
+
+        circle_marker_a46d7745f754285c09347702b2345012.bindPopup(popup_3e161ae1bd765de246b629afe8174bed)
+        ;
+
+
+
+
+            circle_marker_a46d7745f754285c09347702b2345012.bindTooltip(
+                `<div>
+                     Eimsbütteler TV | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_0481f090ec56b3426528aa54d4e9a462 = L.circleMarker(
+                [50.0062916, 8.6819166],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_da439e1c18f6969e087958751f0b29b1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9faf44cf0096a1b33f8b00c5ea50cefd = $(`<div id="html_9faf44cf0096a1b33f8b00c5ea50cefd" style="width: 100.0%; height: 100.0%;">Eintracht Frankfurt II (West)<br>Stadion: maxworks Sportpark<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/1074210225" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_da439e1c18f6969e087958751f0b29b1.setContent(html_9faf44cf0096a1b33f8b00c5ea50cefd);
+
+
+
+        circle_marker_0481f090ec56b3426528aa54d4e9a462.bindPopup(popup_da439e1c18f6969e087958751f0b29b1)
+        ;
+
+
+
+
+            circle_marker_0481f090ec56b3426528aa54d4e9a462.bindTooltip(
+                `<div>
+                     Eintracht Frankfurt II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_4b4194106fa8dcf0aa24ec432be971bf = L.circleMarker(
+                [53.676986, 9.977053],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_c2ced651943081ce03c2105cf2bc3102 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c0da3ba8e6ca524d339d1b5e0e745b97 = $(`<div id="html_c0da3ba8e6ca524d339d1b5e0e745b97" style="width: 100.0%; height: 100.0%;">Eintracht Norderstedt (Nord)<br>Stadion: Edmund-Plambeck-Stadion<br><a href="https://www.fupa.net/match/fc-eintracht-norderstedt-m1-eimsbuetteler-tv-m1-261018/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Edmund-Plambeck-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_c2ced651943081ce03c2105cf2bc3102.setContent(html_c0da3ba8e6ca524d339d1b5e0e745b97);
+
+
+
+        circle_marker_4b4194106fa8dcf0aa24ec432be971bf.bindPopup(popup_c2ced651943081ce03c2105cf2bc3102)
+        ;
+
+
+
+
+            circle_marker_4b4194106fa8dcf0aa24ec432be971bf.bindTooltip(
+                `<div>
+                     Eintracht Norderstedt | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_4d9ae9dac92bc9c7ac6f6d40378875d1 = L.circleMarker(
+                [49.31611111, 7.355],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_99e5d22a83f35318a449541b97e3cba4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9965cabb9148689c5148e9301522d01d = $(`<div id="html_9965cabb9148689c5148e9301522d01d" style="width: 100.0%; height: 100.0%;">FC 08 Homburg (West)<br>Stadion: Waldstadion Homburg<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Waldstadion_Homburg" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_99e5d22a83f35318a449541b97e3cba4.setContent(html_9965cabb9148689c5148e9301522d01d);
+
+
+
+        circle_marker_4d9ae9dac92bc9c7ac6f6d40378875d1.bindPopup(popup_99e5d22a83f35318a449541b97e3cba4)
+        ;
+
+
+
+
+            circle_marker_4d9ae9dac92bc9c7ac6f6d40378875d1.bindTooltip(
+                `<div>
+                     FC 08 Homburg | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a60944c92bdb200a3fe053fb00479b8d = L.circleMarker(
+                [48.35541667, 10.87611111],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_88e33fca5e67e36d68de97a4f27933f4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_fe740bed8a641bfa8e7ae594dcfe2714 = $(`<div id="html_fe740bed8a641bfa8e7ae594dcfe2714" style="width: 100.0%; height: 100.0%;">FC Augsburg II (Süd)<br>Stadion: Rosenaustadion<br><a href="https://www.fupa.net/match/fc-augsburg-m2-1-fc-schweinfurt-05-m1-261018/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Rosenaustadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_88e33fca5e67e36d68de97a4f27933f4.setContent(html_fe740bed8a641bfa8e7ae594dcfe2714);
+
+
+
+        circle_marker_a60944c92bdb200a3fe053fb00479b8d.bindPopup(popup_88e33fca5e67e36d68de97a4f27933f4)
+        ;
+
+
+
+
+            circle_marker_a60944c92bdb200a3fe053fb00479b8d.bindTooltip(
+                `<div>
+                     FC Augsburg II | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_da4403b96416cc1c74a5c9d3b3394a3f = L.circleMarker(
+                [50.91583333, 11.58277778],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3f261fdf4ea3925dadc6d08ce4288efd = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_3481b4415c0fd132be536b20fa9a70d2 = $(`<div id="html_3481b4415c0fd132be536b20fa9a70d2" style="width: 100.0%; height: 100.0%;">FC Carl Zeiss Jena (Ost)<br>Stadion: ad hoc arena im Ernst-Abbe-Sportfeld<br><a href="https://www.fupa.net/match/fc-carl-zeiss-jena-m1-1-fc-magdeburg-m2-261010/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Ernst-Abbe-Sportfeld" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_3f261fdf4ea3925dadc6d08ce4288efd.setContent(html_3481b4415c0fd132be536b20fa9a70d2);
+
+
+
+        circle_marker_da4403b96416cc1c74a5c9d3b3394a3f.bindPopup(popup_3f261fdf4ea3925dadc6d08ce4288efd)
+        ;
+
+
+
+
+            circle_marker_da4403b96416cc1c74a5c9d3b3394a3f.bindTooltip(
+                `<div>
+                     FC Carl Zeiss Jena | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_b2e92abac1705c9a83f110383da46e42 = L.circleMarker(
+                [50.597755, 12.711264],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5a118d179dc4fbce9c8ea368e6d215d8 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_428746f941c3014b6a3ecf174b7c6e3c = $(`<div id="html_428746f941c3014b6a3ecf174b7c6e3c" style="width: 100.0%; height: 100.0%;">FC Erzgebirge Aue (Ost)<br>Stadion: eins-Erzgebirgsstadion<br><a href="https://www.fupa.net/match/fc-erzgebirge-aue-m1-hallescher-fc-m1-261018/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Erzgebirgsstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_5a118d179dc4fbce9c8ea368e6d215d8.setContent(html_428746f941c3014b6a3ecf174b7c6e3c);
+
+
+
+        circle_marker_b2e92abac1705c9a83f110383da46e42.bindPopup(popup_5a118d179dc4fbce9c8ea368e6d215d8)
+        ;
+
+
+
+
+            circle_marker_b2e92abac1705c9a83f110383da46e42.bindTooltip(
+                `<div>
+                     FC Erzgebirge Aue | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_9538c8568cd6ceaa83e964c8256a1f20 = L.circleMarker(
+                [47.979242, 10.165114],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_2d1172d44e3edd99c441c6f572cb6210 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_cc96af6f72cdccd32d577c6bf6f97359 = $(`<div id="html_cc96af6f72cdccd32d577c6bf6f97359" style="width: 100.0%; height: 100.0%;">FC Memmingen (Süd)<br>Stadion: e-con ArenaPark<br><a href="https://www.fupa.net/match/fc-memmingen-m1-1-fc-nuernberg-m2-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Memminger_Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_2d1172d44e3edd99c441c6f572cb6210.setContent(html_cc96af6f72cdccd32d577c6bf6f97359);
+
+
+
+        circle_marker_9538c8568cd6ceaa83e964c8256a1f20.bindPopup(popup_2d1172d44e3edd99c441c6f572cb6210)
+        ;
+
+
+
+
+            circle_marker_9538c8568cd6ceaa83e964c8256a1f20.bindTooltip(
+                `<div>
+                     FC Memmingen | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_8bee4ae5ff115afcdcaf4aedfdc6c3f4 = L.circleMarker(
+                [48.4090257, 11.2902961],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_ea991407c4c32aee4da492a5a39fde34 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_03d75de704b8ad65a2bd0d1f8d7d0244 = $(`<div id="html_03d75de704b8ad65a2bd0d1f8d7d0244" style="width: 100.0%; height: 100.0%;">FC Pipinsried (Süd)<br>Stadion: Küchenstadel Arena<br><a href="https://www.fcpipinsried.de/verein/pipinsrieder-arena" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/29583511" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_ea991407c4c32aee4da492a5a39fde34.setContent(html_03d75de704b8ad65a2bd0d1f8d7d0244);
+
+
+
+        circle_marker_8bee4ae5ff115afcdcaf4aedfdc6c3f4.bindPopup(popup_ea991407c4c32aee4da492a5a39fde34)
+        ;
+
+
+
+
+            circle_marker_8bee4ae5ff115afcdcaf4aedfdc6c3f4.bindTooltip(
+                `<div>
+                     FC Pipinsried | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_94244fe5d49796fa2d78d4105d7dcfcf = L.circleMarker(
+                [51.559253, 7.067625],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_672d042660470a8aa81bd7ab4c1ddd8b = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_cd39fef1491768f18b98b27653bddaec = $(`<div id="html_cd39fef1491768f18b98b27653bddaec" style="width: 100.0%; height: 100.0%;">FC Schalke 04 II (West)<br>Stadion: Parkstadion<br><a href="https://www.fupa.net/match/fc-schalke-04-m2-sv-westfalia-rhynern-m1-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Parkstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_672d042660470a8aa81bd7ab4c1ddd8b.setContent(html_cd39fef1491768f18b98b27653bddaec);
+
+
+
+        circle_marker_94244fe5d49796fa2d78d4105d7dcfcf.bindPopup(popup_672d042660470a8aa81bd7ab4c1ddd8b)
+        ;
+
+
+
+
+            circle_marker_94244fe5d49796fa2d78d4105d7dcfcf.bindTooltip(
+                `<div>
+                     FC Schalke 04 II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_e9666dec4193e3832b78cee0480c866f = L.circleMarker(
+                [50.128119, 8.723262],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_990817bf6192b30e779a13082d4ec2cf = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c649361e89dbd4cdfad856a2bdf8f503 = $(`<div id="html_c649361e89dbd4cdfad856a2bdf8f503" style="width: 100.0%; height: 100.0%;">FSV Frankfurt (West)<br>Stadion: BBBank Arena<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/BBBank_Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_990817bf6192b30e779a13082d4ec2cf.setContent(html_c649361e89dbd4cdfad856a2bdf8f503);
+
+
+
+        circle_marker_e9666dec4193e3832b78cee0480c866f.bindPopup(popup_990817bf6192b30e779a13082d4ec2cf)
+        ;
+
+
+
+
+            circle_marker_e9666dec4193e3832b78cee0480c866f.bindTooltip(
+                `<div>
+                     FSV Frankfurt | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_fb5c68605cb308898443c540ccf90a20 = L.circleMarker(
+                [52.1435218, 10.9545348],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_1031a8d035be14e6636b6776f6a69085 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_05eed0990879ceeaee2ba91f44a05ec7 = $(`<div id="html_05eed0990879ceeaee2ba91f44a05ec7" style="width: 100.0%; height: 100.0%;">FSV Schöningen (Ost)<br>Stadion: Elm-Stadion<br><a href="https://www.fupa.net/match/fsv-schoeningen-m1-hamburger-sv-m2-261010/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/237007153" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_1031a8d035be14e6636b6776f6a69085.setContent(html_05eed0990879ceeaee2ba91f44a05ec7);
+
+
+
+        circle_marker_fb5c68605cb308898443c540ccf90a20.bindPopup(popup_1031a8d035be14e6636b6776f6a69085)
+        ;
+
+
+
+
+            circle_marker_fb5c68605cb308898443c540ccf90a20.bindTooltip(
+                `<div>
+                     FSV Schöningen | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_951999426c2008077c1c86ffd3d76dbc = L.circleMarker(
+                [50.728539, 12.519325],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8b835d44830f5aee5a69dc70fdf600d5 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_6031cc6d389a509fb79940128e4c6359 = $(`<div id="html_6031cc6d389a509fb79940128e4c6359" style="width: 100.0%; height: 100.0%;">FSV Zwickau (Ost)<br>Stadion: GGZ-Arena<br><a href="https://www.fupa.net/match/fsv-zwickau-m1-sv-tasmania-berlin-m1-261009/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/GGZ-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_8b835d44830f5aee5a69dc70fdf600d5.setContent(html_6031cc6d389a509fb79940128e4c6359);
+
+
+
+        circle_marker_951999426c2008077c1c86ffd3d76dbc.bindPopup(popup_8b835d44830f5aee5a69dc70fdf600d5)
+        ;
+
+
+
+
+            circle_marker_951999426c2008077c1c86ffd3d76dbc.bindTooltip(
+                `<div>
+                     FSV Zwickau | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_0768ad67b08e32802871e6d0cefcd51f = L.circleMarker(
+                [48.21797, 10.09233],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_298c6492d6b29fd7c6ab682e95e81c22 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_7b006b04e39ad6c33ad92778743df380 = $(`<div id="html_7b006b04e39ad6c33ad92778743df380" style="width: 100.0%; height: 100.0%;">FV Illertissen (Süd)<br>Stadion: Vöhlinstadion<br><a href="https://www.fupa.net/match/fv-illertissen-m1-tsv-buchbach-m1-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Vöhlinstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_298c6492d6b29fd7c6ab682e95e81c22.setContent(html_7b006b04e39ad6c33ad92778743df380);
+
+
+
+        circle_marker_0768ad67b08e32802871e6d0cefcd51f.bindPopup(popup_298c6492d6b29fd7c6ab682e95e81c22)
+        ;
+
+
+
+
+            circle_marker_0768ad67b08e32802871e6d0cefcd51f.bindTooltip(
+                `<div>
+                     FV Illertissen | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d82db67e324952eca6973a3884a308f8 = L.circleMarker(
+                [51.261635, 6.733163],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_093d064edeeec7d670ba9bdabfcb486c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_91ce07f8dd7dde13bfaa3c5fb6abc36a = $(`<div id="html_91ce07f8dd7dde13bfaa3c5fb6abc36a" style="width: 100.0%; height: 100.0%;">Fortuna Düsseldorf (West)<br>Stadion: Merkur Spiel-Arena<br><a href="https://www.fupa.net/club/fortuna-duesseldorf" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Merkur_Spiel-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_093d064edeeec7d670ba9bdabfcb486c.setContent(html_91ce07f8dd7dde13bfaa3c5fb6abc36a);
+
+
+
+        circle_marker_d82db67e324952eca6973a3884a308f8.bindPopup(popup_093d064edeeec7d670ba9bdabfcb486c)
+        ;
+
+
+
+
+            circle_marker_d82db67e324952eca6973a3884a308f8.bindTooltip(
+                `<div>
+                     Fortuna Düsseldorf | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c0bea9f2dff9e49acd34aff20c10b933 = L.circleMarker(
+                [54.09063, 13.41472],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_0a33dcb6d94f9fbea3ba9da9958681db = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_0445d21261797d8b55b4c4e03e299c3d = $(`<div id="html_0445d21261797d8b55b4c4e03e299c3d" style="width: 100.0%; height: 100.0%;">Greifswalder FC (Nord)<br>Stadion: Volksstadion Greifswald<br><a href="https://www.fupa.net/match/greifswalder-fc-m1-fc-erzgebirge-aue-m1-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Volksstadion_Greifswald" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_0a33dcb6d94f9fbea3ba9da9958681db.setContent(html_0445d21261797d8b55b4c4e03e299c3d);
+
+
+
+        circle_marker_c0bea9f2dff9e49acd34aff20c10b933.bindPopup(popup_0a33dcb6d94f9fbea3ba9da9958681db)
+        ;
+
+
+
+
+            circle_marker_c0bea9f2dff9e49acd34aff20c10b933.bindTooltip(
+                `<div>
+                     Greifswalder FC | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_59fccfda4c148eb6854bc34b68e52a50 = L.circleMarker(
+                [52.4030691, 9.768556],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5a49b28ee24dba56e0e7a6dfc57f014f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b2cb75422b4c72fb676aa737aef39ff3 = $(`<div id="html_b2cb75422b4c72fb676aa737aef39ff3" style="width: 100.0%; height: 100.0%;">HSC Hannover (Nord)<br>Stadion: HSC-Stadion Constantinstraße<br><a href="https://www.fupa.net/match/hsc-hannover-m1-sv-todesfelde-m1-261018/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/32209700" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_5a49b28ee24dba56e0e7a6dfc57f014f.setContent(html_b2cb75422b4c72fb676aa737aef39ff3);
+
+
+
+        circle_marker_59fccfda4c148eb6854bc34b68e52a50.bindPopup(popup_5a49b28ee24dba56e0e7a6dfc57f014f)
+        ;
+
+
+
+
+            circle_marker_59fccfda4c148eb6854bc34b68e52a50.bindTooltip(
+                `<div>
+                     HSC Hannover | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d8d37646aa6ea98dea4974e93ddd2499 = L.circleMarker(
+                [51.46527778, 11.96194444],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_83bc7d49a455d7a8c643bc5b5998adc8 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_fbc8ae2a1f74c0ad587ba4f54504dee4 = $(`<div id="html_fbc8ae2a1f74c0ad587ba4f54504dee4" style="width: 100.0%; height: 100.0%;">Hallescher FC (Ost)<br>Stadion: Leuna-Chemie-Stadion<br><a href="https://www.fupa.net/match/hallescher-fc-m1-rsv-eintracht-1949-m1-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Leuna-Chemie-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_83bc7d49a455d7a8c643bc5b5998adc8.setContent(html_fbc8ae2a1f74c0ad587ba4f54504dee4);
+
+
+
+        circle_marker_d8d37646aa6ea98dea4974e93ddd2499.bindPopup(popup_83bc7d49a455d7a8c643bc5b5998adc8)
+        ;
+
+
+
+
+            circle_marker_d8d37646aa6ea98dea4974e93ddd2499.bindTooltip(
+                `<div>
+                     Hallescher FC | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d304d79801f091a14a0ef3fc27036579 = L.circleMarker(
+                [52.37658889, 9.7729],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_975ae266145cf75e171f4dfe81df7de0 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_f048401b6a0b372ded5307f347c3af37 = $(`<div id="html_f048401b6a0b372ded5307f347c3af37" style="width: 100.0%; height: 100.0%;">Hannover 96 II (Nord)<br>Stadion: Eilenriedestadion<br><a href="https://www.fupa.net/match/hannover-96-m2-fsv-schoeningen-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Eilenriedestadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_975ae266145cf75e171f4dfe81df7de0.setContent(html_f048401b6a0b372ded5307f347c3af37);
+
+
+
+        circle_marker_d304d79801f091a14a0ef3fc27036579.bindPopup(popup_975ae266145cf75e171f4dfe81df7de0)
+        ;
+
+
+
+
+            circle_marker_d304d79801f091a14a0ef3fc27036579.bindTooltip(
+                `<div>
+                     Hannover 96 II | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_baf2019c5dc6f3bb3ce0d1576b8f4cfe = L.circleMarker(
+                [53.3120418, 9.346533],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_94704f3aead2dc4fde78838372b8448a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_7bf4131d24003e3e3a7cc3468a06550e = $(`<div id="html_7bf4131d24003e3e3a7cc3468a06550e" style="width: 100.0%; height: 100.0%;">Heeslinger SC (Nord)<br>Stadion: Waldstadion Heeslingen<br><a href="https://www.heeslinger-sc.de/sportstaetten/" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/99002963" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_94704f3aead2dc4fde78838372b8448a.setContent(html_7bf4131d24003e3e3a7cc3468a06550e);
+
+
+
+        circle_marker_baf2019c5dc6f3bb3ce0d1576b8f4cfe.bindPopup(popup_94704f3aead2dc4fde78838372b8448a)
+        ;
+
+
+
+
+            circle_marker_baf2019c5dc6f3bb3ce0d1576b8f4cfe.bindTooltip(
+                `<div>
+                     Heeslinger SC | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_95c34910936b98db6c3097880209d1d5 = L.circleMarker(
+                [52.51719055, 13.23669438],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_fdb8580463ab479530db1aac7bf4613a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_572f7dfe43c5909f3def6c5d18919317 = $(`<div id="html_572f7dfe43c5909f3def6c5d18919317" style="width: 100.0%; height: 100.0%;">Hertha BSC II (Ost)<br>Stadion: Stadion auf dem Wurfplatz<br><a href="https://www.fupa.net/match/hertha-bsc-m2-rsv-eintracht-1949-m1-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_auf_dem_Wurfplatz" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_fdb8580463ab479530db1aac7bf4613a.setContent(html_572f7dfe43c5909f3def6c5d18919317);
+
+
+
+        circle_marker_95c34910936b98db6c3097880209d1d5.bindPopup(popup_fdb8580463ab479530db1aac7bf4613a)
+        ;
+
+
+
+
+            circle_marker_95c34910936b98db6c3097880209d1d5.bindTooltip(
+                `<div>
+                     Hertha BSC II | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c56688d353907855269767f5a5fd678a = L.circleMarker(
+                [50.67892, 9.7748982],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3be6617e0208587e7bb45cdd513e7864 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_d1de9cf3abe1aea58af6b777538463b3 = $(`<div id="html_d1de9cf3abe1aea58af6b777538463b3" style="width: 100.0%; height: 100.0%;">Hünfelder SV 1919 (Ost)<br>Stadion: Rhönkampfbahn<br><a href="https://www.fupa.net/club/huenfelder-sv-1919" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/351879923" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_3be6617e0208587e7bb45cdd513e7864.setContent(html_d1de9cf3abe1aea58af6b777538463b3);
+
+
+
+        circle_marker_c56688d353907855269767f5a5fd678a.bindPopup(popup_3be6617e0208587e7bb45cdd513e7864)
+        ;
+
+
+
+
+            circle_marker_c56688d353907855269767f5a5fd678a.bindTooltip(
+                `<div>
+                     Hünfelder SV 1919 | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c1fe7a53a4d7301aa90c3148c0b89e86 = L.circleMarker(
+                [53.37920556, 7.20337222],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_f36d9a73d2a4d2c7e099000d6d77038a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c27c687207da73ca09592bf0cd559089 = $(`<div id="html_c27c687207da73ca09592bf0cd559089" style="width: 100.0%; height: 100.0%;">Kickers Emden (Nord)<br>Stadion: Ostfriesland-Stadion<br><a href="https://www.fupa.net/match/bsv-kickers-emden-m1-1-fc-phoenix-luebeck-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Ostfriesland-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_f36d9a73d2a4d2c7e099000d6d77038a.setContent(html_c27c687207da73ca09592bf0cd559089);
+
+
+
+        circle_marker_c1fe7a53a4d7301aa90c3148c0b89e86.bindPopup(popup_f36d9a73d2a4d2c7e099000d6d77038a)
+        ;
+
+
+
+
+            circle_marker_c1fe7a53a4d7301aa90c3148c0b89e86.bindTooltip(
+                `<div>
+                     Kickers Emden | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_9cba7a9e72976684559a8de888dd5f6a = L.circleMarker(
+                [52.43263889, 13.35483333],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5bdff2254e2a3dc89941c17dd559f0f1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_8624cb1f2eb2734151115b33cb10c9a3 = $(`<div id="html_8624cb1f2eb2734151115b33cb10c9a3" style="width: 100.0%; height: 100.0%;">RSV Eintracht 1949 (Ost)<br>Stadion: Preussenstadion<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nordost_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Preussenstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_5bdff2254e2a3dc89941c17dd559f0f1.setContent(html_8624cb1f2eb2734151115b33cb10c9a3);
+
+
+
+        circle_marker_9cba7a9e72976684559a8de888dd5f6a.bindPopup(popup_5bdff2254e2a3dc89941c17dd559f0f1)
+        ;
+
+
+
+
+            circle_marker_9cba7a9e72976684559a8de888dd5f6a.bindTooltip(
+                `<div>
+                     RSV Eintracht 1949 | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_2a7c739ae57f3612bf3a5d5ea18044eb = L.circleMarker(
+                [51.493611, 6.854444],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a0328964f628b82e133879f28978d73a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_8cc845cf71bb0ca1f28909e4d8947c50 = $(`<div id="html_8cc845cf71bb0ca1f28909e4d8947c50" style="width: 100.0%; height: 100.0%;">Rot-Weiß Oberhausen (West)<br>Stadion: Stadion Niederrhein<br><a href="https://www.fupa.net/match/sc-rot-weiss-oberhausen-m1-1-fc-bocholt-m1-261010/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_Niederrhein" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_a0328964f628b82e133879f28978d73a.setContent(html_8cc845cf71bb0ca1f28909e4d8947c50);
+
+
+
+        circle_marker_2a7c739ae57f3612bf3a5d5ea18044eb.bindPopup(popup_a0328964f628b82e133879f28978d73a)
+        ;
+
+
+
+
+            circle_marker_2a7c739ae57f3612bf3a5d5ea18044eb.bindTooltip(
+                `<div>
+                     Rot-Weiß Oberhausen | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_1dc9ea5b39dc188c2785abe538a8dde3 = L.circleMarker(
+                [49.55572, 10.99467],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_781af10f9058eb39ddece002d97e6232 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_8200aedfe3c58d175bcc6ced048a50a4 = $(`<div id="html_8200aedfe3c58d175bcc6ced048a50a4" style="width: 100.0%; height: 100.0%;">SC Eltersdorf (Süd)<br>Stadion: Sportanlage Langenau<br><a href="https://www.fupa.net/match/sc-eltersdorf-m1-sv-wacker-burghausen-m1-261013/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Sportanlage_Langenau" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_781af10f9058eb39ddece002d97e6232.setContent(html_8200aedfe3c58d175bcc6ced048a50a4);
+
+
+
+        circle_marker_1dc9ea5b39dc188c2785abe538a8dde3.bindPopup(popup_781af10f9058eb39ddece002d97e6232)
+        ;
+
+
+
+
+            circle_marker_1dc9ea5b39dc188c2785abe538a8dde3.bindTooltip(
+                `<div>
+                     SC Eltersdorf | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_b8533432c442a956b715097c3e8d0de7 = L.circleMarker(
+                [47.988968, 7.892903],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_7214db13976c67fdb2d074e61fa658ca = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_5e82bafca3d97b22b979c655bc0e378c = $(`<div id="html_5e82bafca3d97b22b979c655bc0e378c" style="width: 100.0%; height: 100.0%;">SC Freiburg II (Süd)<br>Stadion: Dreisamstadion<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Dreisamstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_7214db13976c67fdb2d074e61fa658ca.setContent(html_5e82bafca3d97b22b979c655bc0e378c);
+
+
+
+        circle_marker_b8533432c442a956b715097c3e8d0de7.bindPopup(popup_7214db13976c67fdb2d074e61fa658ca)
+        ;
+
+
+
+
+            circle_marker_b8533432c442a956b715097c3e8d0de7.bindTooltip(
+                `<div>
+                     SC Freiburg II | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_66cb6ff31083c883c7ee31e2d3033bc3 = L.circleMarker(
+                [51.73138889, 8.71083333],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a7699fff532ae98d2ad7f783f9e0617a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_5057b5d35b42efd2bdf74de99e9bdd1e = $(`<div id="html_5057b5d35b42efd2bdf74de99e9bdd1e" style="width: 100.0%; height: 100.0%;">SC Paderborn 07 II (Nord)<br>Stadion: Home-Deluxe-Arena<br><a href="https://www.scp07.de/U21/U21.html" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Home-Deluxe-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_a7699fff532ae98d2ad7f783f9e0617a.setContent(html_5057b5d35b42efd2bdf74de99e9bdd1e);
+
+
+
+        circle_marker_66cb6ff31083c883c7ee31e2d3033bc3.bindPopup(popup_a7699fff532ae98d2ad7f783f9e0617a)
+        ;
+
+
+
+
+            circle_marker_66cb6ff31083c883c7ee31e2d3033bc3.bindTooltip(
+                `<div>
+                     SC Paderborn 07 II | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a8730cd5b9be8383f6cc71b28e3ce464 = L.circleMarker(
+                [51.883405, 8.513408],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_bd6998ff5a5ffebb39c9271bc60f899f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1d517e981aa1cbdf12318866f942062a = $(`<div id="html_1d517e981aa1cbdf12318866f942062a" style="width: 100.0%; height: 100.0%;">SC Verl (Nord)<br>Stadion: Sportclub Arena<br><a href="https://www.fupa.net/club/sc-verl" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Sportclub_Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_bd6998ff5a5ffebb39c9271bc60f899f.setContent(html_1d517e981aa1cbdf12318866f942062a);
+
+
+
+        circle_marker_a8730cd5b9be8383f6cc71b28e3ce464.bindPopup(popup_bd6998ff5a5ffebb39c9271bc60f899f)
+        ;
+
+
+
+
+            circle_marker_a8730cd5b9be8383f6cc71b28e3ce464.bindTooltip(
+                `<div>
+                     SC Verl | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d20e9017587471fdd20df0d1c902edae = L.circleMarker(
+                [54.7603613, 9.4068663],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5bfb7804d1314e4e9979b61cd5fa23e6 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1b784bbffa365336e1f6d0c2bad9b4ed = $(`<div id="html_1b784bbffa365336e1f6d0c2bad9b4ed" style="width: 100.0%; height: 100.0%;">SC Weiche Flensburg 08 (Nord)<br>Stadion: Manfred-Werner-Stadion<br><a href="https://www.fupa.net/match/sc-weiche-flensburg-08-m1-sv-drochtersenassel-m1-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/159639086" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_5bfb7804d1314e4e9979b61cd5fa23e6.setContent(html_1b784bbffa365336e1f6d0c2bad9b4ed);
+
+
+
+        circle_marker_d20e9017587471fdd20df0d1c902edae.bindPopup(popup_5bfb7804d1314e4e9979b61cd5fa23e6)
+        ;
+
+
+
+
+            circle_marker_d20e9017587471fdd20df0d1c902edae.bindTooltip(
+                `<div>
+                     SC Weiche Flensburg 08 | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_bc94a65bd0150b8dcb3c06496df6cca5 = L.circleMarker(
+                [50.540115, 9.665335],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_6a861a25602be93557dad7e3e547bac0 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9ec9059586238f94ec92b9386da6c7fc = $(`<div id="html_9ec9059586238f94ec92b9386da6c7fc" style="width: 100.0%; height: 100.0%;">SG Barockstadt Fulda-Lehnerz (Ost)<br>Stadion: Sportpark Johannisau<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Sportpark_Johannisau" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_6a861a25602be93557dad7e3e547bac0.setContent(html_9ec9059586238f94ec92b9386da6c7fc);
+
+
+
+        circle_marker_bc94a65bd0150b8dcb3c06496df6cca5.bindPopup(popup_6a861a25602be93557dad7e3e547bac0)
+        ;
+
+
+
+
+            circle_marker_bc94a65bd0150b8dcb3c06496df6cca5.bindTooltip(
+                `<div>
+                     SG Barockstadt Fulda-Lehnerz | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a6978d235df2f7a3a3fc0c5f4cdad5ad = L.circleMarker(
+                [48.979865, 9.394126],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a02b5f33147b999928d13d29cefa9c91 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_ba1259386ef97e5f0370f171d2e64c2c = $(`<div id="html_ba1259386ef97e5f0370f171d2e64c2c" style="width: 100.0%; height: 100.0%;">SG Sonnenhof Großaspach (Süd)<br>Stadion: WIRmachenDRUCK Arena<br><a href="https://de.wikipedia.org/wiki/3._Fu%C3%9Fball-Liga_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/WIRmachenDRUCK_Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_a02b5f33147b999928d13d29cefa9c91.setContent(html_ba1259386ef97e5f0370f171d2e64c2c);
+
+
+
+        circle_marker_a6978d235df2f7a3a3fc0c5f4cdad5ad.bindPopup(popup_a02b5f33147b999928d13d29cefa9c91)
+        ;
+
+
+
+
+            circle_marker_a6978d235df2f7a3a3fc0c5f4cdad5ad.bindTooltip(
+                `<div>
+                     SG Sonnenhof Großaspach | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_0bd1bfb0c5e000b3397a88d5502a7c79 = L.circleMarker(
+                [49.134918, 9.203432],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_81ba855da3463e6a1aac30281bb26310 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_05c54022d09a8a562c17e254b0c6d73d = $(`<div id="html_05c54022d09a8a562c17e254b0c6d73d" style="width: 100.0%; height: 100.0%;">SGV Heilbronn-Freiberg (Süd)<br>Stadion: Frankenstadion Heilbronn<br><a href="https://www.fupa.net/match/sgv-heilbronn-freiberg-m1-sg-barockstadt-fulda-lehnerz-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Frankenstadion_Heilbronn" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_81ba855da3463e6a1aac30281bb26310.setContent(html_05c54022d09a8a562c17e254b0c6d73d);
+
+
+
+        circle_marker_0bd1bfb0c5e000b3397a88d5502a7c79.bindPopup(popup_81ba855da3463e6a1aac30281bb26310)
+        ;
+
+
+
+
+            circle_marker_0bd1bfb0c5e000b3397a88d5502a7c79.bindTooltip(
+                `<div>
+                     SGV Heilbronn-Freiberg | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_b77c062d365356113cfea1daef07b1e4 = L.circleMarker(
+                [53.038495, 8.643092],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_cae72432a7ebc5405fabc05ab72f78e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c361bea4718defd82b81346f540d0cf0 = $(`<div id="html_c361bea4718defd82b81346f540d0cf0" style="width: 100.0%; height: 100.0%;">SV Atlas Delmenhorst (Nord)<br>Stadion: Stadion an der Düsternortstraße<br><a href="https://www.fupa.net/match/sv-atlas-delmenhorst-m1-bremer-sv-m1-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Städtisches_Stadion_an_der_Düsternortstraße" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_cae72432a7ebc5405fabc05ab72f78e4.setContent(html_c361bea4718defd82b81346f540d0cf0);
+
+
+
+        circle_marker_b77c062d365356113cfea1daef07b1e4.bindPopup(popup_cae72432a7ebc5405fabc05ab72f78e4)
+        ;
+
+
+
+
+            circle_marker_b77c062d365356113cfea1daef07b1e4.bindTooltip(
+                `<div>
+                     SV Atlas Delmenhorst | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a30a68d89a244b1ea47cd43d76f5ddc0 = L.circleMarker(
+                [52.399093, 13.094777],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_d8acdb01985bfc36cbcdc15ff3015b8f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_cfd025da90691b6bd2469185559e744b = $(`<div id="html_cfd025da90691b6bd2469185559e744b" style="width: 100.0%; height: 100.0%;">SV Babelsberg 03 (Ost)<br>Stadion: Karl-Liebknecht-Stadion<br><a href="https://www.fupa.net/match/sv-babelsberg-03-m1-1-fc-lokomotive-leipzig-m1-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Karl-Liebknecht-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_d8acdb01985bfc36cbcdc15ff3015b8f.setContent(html_cfd025da90691b6bd2469185559e744b);
+
+
+
+        circle_marker_a30a68d89a244b1ea47cd43d76f5ddc0.bindPopup(popup_d8acdb01985bfc36cbcdc15ff3015b8f)
+        ;
+
+
+
+
+            circle_marker_a30a68d89a244b1ea47cd43d76f5ddc0.bindTooltip(
+                `<div>
+                     SV Babelsberg 03 | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_f5f82967bc96f421ec0fc26bd25e8fd4 = L.circleMarker(
+                [53.7038101, 9.3804659],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_c4f4976f01f96a5e77efa1c78ac7a0cc = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_81b65c718b870dc56911f4f2226ae7d7 = $(`<div id="html_81b65c718b870dc56911f4f2226ae7d7" style="width: 100.0%; height: 100.0%;">SV Drochtersen/Assel (Nord)<br>Stadion: Kehdinger Stadion<br><a href="https://www.fupa.net/match/sv-drochtersenassel-m1-sv-todesfelde-m1-261024/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/1110584842" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_c4f4976f01f96a5e77efa1c78ac7a0cc.setContent(html_81b65c718b870dc56911f4f2226ae7d7);
+
+
+
+        circle_marker_f5f82967bc96f421ec0fc26bd25e8fd4.bindPopup(popup_c4f4976f01f96a5e77efa1c78ac7a0cc)
+        ;
+
+
+
+
+            circle_marker_f5f82967bc96f421ec0fc26bd25e8fd4.bindTooltip(
+                `<div>
+                     SV Drochtersen/Assel | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_f10038ec50afe57d60766e8137ada239 = L.circleMarker(
+                [49.76805556, 6.64777778],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3c8f490f2ce74289cb3b9d140a2a31e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1c473c448b6f357961db74cae9e21c72 = $(`<div id="html_1c473c448b6f357961db74cae9e21c72" style="width: 100.0%; height: 100.0%;">SV Eintracht Trier (West)<br>Stadion: Moselstadion<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Moselstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_3c8f490f2ce74289cb3b9d140a2a31e4.setContent(html_1c473c448b6f357961db74cae9e21c72);
+
+
+
+        circle_marker_f10038ec50afe57d60766e8137ada239.bindPopup(popup_3c8f490f2ce74289cb3b9d140a2a31e4)
+        ;
+
+
+
+
+            circle_marker_f10038ec50afe57d60766e8137ada239.bindTooltip(
+                `<div>
+                     SV Eintracht Trier | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_27fab61e91651727c40a0dc6840079b3 = L.circleMarker(
+                [52.249362, 8.507001],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4c8c00f801d35da485c65239b3030583 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_77e4b7e90abdf2667853a18dc08094a2 = $(`<div id="html_77e4b7e90abdf2667853a18dc08094a2" style="width: 100.0%; height: 100.0%;">SV Rödinghausen (Nord)<br>Stadion: Wiehenstadion<br><a href="https://www.fupa.net/match/sv-roedinghausen-m1-1-fc-koeln-m2-261016/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Häcker-Wiehenstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_4c8c00f801d35da485c65239b3030583.setContent(html_77e4b7e90abdf2667853a18dc08094a2);
+
+
+
+        circle_marker_27fab61e91651727c40a0dc6840079b3.bindPopup(popup_4c8c00f801d35da485c65239b3030583)
+        ;
+
+
+
+
+            circle_marker_27fab61e91651727c40a0dc6840079b3.bindTooltip(
+                `<div>
+                     SV Rödinghausen | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d9192c54a818f6165f400138be641c48 = L.circleMarker(
+                [49.33208333, 8.64766667],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_0d4a43d90891c7cedcd0bda9b30761ca = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_cefae6899d60c5dc33cb5a5b0478d22a = $(`<div id="html_cefae6899d60c5dc33cb5a5b0478d22a" style="width: 100.0%; height: 100.0%;">SV Sandhausen (Süd)<br>Stadion: Hardtwaldstadion<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Hardtwaldstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_0d4a43d90891c7cedcd0bda9b30761ca.setContent(html_cefae6899d60c5dc33cb5a5b0478d22a);
+
+
+
+        circle_marker_d9192c54a818f6165f400138be641c48.bindPopup(popup_0d4a43d90891c7cedcd0bda9b30761ca)
+        ;
+
+
+
+
+            circle_marker_d9192c54a818f6165f400138be641c48.bindTooltip(
+                `<div>
+                     SV Sandhausen | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a0b5edcf7aa3084a0056b7b9bbf62918 = L.circleMarker(
+                [53.8981956, 10.185532],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_b0e673fbddcb0a687b3c6110b19b2c68 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_bfa5ee3333d82a25646a0611ed4c49b3 = $(`<div id="html_bfa5ee3333d82a25646a0611ed4c49b3" style="width: 100.0%; height: 100.0%;">SV Todesfelde (Nord)<br>Stadion: Joda Sportpark<br><a href="https://www.fupa.net/match/sv-todesfelde-m1-sc-weiche-flensburg-08-m1-261011/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/753432639" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_b0e673fbddcb0a687b3c6110b19b2c68.setContent(html_bfa5ee3333d82a25646a0611ed4c49b3);
+
+
+
+        circle_marker_a0b5edcf7aa3084a0056b7b9bbf62918.bindPopup(popup_b0e673fbddcb0a687b3c6110b19b2c68)
+        ;
+
+
+
+
+            circle_marker_a0b5edcf7aa3084a0056b7b9bbf62918.bindTooltip(
+                `<div>
+                     SV Todesfelde | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a81ea5514ce718c37ee1dcad2579c6a5 = L.circleMarker(
+                [50.071244, 8.256644],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8a2335e21708fe352464c6a69fb7b93c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b98906fd5c718cadea9cb234f8815709 = $(`<div id="html_b98906fd5c718cadea9cb234f8815709" style="width: 100.0%; height: 100.0%;">SV Wehen Wiesbaden (West)<br>Stadion: Brita-Arena<br><a href="https://de.wikipedia.org/wiki/3._Fu%C3%9Fball-Liga_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Brita-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_8a2335e21708fe352464c6a69fb7b93c.setContent(html_b98906fd5c718cadea9cb234f8815709);
+
+
+
+        circle_marker_a81ea5514ce718c37ee1dcad2579c6a5.bindPopup(popup_8a2335e21708fe352464c6a69fb7b93c)
+        ;
+
+
+
+
+            circle_marker_a81ea5514ce718c37ee1dcad2579c6a5.bindTooltip(
+                `<div>
+                     SV Wehen Wiesbaden | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_3f8759bb18fe20461f8938a71e7a966c = L.circleMarker(
+                [51.4785523, 7.0694301],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3961e7e7f9a97bb1008f5345e735d35d = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_7b33244731e1a9f8356f6aaf4079ba0c = $(`<div id="html_7b33244731e1a9f8356f6aaf4079ba0c" style="width: 100.0%; height: 100.0%;">SpVg Schonnebeck (West)<br>Stadion: Schetters Busch<br><a href="https://www.sv-schonnebeck.com/verein/schetters-busch" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/25008774" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_3961e7e7f9a97bb1008f5345e735d35d.setContent(html_7b33244731e1a9f8356f6aaf4079ba0c);
+
+
+
+        circle_marker_3f8759bb18fe20461f8938a71e7a966c.bindPopup(popup_3961e7e7f9a97bb1008f5345e735d35d)
+        ;
+
+
+
+
+            circle_marker_3f8759bb18fe20461f8938a71e7a966c.bindTooltip(
+                `<div>
+                     SpVg Schonnebeck | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_888ddb52af00256d32dc402eac26b959 = L.circleMarker(
+                [49.945331, 11.587192],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_889ee1e3beb2edbedd4fd3edcc09fc47 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_e7b901387274ab7503935de13eb9709b = $(`<div id="html_e7b901387274ab7503935de13eb9709b" style="width: 100.0%; height: 100.0%;">SpVgg Bayreuth (Ost)<br>Stadion: Hans-Walter-Wild-Stadion<br><a href="https://www.fupa.net/match/spvgg-bayreuth-m1-vfb-eichstaett-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Hans-Walter-Wild-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_889ee1e3beb2edbedd4fd3edcc09fc47.setContent(html_e7b901387274ab7503935de13eb9709b);
+
+
+
+        circle_marker_888ddb52af00256d32dc402eac26b959.bindPopup(popup_889ee1e3beb2edbedd4fd3edcc09fc47)
+        ;
+
+
+
+
+            circle_marker_888ddb52af00256d32dc402eac26b959.bindTooltip(
+                `<div>
+                     SpVgg Bayreuth | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a7594c311b9eb2bf3e545ee25344e235 = L.circleMarker(
+                [48.073791, 11.615835],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_618bafb86c47f300bd5fce2f373d3b41 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4d8dac9d19c89067ac0f54553641aee1 = $(`<div id="html_4d8dac9d19c89067ac0f54553641aee1" style="width: 100.0%; height: 100.0%;">SpVgg Unterhaching (Süd)<br>Stadion: Uhlsport Park<br><a href="https://www.fupa.net/match/spvgg-unterhaching-m1-tsv-landsberg-m1-261013/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Sportpark_Unterhaching" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_618bafb86c47f300bd5fce2f373d3b41.setContent(html_4d8dac9d19c89067ac0f54553641aee1);
+
+
+
+        circle_marker_a7594c311b9eb2bf3e545ee25344e235.bindPopup(popup_618bafb86c47f300bd5fce2f373d3b41)
+        ;
+
+
+
+
+            circle_marker_a7594c311b9eb2bf3e545ee25344e235.bindTooltip(
+                `<div>
+                     SpVgg Unterhaching | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a5031f17e7e160fd90be1f64c31b6caa = L.circleMarker(
+                [52.0413134, 6.8427866],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_b0de491fb63490bbc791b12279cdad65 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_f844af952452af484459f495465d9a09 = $(`<div id="html_f844af952452af484459f495465d9a09" style="width: 100.0%; height: 100.0%;">SpVgg Vreden (West)<br>Stadion: Hamalandstadion<br><a href="https://www.fupa.net/club/spvgg-vreden" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/141701155" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_b0de491fb63490bbc791b12279cdad65.setContent(html_f844af952452af484459f495465d9a09);
+
+
+
+        circle_marker_a5031f17e7e160fd90be1f64c31b6caa.bindPopup(popup_b0de491fb63490bbc791b12279cdad65)
+        ;
+
+
+
+
+            circle_marker_a5031f17e7e160fd90be1f64c31b6caa.bindTooltip(
+                `<div>
+                     SpVgg Vreden | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_e3888ef9bb1af693df46f8ab893b5902 = L.circleMarker(
+                [50.85222222, 8.02611111],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_12f1cd7b1537d4d8da32073478223332 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_db2d425a2e9e1942bf11160217d4b8f5 = $(`<div id="html_db2d425a2e9e1942bf11160217d4b8f5" style="width: 100.0%; height: 100.0%;">Sportfreunde Siegen (West)<br>Stadion: Leimbachstadion<br><a href="https://www.fupa.net/match/sportfreunde-siegen-m1-sc-rot-weiss-oberhausen-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Leimbachstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_12f1cd7b1537d4d8da32073478223332.setContent(html_db2d425a2e9e1942bf11160217d4b8f5);
+
+
+
+        circle_marker_e3888ef9bb1af693df46f8ab893b5902.bindPopup(popup_12f1cd7b1537d4d8da32073478223332)
+        ;
+
+
+
+
+            circle_marker_e3888ef9bb1af693df46f8ab893b5902.bindTooltip(
+                `<div>
+                     Sportfreunde Siegen | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_abb96e2b3f8a5aae31ef8a4fdf1f0daf = L.circleMarker(
+                [48.754001, 9.188316],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_797385d25e3cec988e6ab623af6794c4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_357c71b58e159c829d16857f57f1cf66 = $(`<div id="html_357c71b58e159c829d16857f57f1cf66" style="width: 100.0%; height: 100.0%;">Stuttgarter Kickers (Süd)<br>Stadion: Gazi-Stadion auf der Waldau<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Gazi-Stadion_auf_der_Waldau" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_797385d25e3cec988e6ab623af6794c4.setContent(html_357c71b58e159c829d16857f57f1cf66);
+
+
+
+        circle_marker_abb96e2b3f8a5aae31ef8a4fdf1f0daf.bindPopup(popup_797385d25e3cec988e6ab623af6794c4)
+        ;
+
+
+
+
+            circle_marker_abb96e2b3f8a5aae31ef8a4fdf1f0daf.bindTooltip(
+                `<div>
+                     Stuttgarter Kickers | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_40e924e4849bfb06db54fb2412e5dc5b = L.circleMarker(
+                [48.9415880125, 9.41259205],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_496639b671066985a9f97b344ea33860 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_752f73df1f1a6c096623c6daa2800206 = $(`<div id="html_752f73df1f1a6c096623c6daa2800206" style="width: 100.0%; height: 100.0%;">TSG Backnang (Süd)<br>Stadion: ELCO Arena (Etzwiesenstadion)<br><a href="https://www.fupa.net/club/tsg-backnang" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/41285560" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_496639b671066985a9f97b344ea33860.setContent(html_752f73df1f1a6c096623c6daa2800206);
+
+
+
+        circle_marker_40e924e4849bfb06db54fb2412e5dc5b.bindPopup(popup_496639b671066985a9f97b344ea33860)
+        ;
+
+
+
+
+            circle_marker_40e924e4849bfb06db54fb2412e5dc5b.bindTooltip(
+                `<div>
+                     TSG Backnang | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_648b5209cbdc0a993124cfaa0c76e5e8 = L.circleMarker(
+                [48.110996, 11.574472],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_64af417f9d4f9e17c96ed32c35c12b98 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4a5a44a741832264bbf18493e4509824 = $(`<div id="html_4a5a44a741832264bbf18493e4509824" style="width: 100.0%; height: 100.0%;">TSV 1860 München (Süd)<br>Stadion: Grünwalder Stadion<br><a href="https://www.fupa.net/match/tsv-1860-muenchen-m1-spvgg-bayreuth-m1-261013/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Städtisches_Stadion_an_der_Grünwalder_Straße" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_64af417f9d4f9e17c96ed32c35c12b98.setContent(html_4a5a44a741832264bbf18493e4509824);
+
+
+
+        circle_marker_648b5209cbdc0a993124cfaa0c76e5e8.bindPopup(popup_64af417f9d4f9e17c96ed32c35c12b98)
+        ;
+
+
+
+
+            circle_marker_648b5209cbdc0a993124cfaa0c76e5e8.bindTooltip(
+                `<div>
+                     TSV 1860 München | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_46a99680c195ed7554010b2c83c7c2c8 = L.circleMarker(
+                [50.3296341, 10.4324094],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_cea85967198ca6856871659e75796db6 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_000835b459d0355059740519ed7a770a = $(`<div id="html_000835b459d0355059740519ed7a770a" style="width: 100.0%; height: 100.0%;">TSV Aubstadt (Ost)<br>Stadion: NGN-Arena<br><a href="https://www.fupa.net/match/tsv-aubstadt-m1-fv-illertissen-m1-261013/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/103891118" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_cea85967198ca6856871659e75796db6.setContent(html_000835b459d0355059740519ed7a770a);
+
+
+
+        circle_marker_46a99680c195ed7554010b2c83c7c2c8.bindPopup(popup_cea85967198ca6856871659e75796db6)
+        ;
+
+
+
+
+            circle_marker_46a99680c195ed7554010b2c83c7c2c8.bindTooltip(
+                `<div>
+                     TSV Aubstadt | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_0702e9afe086bd4d6c09a35213f86f44 = L.circleMarker(
+                [48.35541667, 10.87611111],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_ade62d0ac82732785a97953d201e569d = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_dc0df1c0a1888f1705abdd57b321d289 = $(`<div id="html_dc0df1c0a1888f1705abdd57b321d289" style="width: 100.0%; height: 100.0%;">TSV Schwaben Augsburg (Süd)<br>Stadion: Rosenaustadion<br><a href="https://www.fupa.net/match/tsv-schwaben-augsburg-m1-tsv-aubstadt-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Rosenaustadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_ade62d0ac82732785a97953d201e569d.setContent(html_dc0df1c0a1888f1705abdd57b321d289);
+
+
+
+        circle_marker_0702e9afe086bd4d6c09a35213f86f44.bindPopup(popup_ade62d0ac82732785a97953d201e569d)
+        ;
+
+
+
+
+            circle_marker_0702e9afe086bd4d6c09a35213f86f44.bindTooltip(
+                `<div>
+                     TSV Schwaben Augsburg | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_6519c2bd5d1564fc32c3d3aa119703af = L.circleMarker(
+                [50.741305, 8.19008],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_ddc2ca8ab8522736c9f73683483ab6da = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_abed21fc0339954d8684ec37b6852776 = $(`<div id="html_abed21fc0339954d8684ec37b6852776" style="width: 100.0%; height: 100.0%;">TSV Steinbach Haiger (West)<br>Stadion: Sportzentrum Haarwasen Haiger<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/750296487" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_ddc2ca8ab8522736c9f73683483ab6da.setContent(html_abed21fc0339954d8684ec37b6852776);
+
+
+
+        circle_marker_6519c2bd5d1564fc32c3d3aa119703af.bindPopup(popup_ddc2ca8ab8522736c9f73683483ab6da)
+        ;
+
+
+
+
+            circle_marker_6519c2bd5d1564fc32c3d3aa119703af.bindTooltip(
+                `<div>
+                     TSV Steinbach Haiger | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_93be5b806650dffc4ddf59da85e09e7f = L.circleMarker(
+                [53.49270105, 10.357440775],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8f15df58f6178938e637ca30e46dc994 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_034f2e3c2bb124f85fe28d7b032b635e = $(`<div id="html_034f2e3c2bb124f85fe28d7b032b635e" style="width: 100.0%; height: 100.0%;">TuS Dassendorf (Nord)<br>Stadion: Stadion am Wendelweg<br><a href="https://www.fupa.net/club/tus-dassendorf" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/173133274" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_8f15df58f6178938e637ca30e46dc994.setContent(html_034f2e3c2bb124f85fe28d7b032b635e);
+
+
+
+        circle_marker_93be5b806650dffc4ddf59da85e09e7f.bindPopup(popup_8f15df58f6178938e637ca30e46dc994)
+        ;
+
+
+
+
+            circle_marker_93be5b806650dffc4ddf59da85e09e7f.bindTooltip(
+                `<div>
+                     TuS Dassendorf | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_770b925cfe11b3b20985d626cc2a1f25 = L.circleMarker(
+                [50.33047222, 7.58661111],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_362202badafb613682aa030f724e3aac = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4bea0f5637005b3bd3460fe73eb21158 = $(`<div id="html_4bea0f5637005b3bd3460fe73eb21158" style="width: 100.0%; height: 100.0%;">TuS Koblenz (West)<br>Stadion: Stadion Oberwerth<br><a href="https://www.fupa.net/club/tus-koblenz" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_Oberwerth" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_362202badafb613682aa030f724e3aac.setContent(html_4bea0f5637005b3bd3460fe73eb21158);
+
+
+
+        circle_marker_770b925cfe11b3b20985d626cc2a1f25.bindPopup(popup_362202badafb613682aa030f724e3aac)
+        ;
+
+
+
+
+            circle_marker_770b925cfe11b3b20985d626cc2a1f25.bindTooltip(
+                `<div>
+                     TuS Koblenz | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c0e7a5654a9a3cb29921f9e374308dfb = L.circleMarker(
+                [52.3663274, 14.0352782],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_f036b97c2971ebc95d9535d2dfa2083e = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_2bb4edc7572c9d75d68bcea35b7e2e04 = $(`<div id="html_2bb4edc7572c9d75d68bcea35b7e2e04" style="width: 100.0%; height: 100.0%;">VSG Altglienicke (Ost)<br>Stadion: Spree-Arena<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_Nordost_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/96391455" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-14</div>`)[0];
+                popup_f036b97c2971ebc95d9535d2dfa2083e.setContent(html_2bb4edc7572c9d75d68bcea35b7e2e04);
+
+
+
+        circle_marker_c0e7a5654a9a3cb29921f9e374308dfb.bindPopup(popup_f036b97c2971ebc95d9535d2dfa2083e)
+        ;
+
+
+
+
+            circle_marker_c0e7a5654a9a3cb29921f9e374308dfb.bindTooltip(
+                `<div>
+                     VSG Altglienicke | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_458b11dd89cc86ec32256322449d5d22 = L.circleMarker(
+                [51.162561, 6.951492],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5749f9c4861b04c8ac4e54a69c4f6a04 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_dfabb8566ec74e35a3bd74095f96e6d5 = $(`<div id="html_dfabb8566ec74e35a3bd74095f96e6d5" style="width: 100.0%; height: 100.0%;">VfB 03 Hilden (West)<br>Stadion: Stadion am Bandsbusch<br><a href="https://www.vfb-hilden.de/details-registrierung/vfb-03-hilden-1-fc-bocholt-regionalliga-west" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Stadion_am_Bandsbusch" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_5749f9c4861b04c8ac4e54a69c4f6a04.setContent(html_dfabb8566ec74e35a3bd74095f96e6d5);
+
+
+
+        circle_marker_458b11dd89cc86ec32256322449d5d22.bindPopup(popup_5749f9c4861b04c8ac4e54a69c4f6a04)
+        ;
+
+
+
+
+            circle_marker_458b11dd89cc86ec32256322449d5d22.bindTooltip(
+                `<div>
+                     VfB 03 Hilden | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c029597c4f742fc2897ff6c61f85e91a = L.circleMarker(
+                [48.8877505, 11.1922818],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_13f52e5cd6ef083985d51e97c0ce8400 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_568726df80eafc48a22122204ea55aa6 = $(`<div id="html_568726df80eafc48a22122204ea55aa6" style="width: 100.0%; height: 100.0%;">VfB Eichstätt (Süd)<br>Stadion: Hirsch-Sportpark<br><a href="https://www.vfb-eichstaett.de/stadion" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/652930200" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_13f52e5cd6ef083985d51e97c0ce8400.setContent(html_568726df80eafc48a22122204ea55aa6);
+
+
+
+        circle_marker_c029597c4f742fc2897ff6c61f85e91a.bindPopup(popup_13f52e5cd6ef083985d51e97c0ce8400)
+        ;
+
+
+
+
+            circle_marker_c029597c4f742fc2897ff6c61f85e91a.bindTooltip(
+                `<div>
+                     VfB Eichstätt | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_02bca11cf97f2fffe72e17337f6f1760 = L.circleMarker(
+                [51.87636389, 11.05009722],
+                {"bubblingMouseEvents": true, "color": "#16a34a", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a34a", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_69034490296c27da314959ea9f81da7c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b8ff0bee941b1997e1a2e21b0b7c3743 = $(`<div id="html_b8ff0bee941b1997e1a2e21b0b7c3743" style="width: 100.0%; height: 100.0%;">VfB Germania Halberstadt (Ost)<br>Stadion: Friedensstadion<br><a href="https://www.fupa.net/club/vfb-germania-halberstadt" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Friedensstadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_69034490296c27da314959ea9f81da7c.setContent(html_b8ff0bee941b1997e1a2e21b0b7c3743);
+
+
+
+        circle_marker_02bca11cf97f2fffe72e17337f6f1760.bindPopup(popup_69034490296c27da314959ea9f81da7c)
+        ;
+
+
+
+
+            circle_marker_02bca11cf97f2fffe72e17337f6f1760.bindTooltip(
+                `<div>
+                     VfB Germania Halberstadt | Ost
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_54d61712e813e29e5be6e49d242f2f99 = L.circleMarker(
+                [51.522, 7.1719],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_72a3e7395dc5e4bc5d97a5a7fa58c4ae = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_20c7bcd7b3e70ea52ab9567308c905ef = $(`<div id="html_20c7bcd7b3e70ea52ab9567308c905ef" style="width: 100.0%; height: 100.0%;">VfL Bochum II (West)<br>Stadion: Mondpalast-Arena<br><a href="https://www.vfl-bochum.de/aktuelles/2026/10/talentwerk-wochenende-u21-u19-und-u17-am-sonntag-gefordert/" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Mondpalast-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_72a3e7395dc5e4bc5d97a5a7fa58c4ae.setContent(html_20c7bcd7b3e70ea52ab9567308c905ef);
+
+
+
+        circle_marker_54d61712e813e29e5be6e49d242f2f99.bindPopup(popup_72a3e7395dc5e4bc5d97a5a7fa58c4ae)
+        ;
+
+
+
+
+            circle_marker_54d61712e813e29e5be6e49d242f2f99.bindTooltip(
+                `<div>
+                     VfL Bochum II | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_963aa587edaedbcc29677192329c3242 = L.circleMarker(
+                [50.7495313, 6.2688634],
+                {"bubblingMouseEvents": true, "color": "#dc2626", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#dc2626", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_fa759d7a347fd47a90cfb5b845a26986 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_2a608c0c552e848cc5e4ca13c26c4dc4 = $(`<div id="html_2a608c0c552e848cc5e4ca13c26c4dc4" style="width: 100.0%; height: 100.0%;">VfL Vichttal (West)<br>Stadion: EWV-Arena / Sportpark Dörenberg<br><a href="https://www.fupa.net/club/vfl-08-vichttal-mausbach-vicht-zweifall" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/92189769" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Punkt innerhalb der Sportanlage<br>Geprüft: 2026-10-21</div>`)[0];
+                popup_fa759d7a347fd47a90cfb5b845a26986.setContent(html_2a608c0c552e848cc5e4ca13c26c4dc4);
+
+
+
+        circle_marker_963aa587edaedbcc29677192329c3242.bindPopup(popup_fa759d7a347fd47a90cfb5b845a26986)
+        ;
+
+
+
+
+            circle_marker_963aa587edaedbcc29677192329c3242.bindTooltip(
+                `<div>
+                     VfL Vichttal | West
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_51e7d8b443ca40f69a5520a326c20310 = L.circleMarker(
+                [48.840545, 10.072193],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_1c304ac14e02d524eb0d4a9a6b5b2270 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b15b0e33b2c153cc771119c88861aec3 = $(`<div id="html_b15b0e33b2c153cc771119c88861aec3" style="width: 100.0%; height: 100.0%;">VfR Aalen (Süd)<br>Stadion: Bediani-Arena<br><a href="https://www.fupa.net/match/vfr-aalen-m1-fc-astoria-walldorf-m1-261017/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Bediani-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_1c304ac14e02d524eb0d4a9a6b5b2270.setContent(html_b15b0e33b2c153cc771119c88861aec3);
+
+
+
+        circle_marker_51e7d8b443ca40f69a5520a326c20310.bindPopup(popup_1c304ac14e02d524eb0d4a9a6b5b2270)
+        ;
+
+
+
+
+            circle_marker_51e7d8b443ca40f69a5520a326c20310.bindTooltip(
+                `<div>
+                     VfR Aalen | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_07bf89085198e4f62aa7f1e5faa3fb51 = L.circleMarker(
+                [49.47916667, 8.49944444],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3883d92bf1dcfcd311429adad93eddb1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_60431a7d60d33f90aa5cee45da99978e = $(`<div id="html_60431a7d60d33f90aa5cee45da99978e" style="width: 100.0%; height: 100.0%;">VfR Mannheim (Süd)<br>Stadion: Rhein-Neckar-Stadion<br><a href="https://de.wikipedia.org/wiki/Fu%C3%9Fball-Regionalliga_S%C3%BCdwest_2026/27" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Rhein-Neckar-Stadion" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_3883d92bf1dcfcd311429adad93eddb1.setContent(html_60431a7d60d33f90aa5cee45da99978e);
+
+
+
+        circle_marker_07bf89085198e4f62aa7f1e5faa3fb51.bindPopup(popup_3883d92bf1dcfcd311429adad93eddb1)
+        ;
+
+
+
+
+            circle_marker_07bf89085198e4f62aa7f1e5faa3fb51.bindTooltip(
+                `<div>
+                     VfR Mannheim | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_54245c524457e4b492630f7f5fa61a0a = L.circleMarker(
+                [54.0892, 9.955584],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_90a19e488344bea100a73f1de73310e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_04c52548786c5a1d56f8d785cc211d8b = $(`<div id="html_04c52548786c5a1d56f8d785cc211d8b" style="width: 100.0%; height: 100.0%;">VfR Neumünster (Nord)<br>Stadion: Grümmi-Arena<br><a href="https://www.fupa.net/club/vfr-neumuenster" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Grümmi-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-21</div>`)[0];
+                popup_90a19e488344bea100a73f1de73310e4.setContent(html_04c52548786c5a1d56f8d785cc211d8b);
+
+
+
+        circle_marker_54245c524457e4b492630f7f5fa61a0a.bindPopup(popup_90a19e488344bea100a73f1de73310e4)
+        ;
+
+
+
+
+            circle_marker_54245c524457e4b492630f7f5fa61a0a.bindTooltip(
+                `<div>
+                     VfR Neumünster | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_4fd2cbe3eff12922c8fb3e1f53563f56 = L.circleMarker(
+                [48.17888889, 12.83638889],
+                {"bubblingMouseEvents": true, "color": "#f59e0b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f59e0b", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_830b4ab7a0ab08bc57f4a950f5221a4f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_a504447d6dbc184455bded45bbb899b7 = $(`<div id="html_a504447d6dbc184455bded45bbb899b7" style="width: 100.0%; height: 100.0%;">Wacker Burghausen (Süd)<br>Stadion: Wacker-Arena<br><a href="https://www.fupa.net/match/sv-wacker-burghausen-m1-spvgg-unterhaching-m1-261030/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Wacker-Arena" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_830b4ab7a0ab08bc57f4a950f5221a4f.setContent(html_a504447d6dbc184455bded45bbb899b7);
+
+
+
+        circle_marker_4fd2cbe3eff12922c8fb3e1f53563f56.bindPopup(popup_830b4ab7a0ab08bc57f4a950f5221a4f)
+        ;
+
+
+
+
+            circle_marker_4fd2cbe3eff12922c8fb3e1f53563f56.bindTooltip(
+                `<div>
+                     Wacker Burghausen | Süd
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_51cc4f6b7e961982221008eb62c57ec1 = L.circleMarker(
+                [53.063775, 8.842982],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_e9d6c996a76e24203218119e70f59890 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_d7f05465270130f051ab0e76bbdf96c4 = $(`<div id="html_d7f05465270130f051ab0e76bbdf96c4" style="width: 100.0%; height: 100.0%;">Werder Bremen II (Nord)<br>Stadion: Weserstadion Platz 11<br><a href="https://www.fupa.net/match/sv-werder-bremen-m2-sv-atlas-delmenhorst-m1-261009/info" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://de.wikipedia.org/wiki/Weserstadion_Platz_11" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_e9d6c996a76e24203218119e70f59890.setContent(html_d7f05465270130f051ab0e76bbdf96c4);
+
+
+
+        circle_marker_51cc4f6b7e961982221008eb62c57ec1.bindPopup(popup_e9d6c996a76e24203218119e70f59890)
+        ;
+
+
+
+
+            circle_marker_51cc4f6b7e961982221008eb62c57ec1.bindTooltip(
+                `<div>
+                     Werder Bremen II | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_adb30197df8e93dbaa66b321b7f0b17f = L.circleMarker(
+                [51.6379505, 7.8679407],
+                {"bubblingMouseEvents": true, "color": "#2563eb", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2563eb", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_0e8033fe6a0177f125e720eb7c25c452 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_123f3131f35fb02d2fdd89b64cb08d54 = $(`<div id="html_123f3131f35fb02d2fdd89b64cb08d54" style="width: 100.0%; height: 100.0%;">Westfalia Rhynern (Nord)<br>Stadion: Kümpel+Hellmeister Arena<br><a href="https://www.westfalia-rhynern.de/verein/ueber-den-verein/sportstaetten" target="_blank" rel="noopener">Quelle: Heimspielstätte</a><br><a href="https://www.openstreetmap.org/way/992009922" target="_blank" rel="noopener">Quelle: Koordinaten</a><br>Geprüft: 2026-10-14</div>`)[0];
+                popup_0e8033fe6a0177f125e720eb7c25c452.setContent(html_123f3131f35fb02d2fdd89b64cb08d54);
+
+
+
+        circle_marker_adb30197df8e93dbaa66b321b7f0b17f.bindPopup(popup_0e8033fe6a0177f125e720eb7c25c452)
+        ;
+
+
+
+
+            circle_marker_adb30197df8e93dbaa66b321b7f0b17f.bindTooltip(
+                `<div>
+                     Westfalia Rhynern | Nord
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_58685a2600a276add8acc8b9d3c9e975 = L.circleMarker(
+                [49.434697, 7.776466],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4b1d0199b42caf82b9890d40be86d84b = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c7e2ee4099bcb70120982651e91a7098 = $(`<div id="html_c7e2ee4099bcb70120982651e91a7098" style="width: 100.0%; height: 100.0%;">1. FC Kaiserslautern II (Absteiger Regionalliga)</div>`)[0];
+                popup_4b1d0199b42caf82b9890d40be86d84b.setContent(html_c7e2ee4099bcb70120982651e91a7098);
+
+
+
+        circle_marker_58685a2600a276add8acc8b9d3c9e975.bindPopup(popup_4b1d0199b42caf82b9890d40be86d84b)
+        ;
+
+
+
+
+            circle_marker_58685a2600a276add8acc8b9d3c9e975.bindTooltip(
+                `<div>
+                     1. FC Kaiserslautern II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c1011974410b18ddb21037ecd7506ef2 = L.circleMarker(
+                [49.43566111, 11.13218056],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_6e2a980b486ce18d94ff8a028e49175d = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4eacdefd76e346a73551ae9b6de1ac0c = $(`<div id="html_4eacdefd76e346a73551ae9b6de1ac0c" style="width: 100.0%; height: 100.0%;">1. FC Nürnberg II (Absteiger Regionalliga)</div>`)[0];
+                popup_6e2a980b486ce18d94ff8a028e49175d.setContent(html_4eacdefd76e346a73551ae9b6de1ac0c);
+
+
+
+        circle_marker_c1011974410b18ddb21037ecd7506ef2.bindPopup(popup_6e2a980b486ce18d94ff8a028e49175d)
+        ;
+
+
+
+
+            circle_marker_c1011974410b18ddb21037ecd7506ef2.bindTooltip(
+                `<div>
+                     1. FC Nürnberg II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_e86799c41a6e28266aa851a5d2f79c29 = L.circleMarker(
+                [50.00083333, 8.24555556],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_58f56297b67619bdf4dfa12c4dbb1942 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_97c99bdf343fb4aea0f94fa9b6f744f2 = $(`<div id="html_97c99bdf343fb4aea0f94fa9b6f744f2" style="width: 100.0%; height: 100.0%;">1. FSV Mainz 05 II (Absteiger Regionalliga)</div>`)[0];
+                popup_58f56297b67619bdf4dfa12c4dbb1942.setContent(html_97c99bdf343fb4aea0f94fa9b6f744f2);
+
+
+
+        circle_marker_e86799c41a6e28266aa851a5d2f79c29.bindPopup(popup_58f56297b67619bdf4dfa12c4dbb1942)
+        ;
+
+
+
+
+            circle_marker_e86799c41a6e28266aa851a5d2f79c29.bindTooltip(
+                `<div>
+                     1. FSV Mainz 05 II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_06d4c9e8fb1b10f655364f7ae2f60858 = L.circleMarker(
+                [52.43263889, 13.35483333],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_0a18b79a6ee44a6d53dd8f3b1e4c50ed = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_86e5029c7f14d764b38a38fcd7b94ca6 = $(`<div id="html_86e5029c7f14d764b38a38fcd7b94ca6" style="width: 100.0%; height: 100.0%;">BFC Preussen (Absteiger Regionalliga)</div>`)[0];
+                popup_0a18b79a6ee44a6d53dd8f3b1e4c50ed.setContent(html_86e5029c7f14d764b38a38fcd7b94ca6);
+
+
+
+        circle_marker_06d4c9e8fb1b10f655364f7ae2f60858.bindPopup(popup_0a18b79a6ee44a6d53dd8f3b1e4c50ed)
+        ;
+
+
+
+
+            circle_marker_06d4c9e8fb1b10f655364f7ae2f60858.bindTooltip(
+                `<div>
+                     BFC Preussen | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d23d36a3b94cb145d65df06f9cbdce58 = L.circleMarker(
+                [51.358056, 12.307778],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5b4d2e63de62eec5613f8164cbf84ff0 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_519464705fbfdfb4713c784f05af899f = $(`<div id="html_519464705fbfdfb4713c784f05af899f" style="width: 100.0%; height: 100.0%;">BSG Chemie Leipzig (Absteiger Regionalliga)</div>`)[0];
+                popup_5b4d2e63de62eec5613f8164cbf84ff0.setContent(html_519464705fbfdfb4713c784f05af899f);
+
+
+
+        circle_marker_d23d36a3b94cb145d65df06f9cbdce58.bindPopup(popup_5b4d2e63de62eec5613f8164cbf84ff0)
+        ;
+
+
+
+
+            circle_marker_d23d36a3b94cb145d65df06f9cbdce58.bindTooltip(
+                `<div>
+                     BSG Chemie Leipzig | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_ef475fc9daed62786d143e0baa89bf7a = L.circleMarker(
+                [50.748125, 7.08449722],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_7da880504a5a11016432157b39813808 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_93cb41fa5376d91de6c73089cf7e863b = $(`<div id="html_93cb41fa5376d91de6c73089cf7e863b" style="width: 100.0%; height: 100.0%;">Bonner SC (Absteiger Regionalliga)</div>`)[0];
+                popup_7da880504a5a11016432157b39813808.setContent(html_93cb41fa5376d91de6c73089cf7e863b);
+
+
+
+        circle_marker_ef475fc9daed62786d143e0baa89bf7a.bindPopup(popup_7da880504a5a11016432157b39813808)
+        ;
+
+
+
+
+            circle_marker_ef475fc9daed62786d143e0baa89bf7a.bindTooltip(
+                `<div>
+                     Bonner SC | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_001c824a4ee72e2fb45814291e432370 = L.circleMarker(
+                [53.086732, 8.794422],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_03d133455e215553bf4d516f12bc686e = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_953dad651fb5475b95d7dece9f0f10f9 = $(`<div id="html_953dad651fb5475b95d7dece9f0f10f9" style="width: 100.0%; height: 100.0%;">Bremer SV (Absteiger Regionalliga)</div>`)[0];
+                popup_03d133455e215553bf4d516f12bc686e.setContent(html_953dad651fb5475b95d7dece9f0f10f9);
+
+
+
+        circle_marker_001c824a4ee72e2fb45814291e432370.bindPopup(popup_03d133455e215553bf4d516f12bc686e)
+        ;
+
+
+
+
+            circle_marker_001c824a4ee72e2fb45814291e432370.bindTooltip(
+                `<div>
+                     Bremer SV | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_49d52a1ccc6af0489631d58549084dbe = L.circleMarker(
+                [48.110996, 11.574472],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_70bd057ece27c986e8f7002761a52782 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4304de2d51b39c58758a35f7a4ed166e = $(`<div id="html_4304de2d51b39c58758a35f7a4ed166e" style="width: 100.0%; height: 100.0%;">FC Bayern München II (Absteiger Regionalliga)</div>`)[0];
+                popup_70bd057ece27c986e8f7002761a52782.setContent(html_4304de2d51b39c58758a35f7a4ed166e);
+
+
+
+        circle_marker_49d52a1ccc6af0489631d58549084dbe.bindPopup(popup_70bd057ece27c986e8f7002761a52782)
+        ;
+
+
+
+
+            circle_marker_49d52a1ccc6af0489631d58549084dbe.bindTooltip(
+                `<div>
+                     FC Bayern München II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_f4f3c33f9679b9367c1345b2a1de0ce2 = L.circleMarker(
+                [53.676986, 9.977053],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8a080db438b0a37c45bb29f70ec64dbd = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_2a2bb97f6365725d502e1223c2d35086 = $(`<div id="html_2a2bb97f6365725d502e1223c2d35086" style="width: 100.0%; height: 100.0%;">FC St. Pauli II (Absteiger Regionalliga)</div>`)[0];
+                popup_8a080db438b0a37c45bb29f70ec64dbd.setContent(html_2a2bb97f6365725d502e1223c2d35086);
+
+
+
+        circle_marker_f4f3c33f9679b9367c1345b2a1de0ce2.bindPopup(popup_8a080db438b0a37c45bb29f70ec64dbd)
+        ;
+
+
+
+
+            circle_marker_f4f3c33f9679b9367c1345b2a1de0ce2.bindTooltip(
+                `<div>
+                     FC St. Pauli II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_7933ec8fa064ace78cf6698f5dc77279 = L.circleMarker(
+                [49.3151713, 8.6423121],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_b81d8b8fc0da68862f72235f7cf104d4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_6e50488aca10f518c034b78fa1e98893 = $(`<div id="html_6e50488aca10f518c034b78fa1e98893" style="width: 100.0%; height: 100.0%;">FC-Astoria Walldorf (Absteiger Regionalliga)</div>`)[0];
+                popup_b81d8b8fc0da68862f72235f7cf104d4.setContent(html_6e50488aca10f518c034b78fa1e98893);
+
+
+
+        circle_marker_7933ec8fa064ace78cf6698f5dc77279.bindPopup(popup_b81d8b8fc0da68862f72235f7cf104d4)
+        ;
+
+
+
+
+            circle_marker_7933ec8fa064ace78cf6698f5dc77279.bindTooltip(
+                `<div>
+                     FC-Astoria Walldorf | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_858ef74173aea9f18a49585e40959fe8 = L.circleMarker(
+                [52.1032984, 13.1482959],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_3f032edbfcb73da8eeb014187526fe69 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_c190cc45b6138a0675c2639382b562d1 = $(`<div id="html_c190cc45b6138a0675c2639382b562d1" style="width: 100.0%; height: 100.0%;">FSV 63 Luckenwalde (Absteiger Regionalliga)</div>`)[0];
+                popup_3f032edbfcb73da8eeb014187526fe69.setContent(html_c190cc45b6138a0675c2639382b562d1);
+
+
+
+        circle_marker_858ef74173aea9f18a49585e40959fe8.bindPopup(popup_3f032edbfcb73da8eeb014187526fe69)
+        ;
+
+
+
+
+            circle_marker_858ef74173aea9f18a49585e40959fe8.bindTooltip(
+                `<div>
+                     FSV 63 Luckenwalde | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_b1e4c8b231e762748c1696244a89f849 = L.circleMarker(
+                [53.587398, 9.969657],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_ebe28a767613163fff4a64e216ab1714 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b9953b98027dc2488fbe791d57347819 = $(`<div id="html_b9953b98027dc2488fbe791d57347819" style="width: 100.0%; height: 100.0%;">Hamburger SV II (Absteiger Regionalliga)</div>`)[0];
+                popup_ebe28a767613163fff4a64e216ab1714.setContent(html_b9953b98027dc2488fbe791d57347819);
+
+
+
+        circle_marker_b1e4c8b231e762748c1696244a89f849.bindPopup(popup_ebe28a767613163fff4a64e216ab1714)
+        ;
+
+
+
+
+            circle_marker_b1e4c8b231e762748c1696244a89f849.bindTooltip(
+                `<div>
+                     Hamburger SV II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_e95f0a2b965851b81500e6a5f8dfc12c = L.circleMarker(
+                [51.29861111, 9.48416667],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5397c03bd3623d66ffc119b4baaa79de = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_be5e2ea40dfce7356b577c8943f00129 = $(`<div id="html_be5e2ea40dfce7356b577c8943f00129" style="width: 100.0%; height: 100.0%;">KSV Hessen Kassel (Absteiger Regionalliga)</div>`)[0];
+                popup_5397c03bd3623d66ffc119b4baaa79de.setContent(html_be5e2ea40dfce7356b577c8943f00129);
+
+
+
+        circle_marker_e95f0a2b965851b81500e6a5f8dfc12c.bindPopup(popup_5397c03bd3623d66ffc119b4baaa79de)
+        ;
+
+
+
+
+            circle_marker_e95f0a2b965851b81500e6a5f8dfc12c.bindTooltip(
+                `<div>
+                     KSV Hessen Kassel | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_c17a6849b193e3c19e0f8f10f198b664 = L.circleMarker(
+                [51.83361667, 8.32201389],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_6f8e07a179d4d4f1d8237b55e6b59cae = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_457ee815aa5bd7496d4ed653ec3950f5 = $(`<div id="html_457ee815aa5bd7496d4ed653ec3950f5" style="width: 100.0%; height: 100.0%;">SC Wiedenbrück (Absteiger Regionalliga)</div>`)[0];
+                popup_6f8e07a179d4d4f1d8237b55e6b59cae.setContent(html_457ee815aa5bd7496d4ed653ec3950f5);
+
+
+
+        circle_marker_c17a6849b193e3c19e0f8f10f198b664.bindPopup(popup_6f8e07a179d4d4f1d8237b55e6b59cae)
+        ;
+
+
+
+
+            circle_marker_c17a6849b193e3c19e0f8f10f198b664.bindTooltip(
+                `<div>
+                     SC Wiedenbrück | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_4521a4484f24cbac14f887ccbd83f3f7 = L.circleMarker(
+                [51.48555556, 7.11861111],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_b36458004bb8e38a90728c801285e98a = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_aa0b678abbb90325997cc012616b96d1 = $(`<div id="html_aa0b678abbb90325997cc012616b96d1" style="width: 100.0%; height: 100.0%;">SG Wattenscheid 09 (Absteiger Regionalliga)</div>`)[0];
+                popup_b36458004bb8e38a90728c801285e98a.setContent(html_aa0b678abbb90325997cc012616b96d1);
+
+
+
+        circle_marker_4521a4484f24cbac14f887ccbd83f3f7.bindPopup(popup_b36458004bb8e38a90728c801285e98a)
+        ;
+
+
+
+
+            circle_marker_4521a4484f24cbac14f887ccbd83f3f7.bindTooltip(
+                `<div>
+                     SG Wattenscheid 09 | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_ae7f94d645dd9bb64b35c94eb1b1610e = L.circleMarker(
+                [53.0913877, 8.0580029],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4e7639bc3349f5ab3f05804c6b1858f2 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b996488c942d4e31276e419154dc3ce4 = $(`<div id="html_b996488c942d4e31276e419154dc3ce4" style="width: 100.0%; height: 100.0%;">SSV Jeddeloh (Absteiger Regionalliga)</div>`)[0];
+                popup_4e7639bc3349f5ab3f05804c6b1858f2.setContent(html_b996488c942d4e31276e419154dc3ce4);
+
+
+
+        circle_marker_ae7f94d645dd9bb64b35c94eb1b1610e.bindPopup(popup_4e7639bc3349f5ab3f05804c6b1858f2)
+        ;
+
+
+
+
+            circle_marker_ae7f94d645dd9bb64b35c94eb1b1610e.bindTooltip(
+                `<div>
+                     SSV Jeddeloh | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_f220e1973331b5e4919b87857d4fcd17 = L.circleMarker(
+                [48.404503, 10.009542],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4ec557e918752997542a121804a1041f = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4ef948ffdbb8405c3b6f4f95f044a708 = $(`<div id="html_4ef948ffdbb8405c3b6f4f95f044a708" style="width: 100.0%; height: 100.0%;">SSV Ulm 1846 (Absteiger Regionalliga)</div>`)[0];
+                popup_4ec557e918752997542a121804a1041f.setContent(html_4ef948ffdbb8405c3b6f4f95f044a708);
+
+
+
+        circle_marker_f220e1973331b5e4919b87857d4fcd17.bindPopup(popup_4ec557e918752997542a121804a1041f)
+        ;
+
+
+
+
+            circle_marker_f220e1973331b5e4919b87857d4fcd17.bindTooltip(
+                `<div>
+                     SSV Ulm 1846 | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_8f9069f221f29c6b917277b5937d379a = L.circleMarker(
+                [50.99394968, 7.11969316],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a1969343096f001ac14cad1182a1132c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_4fe19d2f7f3a8363063ef0b09ddc16a1 = $(`<div id="html_4fe19d2f7f3a8363063ef0b09ddc16a1" style="width: 100.0%; height: 100.0%;">SV Bergisch Gladbach 09 (Absteiger Regionalliga)</div>`)[0];
+                popup_a1969343096f001ac14cad1182a1132c.setContent(html_4fe19d2f7f3a8363063ef0b09ddc16a1);
+
+
+
+        circle_marker_8f9069f221f29c6b917277b5937d379a.bindPopup(popup_a1969343096f001ac14cad1182a1132c)
+        ;
+
+
+
+
+            circle_marker_8f9069f221f29c6b917277b5937d379a.bindTooltip(
+                `<div>
+                     SV Bergisch Gladbach 09 | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_8864f9b236bcd9ac3ba52514766469e7 = L.circleMarker(
+                [52.46916667, 13.41666667],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_7e55173f82b54ce23422064bda13f192 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1ce2865208a706b00cd843d65471bbba = $(`<div id="html_1ce2865208a706b00cd843d65471bbba" style="width: 100.0%; height: 100.0%;">SV Tasmania Berlin (Absteiger Regionalliga)</div>`)[0];
+                popup_7e55173f82b54ce23422064bda13f192.setContent(html_1ce2865208a706b00cd843d65471bbba);
+
+
+
+        circle_marker_8864f9b236bcd9ac3ba52514766469e7.bindPopup(popup_7e55173f82b54ce23422064bda13f192)
+        ;
+
+
+
+
+            circle_marker_8864f9b236bcd9ac3ba52514766469e7.bindTooltip(
+                `<div>
+                     SV Tasmania Berlin | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_cf8394b31c32d288fc195d1846fb1a4d = L.circleMarker(
+                [49.3064171, 10.557135],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_7b54a1bb2235c93474752305ae17d1a4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_b3c8a057a3e0059046260814e1dbf5c3 = $(`<div id="html_b3c8a057a3e0059046260814e1dbf5c3" style="width: 100.0%; height: 100.0%;">SpVgg Ansbach 09 (Absteiger Regionalliga)</div>`)[0];
+                popup_7b54a1bb2235c93474752305ae17d1a4.setContent(html_b3c8a057a3e0059046260814e1dbf5c3);
+
+
+
+        circle_marker_cf8394b31c32d288fc195d1846fb1a4d.bindPopup(popup_7b54a1bb2235c93474752305ae17d1a4)
+        ;
+
+
+
+
+            circle_marker_cf8394b31c32d288fc195d1846fb1a4d.bindTooltip(
+                `<div>
+                     SpVgg Ansbach 09 | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_d759aca8cd80a56cbb1cdd223468d07d = L.circleMarker(
+                [49.4937551, 10.9089799],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_485d112961d9ca47f13bba444f7645ce = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1c65a46d47ce73369a9e125edfd481c4 = $(`<div id="html_1c65a46d47ce73369a9e125edfd481c4" style="width: 100.0%; height: 100.0%;">SpVgg Greuther Fürth II (Absteiger Regionalliga)</div>`)[0];
+                popup_485d112961d9ca47f13bba444f7645ce.setContent(html_1c65a46d47ce73369a9e125edfd481c4);
+
+
+
+        circle_marker_d759aca8cd80a56cbb1cdd223468d07d.bindPopup(popup_485d112961d9ca47f13bba444f7645ce)
+        ;
+
+
+
+
+            circle_marker_d759aca8cd80a56cbb1cdd223468d07d.bindTooltip(
+                `<div>
+                     SpVgg Greuther Fürth II | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_605472a1ef902dad53c983e8d3890783 = L.circleMarker(
+                [52.270935, 7.920443],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_2e6db27589eb703596e380bb726108dd = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_6de1dbaca907e3c59486b481b173c44f = $(`<div id="html_6de1dbaca907e3c59486b481b173c44f" style="width: 100.0%; height: 100.0%;">Sportfreunde Lotte (Absteiger Regionalliga)</div>`)[0];
+                popup_2e6db27589eb703596e380bb726108dd.setContent(html_6de1dbaca907e3c59486b481b173c44f);
+
+
+
+        circle_marker_605472a1ef902dad53c983e8d3890783.bindPopup(popup_2e6db27589eb703596e380bb726108dd)
+        ;
+
+
+
+
+            circle_marker_605472a1ef902dad53c983e8d3890783.bindTooltip(
+                `<div>
+                     Sportfreunde Lotte | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_a42623874f318c66c73f55f72d486e8d = L.circleMarker(
+                [48.0471681, 10.8638493],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_2bc070c3d1f622ca29e419fd16771ca1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_f1beeea38beb1f8e5538bb9c5cdb87d2 = $(`<div id="html_f1beeea38beb1f8e5538bb9c5cdb87d2" style="width: 100.0%; height: 100.0%;">TSV Landsberg (Absteiger Regionalliga)</div>`)[0];
+                popup_2bc070c3d1f622ca29e419fd16771ca1.setContent(html_f1beeea38beb1f8e5538bb9c5cdb87d2);
+
+
+
+        circle_marker_a42623874f318c66c73f55f72d486e8d.bindPopup(popup_2bc070c3d1f622ca29e419fd16771ca1)
+        ;
+
+
+
+
+            circle_marker_a42623874f318c66c73f55f72d486e8d.bindTooltip(
+                `<div>
+                     TSV Landsberg | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var circle_marker_cc581c4dac011dcd0a037abb9425323f = L.circleMarker(
+                [53.88111111, 10.66888889],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 3}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_947c5467171c076c97b721c7f19c5965 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_7e0ab2340b73b82ebdecd91af4c51239 = $(`<div id="html_7e0ab2340b73b82ebdecd91af4c51239" style="width: 100.0%; height: 100.0%;">VfB Lübeck (Absteiger Regionalliga)</div>`)[0];
+                popup_947c5467171c076c97b721c7f19c5965.setContent(html_7e0ab2340b73b82ebdecd91af4c51239);
+
+
+
+        circle_marker_cc581c4dac011dcd0a037abb9425323f.bindPopup(popup_947c5467171c076c97b721c7f19c5965)
+        ;
+
+
+
+
+            circle_marker_cc581c4dac011dcd0a037abb9425323f.bindTooltip(
+                `<div>
+                     VfB Lübeck | Absteiger Regionalliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_5a793373a227a8de1a0ef8718367195b = new L.RegularPolygonMarker(
+                [51.891765, 8.388059],
+                {
+  "stroke": true,
+  "color": "#b8860b",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffd700",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 11,
+  "numberOfSides": 3,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_df1a63821d3ddda8f74217c594b86d4d = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_0029f0460975bb8e76d49524b7c50ff0 = $(`<div id="html_0029f0460975bb8e76d49524b7c50ff0" style="width: 100.0%; height: 100.0%;">FC Gütersloh (Aufsteiger in 3. Liga)</div>`)[0];
+                popup_df1a63821d3ddda8f74217c594b86d4d.setContent(html_0029f0460975bb8e76d49524b7c50ff0);
+
+
+
+        regular_polygon_marker_5a793373a227a8de1a0ef8718367195b.bindPopup(popup_df1a63821d3ddda8f74217c594b86d4d)
+        ;
+
+
+
+
+            regular_polygon_marker_5a793373a227a8de1a0ef8718367195b.bindTooltip(
+                `<div>
+                     FC Gütersloh | Aufsteiger in 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_6617a7423cc52f71920e21fe8dd2ef55 = new L.RegularPolygonMarker(
+                [50.960227, 11.037247],
+                {
+  "stroke": true,
+  "color": "#b8860b",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffd700",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 11,
+  "numberOfSides": 3,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_f51cbc60a7fb78dd175df9086526b6a1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_55034687ca4248cca419106d5a9cc88b = $(`<div id="html_55034687ca4248cca419106d5a9cc88b" style="width: 100.0%; height: 100.0%;">FC Rot-Weiß Erfurt (Aufsteiger in 3. Liga)</div>`)[0];
+                popup_f51cbc60a7fb78dd175df9086526b6a1.setContent(html_55034687ca4248cca419106d5a9cc88b);
+
+
+
+        regular_polygon_marker_6617a7423cc52f71920e21fe8dd2ef55.bindPopup(popup_f51cbc60a7fb78dd175df9086526b6a1)
+        ;
+
+
+
+
+            regular_polygon_marker_6617a7423cc52f71920e21fe8dd2ef55.bindTooltip(
+                `<div>
+                     FC Rot-Weiß Erfurt | Aufsteiger in 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_094008ee4027085181540c5b7b038355 = new L.RegularPolygonMarker(
+                [50.094743, 8.798646],
+                {
+  "stroke": true,
+  "color": "#b8860b",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffd700",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 11,
+  "numberOfSides": 3,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_bbbf5695ee8733e28138571d08654eb5 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9e9398558bedafc7ec2091304e93088c = $(`<div id="html_9e9398558bedafc7ec2091304e93088c" style="width: 100.0%; height: 100.0%;">Kickers Offenbach (Aufsteiger in 3. Liga)</div>`)[0];
+                popup_bbbf5695ee8733e28138571d08654eb5.setContent(html_9e9398558bedafc7ec2091304e93088c);
+
+
+
+        regular_polygon_marker_094008ee4027085181540c5b7b038355.bindPopup(popup_bbbf5695ee8733e28138571d08654eb5)
+        ;
+
+
+
+
+            regular_polygon_marker_094008ee4027085181540c5b7b038355.bindTooltip(
+                `<div>
+                     Kickers Offenbach | Aufsteiger in 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_6d4a16717147e6f36856ca3dc989a7ce = new L.RegularPolygonMarker(
+                [48.31495021, 12.2758913],
+                {
+  "stroke": true,
+  "color": "#b8860b",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffd700",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 11,
+  "numberOfSides": 3,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_ef64325981cd7551b3b91d2fba03eb06 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_e9e169ddad6cb307ee5ecbc7a3c5944f = $(`<div id="html_e9e169ddad6cb307ee5ecbc7a3c5944f" style="width: 100.0%; height: 100.0%;">TSV Buchbach (Aufsteiger in 3. Liga)</div>`)[0];
+                popup_ef64325981cd7551b3b91d2fba03eb06.setContent(html_e9e169ddad6cb307ee5ecbc7a3c5944f);
+
+
+
+        regular_polygon_marker_6d4a16717147e6f36856ca3dc989a7ce.bindPopup(popup_ef64325981cd7551b3b91d2fba03eb06)
+        ;
+
+
+
+
+            regular_polygon_marker_6d4a16717147e6f36856ca3dc989a7ce.bindTooltip(
+                `<div>
+                     TSV Buchbach | Aufsteiger in 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_a10d1705d9e56033b2b8557b0afa8577 = new L.RegularPolygonMarker(
+                [53.12916667, 8.20638889],
+                {
+  "stroke": true,
+  "color": "#b8860b",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffd700",
+  "fillOpacity": 0.9,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 11,
+  "numberOfSides": 3,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_1b3e750a69b85fde6ff973df12876d96 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9338e2dea23925ee5f26fa9adde08366 = $(`<div id="html_9338e2dea23925ee5f26fa9adde08366" style="width: 100.0%; height: 100.0%;">VfB Oldenburg (Aufsteiger in 3. Liga)</div>`)[0];
+                popup_1b3e750a69b85fde6ff973df12876d96.setContent(html_9338e2dea23925ee5f26fa9adde08366);
+
+
+
+        regular_polygon_marker_a10d1705d9e56033b2b8557b0afa8577.bindPopup(popup_1b3e750a69b85fde6ff973df12876d96)
+        ;
+
+
+
+
+            regular_polygon_marker_a10d1705d9e56033b2b8557b0afa8577.bindTooltip(
+                `<div>
+                     VfB Oldenburg | Aufsteiger in 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_2860d2cbd2ea5595d1c23bdedc0667bc = new L.RegularPolygonMarker(
+                [51.261635, 6.733163],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 10,
+  "numberOfSides": 4,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a690988995142452dfb9f9b72455b52c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_84c759d4c5fb50914144f16258f528fd = $(`<div id="html_84c759d4c5fb50914144f16258f528fd" style="width: 100.0%; height: 100.0%;">Fortuna Düsseldorf (Absteiger aus 3. Liga)</div>`)[0];
+                popup_a690988995142452dfb9f9b72455b52c.setContent(html_84c759d4c5fb50914144f16258f528fd);
+
+
+
+        regular_polygon_marker_2860d2cbd2ea5595d1c23bdedc0667bc.bindPopup(popup_a690988995142452dfb9f9b72455b52c)
+        ;
+
+
+
+
+            regular_polygon_marker_2860d2cbd2ea5595d1c23bdedc0667bc.bindTooltip(
+                `<div>
+                     Fortuna Düsseldorf | Absteiger aus 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_0ab8108b611e98d217105b1320564ef9 = new L.RegularPolygonMarker(
+                [51.883405, 8.513408],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 10,
+  "numberOfSides": 4,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_7b0c35b1c936372c34e14444c6868626 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_a0881443b4a2d0c825a6c4195c37586f = $(`<div id="html_a0881443b4a2d0c825a6c4195c37586f" style="width: 100.0%; height: 100.0%;">SC Verl (Absteiger aus 3. Liga)</div>`)[0];
+                popup_7b0c35b1c936372c34e14444c6868626.setContent(html_a0881443b4a2d0c825a6c4195c37586f);
+
+
+
+        regular_polygon_marker_0ab8108b611e98d217105b1320564ef9.bindPopup(popup_7b0c35b1c936372c34e14444c6868626)
+        ;
+
+
+
+
+            regular_polygon_marker_0ab8108b611e98d217105b1320564ef9.bindTooltip(
+                `<div>
+                     SC Verl | Absteiger aus 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_c80f8d98b0923422000407b1357e0f14 = new L.RegularPolygonMarker(
+                [48.979865, 9.394126],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 10,
+  "numberOfSides": 4,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_16d2dd1e3d6f002b2f898c792934246b = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_2733d9f9b468951ab33ae3351e0109f2 = $(`<div id="html_2733d9f9b468951ab33ae3351e0109f2" style="width: 100.0%; height: 100.0%;">SG Sonnenhof Großaspach (Absteiger aus 3. Liga)</div>`)[0];
+                popup_16d2dd1e3d6f002b2f898c792934246b.setContent(html_2733d9f9b468951ab33ae3351e0109f2);
+
+
+
+        regular_polygon_marker_c80f8d98b0923422000407b1357e0f14.bindPopup(popup_16d2dd1e3d6f002b2f898c792934246b)
+        ;
+
+
+
+
+            regular_polygon_marker_c80f8d98b0923422000407b1357e0f14.bindTooltip(
+                `<div>
+                     SG Sonnenhof Großaspach | Absteiger aus 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_026a0d4042fe211d72b6c051e84b3941 = new L.RegularPolygonMarker(
+                [50.071244, 8.256644],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 10,
+  "numberOfSides": 4,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_76994eac00928d50ec7eb1603797a2c2 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_e792331a9d90994de9cc677601ed2dc1 = $(`<div id="html_e792331a9d90994de9cc677601ed2dc1" style="width: 100.0%; height: 100.0%;">SV Wehen Wiesbaden (Absteiger aus 3. Liga)</div>`)[0];
+                popup_76994eac00928d50ec7eb1603797a2c2.setContent(html_e792331a9d90994de9cc677601ed2dc1);
+
+
+
+        regular_polygon_marker_026a0d4042fe211d72b6c051e84b3941.bindPopup(popup_76994eac00928d50ec7eb1603797a2c2)
+        ;
+
+
+
+
+            regular_polygon_marker_026a0d4042fe211d72b6c051e84b3941.bindTooltip(
+                `<div>
+                     SV Wehen Wiesbaden | Absteiger aus 3. Liga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_28865d5d3ea5217c5a08950d85824e7a = new L.RegularPolygonMarker(
+                [53.3120418, 9.346533],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5fa56773efcd26b7127b8cc3833d2e84 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_a81de1653a0b7295aab5e6db678c270f = $(`<div id="html_a81de1653a0b7295aab5e6db678c270f" style="width: 100.0%; height: 100.0%;">Heeslinger SC (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_5fa56773efcd26b7127b8cc3833d2e84.setContent(html_a81de1653a0b7295aab5e6db678c270f);
+
+
+
+        regular_polygon_marker_28865d5d3ea5217c5a08950d85824e7a.bindPopup(popup_5fa56773efcd26b7127b8cc3833d2e84)
+        ;
+
+
+
+
+            regular_polygon_marker_28865d5d3ea5217c5a08950d85824e7a.bindTooltip(
+                `<div>
+                     Heeslinger SC | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_a7aa610c8f806e47a9fdc41d08ba0fed = new L.RegularPolygonMarker(
+                [54.0892, 9.955584],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_4af286becf0942249512d92b47cd99bf = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_9715d89b2e9805b97db70fade43ebc6c = $(`<div id="html_9715d89b2e9805b97db70fade43ebc6c" style="width: 100.0%; height: 100.0%;">VfR Neumünster (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_4af286becf0942249512d92b47cd99bf.setContent(html_9715d89b2e9805b97db70fade43ebc6c);
+
+
+
+        regular_polygon_marker_a7aa610c8f806e47a9fdc41d08ba0fed.bindPopup(popup_4af286becf0942249512d92b47cd99bf)
+        ;
+
+
+
+
+            regular_polygon_marker_a7aa610c8f806e47a9fdc41d08ba0fed.bindTooltip(
+                `<div>
+                     VfR Neumünster | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_68e471e965dd17c8b9f33291056a5dd3 = new L.RegularPolygonMarker(
+                [53.49270105, 10.357440775],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_32b18fd4b7e5ed7c0fca60dc190ff950 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_388372ddde5f7d425d81e2d5df2b92c4 = $(`<div id="html_388372ddde5f7d425d81e2d5df2b92c4" style="width: 100.0%; height: 100.0%;">TuS Dassendorf (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_32b18fd4b7e5ed7c0fca60dc190ff950.setContent(html_388372ddde5f7d425d81e2d5df2b92c4);
+
+
+
+        regular_polygon_marker_68e471e965dd17c8b9f33291056a5dd3.bindPopup(popup_32b18fd4b7e5ed7c0fca60dc190ff950)
+        ;
+
+
+
+
+            regular_polygon_marker_68e471e965dd17c8b9f33291056a5dd3.bindTooltip(
+                `<div>
+                     TuS Dassendorf | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_71ab180988bbf9e851533f5eb0e48a6c = new L.RegularPolygonMarker(
+                [53.188195, 8.583559],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_811296ad2b040b2d8a8a67ebd61e064e = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_381762d7404a82833d38f20ecda4c670 = $(`<div id="html_381762d7404a82833d38f20ecda4c670" style="width: 100.0%; height: 100.0%;">Blumenthaler SV (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_811296ad2b040b2d8a8a67ebd61e064e.setContent(html_381762d7404a82833d38f20ecda4c670);
+
+
+
+        regular_polygon_marker_71ab180988bbf9e851533f5eb0e48a6c.bindPopup(popup_811296ad2b040b2d8a8a67ebd61e064e)
+        ;
+
+
+
+
+            regular_polygon_marker_71ab180988bbf9e851533f5eb0e48a6c.bindTooltip(
+                `<div>
+                     Blumenthaler SV | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_e2fb3d4607b2389307a8397106fc7ccd = new L.RegularPolygonMarker(
+                [52.0413134, 6.8427866],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_57721663a7f39a9d0fb8e61b651c4bef = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_8da35b48b50424fe916ee3cc36bfaf51 = $(`<div id="html_8da35b48b50424fe916ee3cc36bfaf51" style="width: 100.0%; height: 100.0%;">SpVgg Vreden (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_57721663a7f39a9d0fb8e61b651c4bef.setContent(html_8da35b48b50424fe916ee3cc36bfaf51);
+
+
+
+        regular_polygon_marker_e2fb3d4607b2389307a8397106fc7ccd.bindPopup(popup_57721663a7f39a9d0fb8e61b651c4bef)
+        ;
+
+
+
+
+            regular_polygon_marker_e2fb3d4607b2389307a8397106fc7ccd.bindTooltip(
+                `<div>
+                     SpVgg Vreden | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_2b927037f5ce4dcf0deb689bd4153a9d = new L.RegularPolygonMarker(
+                [51.4785523, 7.0694301],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_93c82efe7d6a3f972a9cbc641e550106 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_92b9056f8434924f7dc7f70aedd1bd87 = $(`<div id="html_92b9056f8434924f7dc7f70aedd1bd87" style="width: 100.0%; height: 100.0%;">SpVg Schonnebeck (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_93c82efe7d6a3f972a9cbc641e550106.setContent(html_92b9056f8434924f7dc7f70aedd1bd87);
+
+
+
+        regular_polygon_marker_2b927037f5ce4dcf0deb689bd4153a9d.bindPopup(popup_93c82efe7d6a3f972a9cbc641e550106)
+        ;
+
+
+
+
+            regular_polygon_marker_2b927037f5ce4dcf0deb689bd4153a9d.bindTooltip(
+                `<div>
+                     SpVg Schonnebeck | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_5425e0cbee79126b8debfeb36e0d771f = new L.RegularPolygonMarker(
+                [50.7495313, 6.2688634],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_95eef6e46b75e8bdb6baf64759ecd8a0 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_330f5628a544906ba94f68a53afd9fc9 = $(`<div id="html_330f5628a544906ba94f68a53afd9fc9" style="width: 100.0%; height: 100.0%;">VfL Vichttal (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_95eef6e46b75e8bdb6baf64759ecd8a0.setContent(html_330f5628a544906ba94f68a53afd9fc9);
+
+
+
+        regular_polygon_marker_5425e0cbee79126b8debfeb36e0d771f.bindPopup(popup_95eef6e46b75e8bdb6baf64759ecd8a0)
+        ;
+
+
+
+
+            regular_polygon_marker_5425e0cbee79126b8debfeb36e0d771f.bindTooltip(
+                `<div>
+                     VfL Vichttal | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_3a14d0a4b7ac17acf7b6942e9c5da0e7 = new L.RegularPolygonMarker(
+                [52.53, 13.35944444],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_a485f9249777e60b8ad668e4193d911d = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_1891c0d042b68e5caa70066d4d055362 = $(`<div id="html_1891c0d042b68e5caa70066d4d055362" style="width: 100.0%; height: 100.0%;">Berliner AK (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_a485f9249777e60b8ad668e4193d911d.setContent(html_1891c0d042b68e5caa70066d4d055362);
+
+
+
+        regular_polygon_marker_3a14d0a4b7ac17acf7b6942e9c5da0e7.bindPopup(popup_a485f9249777e60b8ad668e4193d911d)
+        ;
+
+
+
+
+            regular_polygon_marker_3a14d0a4b7ac17acf7b6942e9c5da0e7.bindTooltip(
+                `<div>
+                     Berliner AK | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_59e8b3c9bee6a4e7ee5e9e3afccbb1e6 = new L.RegularPolygonMarker(
+                [51.87636389, 11.05009722],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_5b8dca2a40b37b45fc34af9fe38dd278 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_df2b56dde2da5ca6c7ae0024039c9a3c = $(`<div id="html_df2b56dde2da5ca6c7ae0024039c9a3c" style="width: 100.0%; height: 100.0%;">VfB Germania Halberstadt (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_5b8dca2a40b37b45fc34af9fe38dd278.setContent(html_df2b56dde2da5ca6c7ae0024039c9a3c);
+
+
+
+        regular_polygon_marker_59e8b3c9bee6a4e7ee5e9e3afccbb1e6.bindPopup(popup_5b8dca2a40b37b45fc34af9fe38dd278)
+        ;
+
+
+
+
+            regular_polygon_marker_59e8b3c9bee6a4e7ee5e9e3afccbb1e6.bindTooltip(
+                `<div>
+                     VfB Germania Halberstadt | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_3ce78cb42c121efee7aba0305ca7931c = new L.RegularPolygonMarker(
+                [48.9415880125, 9.41259205],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_efd9a3caf19c21464788b32742984850 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_41d2d59c688ce716a367b010dfba9d93 = $(`<div id="html_41d2d59c688ce716a367b010dfba9d93" style="width: 100.0%; height: 100.0%;">TSG Backnang (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_efd9a3caf19c21464788b32742984850.setContent(html_41d2d59c688ce716a367b010dfba9d93);
+
+
+
+        regular_polygon_marker_3ce78cb42c121efee7aba0305ca7931c.bindPopup(popup_efd9a3caf19c21464788b32742984850)
+        ;
+
+
+
+
+            regular_polygon_marker_3ce78cb42c121efee7aba0305ca7931c.bindTooltip(
+                `<div>
+                     TSG Backnang | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_8be75976b1b039a969a4482463227c93 = new L.RegularPolygonMarker(
+                [50.67892, 9.7748982],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_8c760d302d7824aca0669abbf53f8b6c = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_08feef6ea5620c4aee0ebf99fb3c36cb = $(`<div id="html_08feef6ea5620c4aee0ebf99fb3c36cb" style="width: 100.0%; height: 100.0%;">Hünfelder SV 1919 (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_8c760d302d7824aca0669abbf53f8b6c.setContent(html_08feef6ea5620c4aee0ebf99fb3c36cb);
+
+
+
+        regular_polygon_marker_8be75976b1b039a969a4482463227c93.bindPopup(popup_8c760d302d7824aca0669abbf53f8b6c)
+        ;
+
+
+
+
+            regular_polygon_marker_8be75976b1b039a969a4482463227c93.bindTooltip(
+                `<div>
+                     Hünfelder SV 1919 | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_8f880e6862444dfff7dd70a8c9664c87 = new L.RegularPolygonMarker(
+                [50.33047222, 7.58661111],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_f40d9b1eaa6ba6a0ce45accc0d964fca = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_21424a3c1dc8c38e01fd0d1e5dd224de = $(`<div id="html_21424a3c1dc8c38e01fd0d1e5dd224de" style="width: 100.0%; height: 100.0%;">TuS Koblenz (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_f40d9b1eaa6ba6a0ce45accc0d964fca.setContent(html_21424a3c1dc8c38e01fd0d1e5dd224de);
+
+
+
+        regular_polygon_marker_8f880e6862444dfff7dd70a8c9664c87.bindPopup(popup_f40d9b1eaa6ba6a0ce45accc0d964fca)
+        ;
+
+
+
+
+            regular_polygon_marker_8f880e6862444dfff7dd70a8c9664c87.bindTooltip(
+                `<div>
+                     TuS Koblenz | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_b61081f6b5907236395c2681d22c8f00 = new L.RegularPolygonMarker(
+                [49.2330876, 12.6778489],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_acfd250d892dffc2660003be60196ae4 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_3620144931686e309593e2f5eb99b3fe = $(`<div id="html_3620144931686e309593e2f5eb99b3fe" style="width: 100.0%; height: 100.0%;">ASV Cham (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_acfd250d892dffc2660003be60196ae4.setContent(html_3620144931686e309593e2f5eb99b3fe);
+
+
+
+        regular_polygon_marker_b61081f6b5907236395c2681d22c8f00.bindPopup(popup_acfd250d892dffc2660003be60196ae4)
+        ;
+
+
+
+
+            regular_polygon_marker_b61081f6b5907236395c2681d22c8f00.bindTooltip(
+                `<div>
+                     ASV Cham | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+
+            var regular_polygon_marker_825502b22963354ec40f9d18e1e5af00 = new L.RegularPolygonMarker(
+                [48.4090257, 11.2902961],
+                {
+  "stroke": true,
+  "color": "#2f2f2f",
+  "weight": 3,
+  "opacity": 1.0,
+  "lineCap": "round",
+  "lineJoin": "round",
+  "dashArray": null,
+  "dashOffset": null,
+  "fill": true,
+  "fillColor": "#ffffff",
+  "fillOpacity": 0.0,
+  "fillRule": "evenodd",
+  "bubblingMouseEvents": true,
+  "radius": 14,
+  "numberOfSides": 5,
+  "rotation": 0,
+}
+            ).addTo(map_90ee71c37f75181b02e3f4f6b75a60ed);
+
+
+        var popup_9b93e68a45f5370fe3b8093c8423a3f1 = L.popup({
+  "maxWidth": "100%",
+});
+
+
+
+                var html_d2028a811e8a6919ffbea098a293b027 = $(`<div id="html_d2028a811e8a6919ffbea098a293b027" style="width: 100.0%; height: 100.0%;">FC Pipinsried (Aufsteiger aus Oberliga)</div>`)[0];
+                popup_9b93e68a45f5370fe3b8093c8423a3f1.setContent(html_d2028a811e8a6919ffbea098a293b027);
+
+
+
+        regular_polygon_marker_825502b22963354ec40f9d18e1e5af00.bindPopup(popup_9b93e68a45f5370fe3b8093c8423a3f1)
+        ;
+
+
+
+
+            regular_polygon_marker_825502b22963354ec40f9d18e1e5af00.bindTooltip(
+                `<div>
+                     FC Pipinsried | Aufsteiger aus Oberliga
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+
+</script>
+</html>

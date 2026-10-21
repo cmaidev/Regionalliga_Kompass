@@ -29,6 +29,8 @@ import json
 import itertools
 import os
 import re
+import subprocess
+import sys
 import time
 from datetime import date, datetime, timezone
 from io import StringIO
@@ -43,6 +45,7 @@ from sklearn.cluster import KMeans
 from urllib3.util.retry import Retry
 
 from kompass_utils import Club, ensure_parent_dir, haversine_km, load_verified_stadiums, normalize_text
+from kompass_history import record_output_snapshot
 
 
 # -------------------------
@@ -105,12 +108,17 @@ TEAM_NAME_NORMALIZATION_OVERRIDES = {
     "SV Stuttgarter Kickers": "Stuttgarter Kickers",
     "SSV Ulm 1846 Fußball": "SSV Ulm 1846",
     "SG Barockstadt Fulda Lehnerz": "SG Barockstadt Fulda-Lehnerz",
-    "Fortuna Düsseldorf": "Fortuna Düsseldorf II",
     "FC Eintracht Norderstedt": "Eintracht Norderstedt",
     "SV Werder Bremen II": "Werder Bremen II",
     "FSV Mainz 05 II": "1. FSV Mainz 05 II",
     "Eintr. Stadtallendorf": "TSV Eintracht Stadtallendorf",
 }
+TEAM_NAME_NORMALIZATION_OVERRIDES_BY_SEASON = {
+    "2025/26": {"Fortuna Düsseldorf": "Fortuna Düsseldorf II"},
+}
+TEAM_NAME_NORMALIZATION_OVERRIDES.update(
+    TEAM_NAME_NORMALIZATION_OVERRIDES_BY_SEASON.get(SEASON, {})
+)
 
 # Harte Koordinaten-Overrides fuer nachweislich fehlerhafte Treffer.
 CLUB_COORD_OVERRIDES: Dict[str, Tuple[float, float]] = {
@@ -176,6 +184,8 @@ OUT_SOLUTION_DIFF_CSV = os.path.join(
 WIKIPEDIA_API = "https://de.wikipedia.org/w/api.php"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 USER_AGENT = "CompassRegionalligaBot/1.0 (https://github.com/cmaidev/Regionalliga_Kompass)"
+RECALCULATION_STANDINGS: Dict[str, List[Dict[str, Any]]] = {}
+TABLE_SNAPSHOT_OVERRIDE: Optional[Dict[str, List[Dict[str, Any]]]] = None
 
 # Multi-Start: viele eingeschraenkte lokale Durchlaeufe fuer robustere "best-of"-Suche.
 ENABLE_MULTI_START_SEARCH = True
@@ -1070,6 +1080,13 @@ def extract_standings_rows(url: str, source: Optional[str] = None, table_pick: i
 
 
 def extract_standings_rows_with_fallback(source_urls: Dict[str, str], table_pick: int = 0) -> Tuple[List[Dict], str, str]:
+    if TABLE_SNAPSHOT_OVERRIDE is not None:
+        table_key = json.dumps([source_urls, table_pick], sort_keys=True)
+        if table_key not in TABLE_SNAPSHOT_OVERRIDE:
+            raise RuntimeError(f"Missing historical table: {table_key}")
+        rows = [dict(row) for row in TABLE_SNAPSHOT_OVERRIDE[table_key]]
+        RECALCULATION_STANDINGS[table_key] = rows
+        return rows, "reconstructed_fupa", source_urls.get("fupa", "")
     errors: List[str] = []
     for src in table_source_priority_for_season():
         url = source_urls.get(src)
@@ -1079,6 +1096,11 @@ def extract_standings_rows_with_fallback(source_urls: Dict[str, str], table_pick
             rows = extract_standings_rows(
                 url, source=src, table_pick=table_pick)
             if rows:
+                table_key = json.dumps([source_urls, table_pick], sort_keys=True)
+                RECALCULATION_STANDINGS[table_key] = [
+                    {key: row.get(key) for key in ("team", "rank", "points", "games", "ppg", "mark", "fupa_team_level")}
+                    for row in rows
+                ]
                 return rows, src, url
         except Exception as exc:
             errors.append(f"{src}:{type(exc).__name__}")
@@ -1288,7 +1310,7 @@ def _rows_by_rank(rows: List[Dict]) -> Dict[int, Dict]:
     return out
 
 
-def build_reform_12_4_14_team_pool(target: int) -> List[str]:
+def build_reform_12_4_14_team_pool(target: int, include_reference_assignments: bool = True) -> List[str]:
     rl_rows_by_league: Dict[str, List[Dict]] = {}
     rl_source_info: Dict[str, str] = {}
 
@@ -1368,8 +1390,9 @@ def build_reform_12_4_14_team_pool(target: int) -> List[str]:
         pool.append(t)
     if len(relegated_3liga) < REFORM_3LIGA_RELEGATED_SLOTS:
         raise RuntimeError("Zu wenig 3.-Liga-Absteiger gefunden.")
-    relegated_3liga_league = assign_3liga_relegated_to_current_regionalliga(
-        relegated_3liga
+    relegated_3liga_league = (
+        assign_3liga_relegated_to_current_regionalliga(relegated_3liga)
+        if include_reference_assignments else {}
     )
     for team, league_name in relegated_3liga_league.items():
         append_current_regionalliga_assignment(
@@ -4910,8 +4933,11 @@ def select_teams_for_season(target_count: int) -> List[str]:
 # Main
 # -------------------------
 def main() -> None:
+    record_output_snapshot()
+    RECALCULATION_STANDINGS.clear()
     # 1) Teamliste bauen
     teams = select_teams_for_season(TARGET_TEAM_COUNT)
+    selection_standings = dict(RECALCULATION_STANDINGS)
     kompass_transitions = load_json_file(SEASON_TRANSITIONS_FILE)
     export_current_regionalliga_after_transitions(kompass_transitions)
 
@@ -5336,6 +5362,12 @@ def main() -> None:
                 OUT_CSV_WISH_WORST,
                 "4 Kompass-Ligen (Worst-Case-Optimierung, Maximale Distanz)",
             )
+
+    if record_output_snapshot(selection_standings):
+        print("Neuberechnung in data/recalculation_history gespeichert.")
+    if SEASON == current_football_season():
+        print("Aktualisiere Wochenverlauf bis zum letzten abgeschlossenen Sonntag.", flush=True)
+        subprocess.run([sys.executable, "-u", str(Path(__file__).with_name("kompass_weekly.py"))], check=True)
 
 
 if __name__ == "__main__":
