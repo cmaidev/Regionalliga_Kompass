@@ -1,8 +1,7 @@
 {
   "schema_version": 1,
   "source_season": "2026/27",
-  "retrieved_at": "2026-10-21T12:26:55.011788+00:00",
-  "valuation_note": "Rekonstruktion aus datierten Ergebnissen mit heutigem Spielwertungs- und Punktabzugsstand; spätere Sportgerichtsentscheidungen können von den damals veröffentlichten Tabellen abweichen.",
+  "retrieved_at": "2026-10-26T09:17:58.729619+00:00",
   "leagues": [
     {
       "name": "Nord",
@@ -21,10 +20,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 14,
+            "matches": 15,
             "points": 34,
             "ownGoals": 43,
-            "againstGoals": 14
+            "againstGoals": 17
           }
         },
         {
@@ -33,10 +32,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 14,
-            "points": 30,
-            "ownGoals": 32,
-            "againstGoals": 18
+            "matches": 15,
+            "points": 33,
+            "ownGoals": 36,
+            "againstGoals": 21
           }
         },
         {
@@ -45,10 +44,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 14,
-            "points": 28,
-            "ownGoals": 43,
-            "againstGoals": 21
+            "matches": 15,
+            "points": 31,
+            "ownGoals": 48,
+            "againstGoals": 22
           }
         },
         {
@@ -57,10 +56,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 13,
-            "points": 28,
-            "ownGoals": 39,
-            "againstGoals": 18
+            "matches": 14,
+            "points": 31,
+            "ownGoals": 41,
+            "againstGoals": 19
           }
         },
         {
@@ -69,10 +68,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 5,
-            "matches": 13,
-            "points": 27,
-            "ownGoals": 36,
-            "againstGoals": 12
+            "matches": 14,
+            "points": 28,
+            "ownGoals": 38,
+            "againstGoals": 14
           }
         },
         {
@@ -93,10 +92,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 7,
-            "matches": 13,
-            "points": 19,
-            "ownGoals": 19,
-            "againstGoals": 20
+            "matches": 14,
+            "points": 20,
+            "ownGoals": 21,
+            "againstGoals": 22
           }
         },
         {
@@ -105,10 +104,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 14,
+            "matches": 15,
             "points": 19,
-            "ownGoals": 34,
-            "againstGoals": 38
+            "ownGoals": 36,
+            "againstGoals": 41
           }
         },
         {
@@ -129,58 +128,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 14,
+            "matches": 15,
             "points": 17,
-            "ownGoals": 22,
-            "againstGoals": 30
-          }
-        },
-        {
-          "team": "Eimsbütteler TV",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 13,
-            "points": 14,
-            "ownGoals": 21,
-            "againstGoals": 35
-          }
-        },
-        {
-          "team": "Eintracht Norderstedt",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 12,
-            "matches": 12,
-            "points": 13,
-            "ownGoals": 24,
-            "againstGoals": 31
-          }
-        },
-        {
-          "team": "Hamburger SV II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 13,
-            "matches": 13,
-            "points": 13,
-            "ownGoals": 19,
-            "againstGoals": 28
-          }
-        },
-        {
-          "team": "SSV Jeddeloh",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 14,
-            "matches": 14,
-            "points": 13,
-            "ownGoals": 22,
-            "againstGoals": 36
+            "ownGoals": 23,
+            "againstGoals": 32
           }
         },
         {
@@ -188,23 +139,35 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 15,
-            "matches": 13,
-            "points": 12,
-            "ownGoals": 18,
-            "againstGoals": 23
+            "rank": 11,
+            "matches": 14,
+            "points": 15,
+            "ownGoals": 21,
+            "againstGoals": 25
           }
         },
         {
-          "team": "SV Todesfelde",
+          "team": "Eimsbütteler TV",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 16,
+            "rank": 12,
             "matches": 14,
-            "points": 12,
+            "points": 15,
             "ownGoals": 22,
-            "againstGoals": 43
+            "againstGoals": 36
+          }
+        },
+        {
+          "team": "SSV Jeddeloh",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 13,
+            "matches": 15,
+            "points": 14,
+            "ownGoals": 23,
+            "againstGoals": 37
           }
         },
         {
@@ -212,11 +175,47 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 17,
-            "matches": 13,
-            "points": 10,
-            "ownGoals": 24,
+            "rank": 14,
+            "matches": 14,
+            "points": 13,
+            "ownGoals": 27,
             "againstGoals": 29
+          }
+        },
+        {
+          "team": "Eintracht Norderstedt",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 15,
+            "matches": 13,
+            "points": 13,
+            "ownGoals": 27,
+            "againstGoals": 35
+          }
+        },
+        {
+          "team": "Hamburger SV II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
+            "rank": 16,
+            "matches": 14,
+            "points": 13,
+            "ownGoals": 20,
+            "againstGoals": 32
+          }
+        },
+        {
+          "team": "SV Todesfelde",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 17,
+            "matches": 15,
+            "points": 12,
+            "ownGoals": 23,
+            "againstGoals": 48
           }
         },
         {
@@ -225,10 +224,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 13,
-            "points": 8,
-            "ownGoals": 9,
-            "againstGoals": 26
+            "matches": 14,
+            "points": 11,
+            "ownGoals": 13,
+            "againstGoals": 27
           }
         }
       ],
@@ -1321,6 +1320,78 @@
           "home_goals": 1,
           "away_goals": 1,
           "awarded": false
+        },
+        {
+          "id": 15011278,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Werder Bremen II",
+          "away": "Kickers Emden",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15011280,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Eimsbütteler TV",
+          "away": "SSV Jeddeloh",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15011287,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Hannover 96 II",
+          "away": "Eintracht Norderstedt",
+          "home_goals": 4,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15011282,
+          "kickoff": "2026-10-24T18:00:00+02:00",
+          "home": "SV Drochtersen/Assel",
+          "away": "SV Todesfelde",
+          "home_goals": 5,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15011283,
+          "kickoff": "2026-10-24T18:00:00+02:00",
+          "home": "VfB Oldenburg",
+          "away": "HSC Hannover",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15011279,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "Bremer SV",
+          "away": "Hamburger SV II",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15011284,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "1. FC Phönix Lübeck",
+          "away": "SV Atlas Delmenhorst",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15011286,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "FC St. Pauli II",
+          "away": "SC Weiche Flensburg 08",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
         }
       ]
     },
@@ -1336,27 +1407,27 @@
       "second_sort": "goal_diff",
       "teams": [
         {
-          "team": "Chemnitzer FC",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 1,
-            "matches": 13,
-            "points": 30,
-            "ownGoals": 29,
-            "againstGoals": 7
-          }
-        },
-        {
           "team": "FC Rot-Weiß Erfurt",
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 1,
+            "matches": 14,
+            "points": 31,
+            "ownGoals": 42,
+            "againstGoals": 18
+          }
+        },
+        {
+          "team": "Chemnitzer FC",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 2,
-            "matches": 13,
-            "points": 28,
-            "ownGoals": 39,
-            "againstGoals": 16
+            "matches": 14,
+            "points": 30,
+            "ownGoals": 30,
+            "againstGoals": 9
           }
         },
         {
@@ -1365,10 +1436,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 13,
-            "points": 28,
-            "ownGoals": 20,
-            "againstGoals": 9
+            "matches": 14,
+            "points": 29,
+            "ownGoals": 22,
+            "againstGoals": 11
+          }
+        },
+        {
+          "team": "VSG Altglienicke",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 4,
+            "matches": 14,
+            "points": 27,
+            "ownGoals": 26,
+            "againstGoals": 17
           }
         },
         {
@@ -1376,9 +1459,9 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 4,
-            "matches": 13,
-            "points": 25,
+            "rank": 5,
+            "matches": 14,
+            "points": 26,
             "ownGoals": 23,
             "againstGoals": 12
           }
@@ -1388,35 +1471,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
-            "matches": 13,
-            "points": 25,
+            "rank": 6,
+            "matches": 14,
+            "points": 26,
             "ownGoals": 22,
             "againstGoals": 13
-          }
-        },
-        {
-          "team": "VSG Altglienicke",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 6,
-            "matches": 13,
-            "points": 24,
-            "ownGoals": 23,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "Greifswalder FC",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 13,
-            "points": 22,
-            "ownGoals": 26,
-            "againstGoals": 20
           }
         },
         {
@@ -1424,35 +1483,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 8,
-            "matches": 13,
-            "points": 21,
-            "ownGoals": 20,
+            "rank": 7,
+            "matches": 14,
+            "points": 24,
+            "ownGoals": 23,
             "againstGoals": 18
           }
         },
         {
-          "team": "FSV Zwickau",
+          "team": "Greifswalder FC",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 13,
-            "points": 19,
-            "ownGoals": 17,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "1. FC Lokomotive Leipzig",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 10,
-            "matches": 13,
-            "points": 17,
-            "ownGoals": 25,
-            "againstGoals": 25
+            "rank": 8,
+            "matches": 14,
+            "points": 22,
+            "ownGoals": 28,
+            "againstGoals": 23
           }
         },
         {
@@ -1460,10 +1507,34 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 9,
+            "matches": 14,
+            "points": 19,
+            "ownGoals": 27,
+            "againstGoals": 28
+          }
+        },
+        {
+          "team": "FSV Zwickau",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 10,
+            "matches": 14,
+            "points": 19,
+            "ownGoals": 17,
+            "againstGoals": 22
+          }
+        },
+        {
+          "team": "1. FC Lokomotive Leipzig",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 11,
-            "matches": 13,
-            "points": 16,
-            "ownGoals": 25,
+            "matches": 14,
+            "points": 18,
+            "ownGoals": 27,
             "againstGoals": 27
           }
         },
@@ -1473,22 +1544,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 13,
-            "points": 13,
-            "ownGoals": 14,
+            "matches": 14,
+            "points": 16,
+            "ownGoals": 15,
             "againstGoals": 23
-          }
-        },
-        {
-          "team": "BFC Preussen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 13,
-            "matches": 13,
-            "points": 11,
-            "ownGoals": 16,
-            "againstGoals": 21
           }
         },
         {
@@ -1496,35 +1555,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 13,
-            "points": 10,
-            "ownGoals": 15,
+            "rank": 13,
+            "matches": 14,
+            "points": 13,
+            "ownGoals": 17,
             "againstGoals": 22
           }
         },
         {
-          "team": "Hertha BSC II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 15,
-            "matches": 13,
-            "points": 10,
-            "ownGoals": 10,
-            "againstGoals": 23
-          }
-        },
-        {
-          "team": "RSV Eintracht 1949",
+          "team": "BFC Preussen",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 16,
-            "matches": 13,
-            "points": 9,
-            "ownGoals": 14,
-            "againstGoals": 30
+            "rank": 14,
+            "matches": 14,
+            "points": 11,
+            "ownGoals": 16,
+            "againstGoals": 22
           }
         },
         {
@@ -1532,11 +1579,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 15,
+            "matches": 14,
+            "points": 11,
+            "ownGoals": 21,
+            "againstGoals": 39
+          }
+        },
+        {
+          "team": "Hertha BSC II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
+            "rank": 16,
+            "matches": 14,
+            "points": 10,
+            "ownGoals": 10,
+            "againstGoals": 25
+          }
+        },
+        {
+          "team": "RSV Eintracht 1949",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 17,
-            "matches": 13,
-            "points": 8,
-            "ownGoals": 19,
-            "againstGoals": 38
+            "matches": 14,
+            "points": 9,
+            "ownGoals": 15,
+            "againstGoals": 32
           }
         },
         {
@@ -1545,10 +1616,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 13,
+            "matches": 14,
             "points": 6,
-            "ownGoals": 13,
-            "againstGoals": 31
+            "ownGoals": 14,
+            "againstGoals": 34
           }
         }
       ],
@@ -2605,6 +2676,87 @@
           "home_goals": 1,
           "away_goals": 1,
           "awarded": false
+        },
+        {
+          "id": 15019280,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "FC Carl Zeiss Jena",
+          "away": "BFC Dynamo",
+          "home_goals": 0,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15019283,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "SV Babelsberg 03",
+          "away": "BFC Preussen",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15019288,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "VSG Altglienicke",
+          "away": "FSV 63 Luckenwalde",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15019281,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FSV Zwickau",
+          "away": "FC Erzgebirge Aue",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15019284,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "RSV Eintracht 1949",
+          "away": "SV Tasmania Berlin",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15019287,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Chemnitzer FC",
+          "away": "1. FC Magdeburg II",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15019282,
+          "kickoff": "2026-10-24T16:00:00+02:00",
+          "home": "Greifswalder FC",
+          "away": "FC Rot-Weiß Erfurt",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15019285,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "BSG Chemie Leipzig",
+          "away": "Hertha BSC II",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15019286,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "Hallescher FC",
+          "away": "1. FC Lokomotive Leipzig",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
         }
       ]
     },
@@ -2625,9 +2777,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 13,
-            "points": 31,
-            "ownGoals": 32,
+            "matches": 14,
+            "points": 34,
+            "ownGoals": 35,
             "againstGoals": 13
           }
         },
@@ -2637,21 +2789,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 13,
-            "points": 31,
-            "ownGoals": 30,
-            "againstGoals": 15
-          }
-        },
-        {
-          "team": "Borussia Mönchengladbach II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 3,
-            "matches": 13,
-            "points": 26,
-            "ownGoals": 29,
+            "matches": 14,
+            "points": 34,
+            "ownGoals": 32,
             "againstGoals": 15
           }
         },
@@ -2660,11 +2800,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 3,
+            "matches": 14,
+            "points": 29,
+            "ownGoals": 31,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "Borussia Mönchengladbach II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
             "rank": 4,
-            "matches": 13,
+            "matches": 14,
             "points": 26,
-            "ownGoals": 28,
-            "againstGoals": 19
+            "ownGoals": 31,
+            "againstGoals": 18
           }
         },
         {
@@ -2673,10 +2825,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 5,
-            "matches": 13,
-            "points": 22,
-            "ownGoals": 27,
-            "againstGoals": 19
+            "matches": 14,
+            "points": 25,
+            "ownGoals": 31,
+            "againstGoals": 20
           }
         },
         {
@@ -2685,34 +2837,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 6,
-            "matches": 13,
-            "points": 20,
-            "ownGoals": 26,
-            "againstGoals": 23
-          }
-        },
-        {
-          "team": "FC Schalke 04 II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 13,
-            "points": 19,
-            "ownGoals": 27,
+            "matches": 14,
+            "points": 21,
+            "ownGoals": 28,
             "againstGoals": 25
-          }
-        },
-        {
-          "team": "Bonner SC",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 13,
-            "points": 18,
-            "ownGoals": 26,
-            "againstGoals": 23
           }
         },
         {
@@ -2720,11 +2848,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 13,
-            "points": 18,
-            "ownGoals": 21,
-            "againstGoals": 24
+            "rank": 7,
+            "matches": 14,
+            "points": 21,
+            "ownGoals": 24,
+            "againstGoals": 26
+          }
+        },
+        {
+          "team": "FC Schalke 04 II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
+            "rank": 8,
+            "matches": 14,
+            "points": 20,
+            "ownGoals": 28,
+            "againstGoals": 26
           }
         },
         {
@@ -2732,11 +2872,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 9,
+            "matches": 14,
+            "points": 19,
+            "ownGoals": 19,
+            "againstGoals": 24
+          }
+        },
+        {
+          "team": "Bonner SC",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 10,
-            "matches": 13,
+            "matches": 14,
             "points": 18,
-            "ownGoals": 18,
-            "againstGoals": 23
+            "ownGoals": 26,
+            "againstGoals": 25
           }
         },
         {
@@ -2745,10 +2897,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 13,
-            "points": 16,
-            "ownGoals": 26,
-            "againstGoals": 29
+            "matches": 14,
+            "points": 17,
+            "ownGoals": 29,
+            "againstGoals": 32
           }
         },
         {
@@ -2757,10 +2909,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 13,
-            "points": 16,
-            "ownGoals": 21,
-            "againstGoals": 29
+            "matches": 14,
+            "points": 17,
+            "ownGoals": 22,
+            "againstGoals": 30
           }
         },
         {
@@ -2769,10 +2921,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 12,
-            "points": 14,
-            "ownGoals": 20,
-            "againstGoals": 25
+            "matches": 13,
+            "points": 15,
+            "ownGoals": 23,
+            "againstGoals": 28
           }
         },
         {
@@ -2781,10 +2933,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 12,
-            "points": 13,
-            "ownGoals": 19,
-            "againstGoals": 23
+            "matches": 13,
+            "points": 14,
+            "ownGoals": 21,
+            "againstGoals": 25
           }
         },
         {
@@ -2793,10 +2945,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 13,
+            "matches": 14,
             "points": 12,
             "ownGoals": 19,
-            "againstGoals": 25
+            "againstGoals": 28
           }
         },
         {
@@ -2805,10 +2957,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 13,
-            "points": 9,
-            "ownGoals": 22,
-            "againstGoals": 29
+            "matches": 14,
+            "points": 10,
+            "ownGoals": 23,
+            "againstGoals": 30
           }
         },
         {
@@ -2817,10 +2969,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 13,
+            "matches": 14,
             "points": 8,
-            "ownGoals": 18,
-            "againstGoals": 35
+            "ownGoals": 19,
+            "againstGoals": 38
           }
         },
         {
@@ -2829,10 +2981,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 13,
+            "matches": 14,
             "points": 6,
-            "ownGoals": 8,
-            "againstGoals": 23
+            "ownGoals": 9,
+            "againstGoals": 27
           }
         }
       ],
@@ -3880,6 +4032,87 @@
           "home_goals": 1,
           "away_goals": 3,
           "awarded": false
+        },
+        {
+          "id": 15041358,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "FC Gütersloh",
+          "away": "SC Wiedenbrück",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15041359,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "Borussia Dortmund II",
+          "away": "Bonner SC",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15041360,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "VfB 03 Hilden",
+          "away": "FC Schalke 04 II",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15041361,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Westfalia Rhynern",
+          "away": "Borussia Mönchengladbach II",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15041362,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Bergisch Gladbach 09",
+          "away": "SV Rödinghausen",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15041364,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "VfL Bochum II",
+          "away": "1. FC Bocholt",
+          "home_goals": 3,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15041365,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Sportfreunde Lotte",
+          "away": "Sportfreunde Siegen",
+          "home_goals": 1,
+          "away_goals": 4,
+          "awarded": false
+        },
+        {
+          "id": 15041363,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "1. FC Köln II",
+          "away": "SC Paderborn 07 II",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15041366,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "Rot-Weiß Oberhausen",
+          "away": "SG Wattenscheid 09",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
         }
       ]
     },
@@ -3900,9 +4133,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 15,
-            "points": 30,
-            "ownGoals": 17,
+            "matches": 16,
+            "points": 33,
+            "ownGoals": 19,
             "againstGoals": 9
           }
         },
@@ -3912,10 +4145,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 15,
-            "points": 28,
-            "ownGoals": 27,
-            "againstGoals": 20
+            "matches": 16,
+            "points": 29,
+            "ownGoals": 30,
+            "againstGoals": 23
           }
         },
         {
@@ -3924,10 +4157,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 14,
-            "points": 25,
-            "ownGoals": 20,
-            "againstGoals": 11
+            "matches": 15,
+            "points": 28,
+            "ownGoals": 22,
+            "againstGoals": 12
           }
         },
         {
@@ -3936,10 +4169,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 14,
-            "points": 24,
-            "ownGoals": 29,
+            "matches": 15,
+            "points": 27,
+            "ownGoals": 31,
             "againstGoals": 19
+          }
+        },
+        {
+          "team": "FC Augsburg II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
+            "rank": 5,
+            "matches": 15,
+            "points": 24,
+            "ownGoals": 27,
+            "againstGoals": 28
           }
         },
         {
@@ -3947,11 +4192,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
-            "matches": 14,
+            "rank": 6,
+            "matches": 15,
             "points": 23,
-            "ownGoals": 25,
-            "againstGoals": 16
+            "ownGoals": 26,
+            "againstGoals": 18
           }
         },
         {
@@ -3959,7 +4204,7 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
+            "rank": 7,
             "matches": 15,
             "points": 22,
             "ownGoals": 29,
@@ -3971,23 +4216,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 7,
+            "rank": 8,
             "matches": 14,
             "points": 21,
             "ownGoals": 22,
             "againstGoals": 21
-          }
-        },
-        {
-          "team": "FC Augsburg II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 14,
-            "points": 21,
-            "ownGoals": 25,
-            "againstGoals": 27
           }
         },
         {
@@ -3996,10 +4229,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 15,
+            "matches": 16,
             "points": 21,
             "ownGoals": 18,
-            "againstGoals": 22
+            "againstGoals": 24
           }
         },
         {
@@ -4008,10 +4241,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 14,
-            "points": 19,
-            "ownGoals": 32,
-            "againstGoals": 25
+            "matches": 15,
+            "points": 20,
+            "ownGoals": 35,
+            "againstGoals": 28
           }
         },
         {
@@ -4020,10 +4253,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 13,
-            "points": 19,
-            "ownGoals": 24,
-            "againstGoals": 18
+            "matches": 14,
+            "points": 20,
+            "ownGoals": 25,
+            "againstGoals": 19
           }
         },
         {
@@ -4044,10 +4277,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 14,
+            "matches": 15,
             "points": 18,
             "ownGoals": 21,
-            "againstGoals": 20
+            "againstGoals": 22
           }
         },
         {
@@ -4056,9 +4289,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 14,
-            "points": 15,
-            "ownGoals": 16,
+            "matches": 15,
+            "points": 18,
+            "ownGoals": 18,
             "againstGoals": 27
           }
         },
@@ -4068,10 +4301,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 14,
-            "points": 14,
-            "ownGoals": 18,
-            "againstGoals": 29
+            "matches": 15,
+            "points": 17,
+            "ownGoals": 20,
+            "againstGoals": 30
           }
         },
         {
@@ -4080,10 +4313,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 14,
+            "matches": 15,
             "points": 13,
             "ownGoals": 19,
-            "againstGoals": 23
+            "againstGoals": 25
           }
         },
         {
@@ -4092,10 +4325,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 14,
+            "matches": 15,
             "points": 12,
-            "ownGoals": 12,
-            "againstGoals": 28
+            "ownGoals": 13,
+            "againstGoals": 30
           }
         },
         {
@@ -4104,10 +4337,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 14,
-            "points": 10,
-            "ownGoals": 17,
-            "againstGoals": 24
+            "matches": 15,
+            "points": 11,
+            "ownGoals": 18,
+            "againstGoals": 25
           }
         },
         {
@@ -4116,10 +4349,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 19,
-            "matches": 14,
+            "matches": 15,
             "points": 9,
-            "ownGoals": 13,
-            "againstGoals": 28
+            "ownGoals": 14,
+            "againstGoals": 30
           }
         }
       ],
@@ -5329,6 +5562,78 @@
           "home_goals": 2,
           "away_goals": 4,
           "awarded": false
+        },
+        {
+          "id": 15021416,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "TSV Buchbach",
+          "away": "Wacker Burghausen",
+          "home_goals": 3,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15021417,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "SC Eltersdorf",
+          "away": "FC Memmingen",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15021421,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "1. FC Schweinfurt 05",
+          "away": "TSV Landsberg",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15021422,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "FC Augsburg II",
+          "away": "FV Illertissen",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15021418,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SpVgg Unterhaching",
+          "away": "SpVgg Ansbach 09",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15021419,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SpVgg Greuther Fürth II",
+          "away": "TSV Schwaben Augsburg",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15021420,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "1. FC Nürnberg II",
+          "away": "TSV Aubstadt",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15021423,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "VfB Eichstätt",
+          "away": "TSV 1860 München",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
         }
       ]
     },
@@ -5349,10 +5654,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 12,
-            "points": 26,
-            "ownGoals": 31,
-            "againstGoals": 12
+            "matches": 13,
+            "points": 27,
+            "ownGoals": 32,
+            "againstGoals": 13
           }
         },
         {
@@ -5361,9 +5666,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 12,
-            "points": 24,
-            "ownGoals": 22,
+            "matches": 13,
+            "points": 27,
+            "ownGoals": 23,
             "againstGoals": 11
           }
         },
@@ -5373,9 +5678,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 12,
-            "points": 23,
-            "ownGoals": 20,
+            "matches": 13,
+            "points": 26,
+            "ownGoals": 22,
             "againstGoals": 9
           }
         },
@@ -5385,46 +5690,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 12,
+            "matches": 13,
             "points": 23,
             "ownGoals": 22,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "Kickers Offenbach",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 12,
-            "points": 20,
-            "ownGoals": 22,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "FC 08 Homburg",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 6,
-            "matches": 12,
-            "points": 19,
-            "ownGoals": 17,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "SV Sandhausen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 12,
-            "points": 19,
-            "ownGoals": 20,
-            "againstGoals": 21
+            "againstGoals": 18
           }
         },
         {
@@ -5432,11 +5701,47 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 8,
-            "matches": 12,
-            "points": 19,
-            "ownGoals": 14,
+            "rank": 5,
+            "matches": 13,
+            "points": 22,
+            "ownGoals": 16,
             "againstGoals": 17
+          }
+        },
+        {
+          "team": "Kickers Offenbach",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 13,
+            "points": 21,
+            "ownGoals": 23,
+            "againstGoals": 17
+          }
+        },
+        {
+          "team": "FC 08 Homburg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 7,
+            "matches": 13,
+            "points": 20,
+            "ownGoals": 18,
+            "againstGoals": 17
+          }
+        },
+        {
+          "team": "SV Sandhausen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 8,
+            "matches": 13,
+            "points": 19,
+            "ownGoals": 20,
+            "againstGoals": 22
           }
         },
         {
@@ -5445,10 +5750,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 11,
-            "points": 16,
-            "ownGoals": 20,
-            "againstGoals": 15
+            "matches": 12,
+            "points": 17,
+            "ownGoals": 22,
+            "againstGoals": 17
           }
         },
         {
@@ -5457,34 +5762,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 12,
+            "matches": 13,
             "points": 16,
             "ownGoals": 20,
-            "againstGoals": 18
-          }
-        },
-        {
-          "team": "KSV Hessen Kassel",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 12,
-            "points": 14,
-            "ownGoals": 20,
-            "againstGoals": 24
-          }
-        },
-        {
-          "team": "FSV Frankfurt",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 12,
-            "matches": 12,
-            "points": 13,
-            "ownGoals": 19,
-            "againstGoals": 21
+            "againstGoals": 20
           }
         },
         {
@@ -5492,23 +5773,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 11,
-            "points": 13,
-            "ownGoals": 13,
-            "againstGoals": 15
+            "rank": 11,
+            "matches": 12,
+            "points": 16,
+            "ownGoals": 15,
+            "againstGoals": 16
           }
         },
         {
-          "team": "1. FSV Mainz 05 II",
-          "level": 2,
+          "team": "KSV Hessen Kassel",
+          "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 12,
-            "points": 11,
-            "ownGoals": 12,
-            "againstGoals": 23
+            "rank": 12,
+            "matches": 13,
+            "points": 14,
+            "ownGoals": 21,
+            "againstGoals": 28
           }
         },
         {
@@ -5516,11 +5797,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 15,
-            "matches": 12,
-            "points": 10,
-            "ownGoals": 16,
-            "againstGoals": 21
+            "rank": 13,
+            "matches": 13,
+            "points": 13,
+            "ownGoals": 20,
+            "againstGoals": 22
+          }
+        },
+        {
+          "team": "FSV Frankfurt",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 14,
+            "matches": 13,
+            "points": 13,
+            "ownGoals": 20,
+            "againstGoals": 23
           }
         },
         {
@@ -5528,11 +5821,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 15,
+            "matches": 13,
+            "points": 11,
+            "ownGoals": 14,
+            "againstGoals": 27
+          }
+        },
+        {
+          "team": "1. FSV Mainz 05 II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
             "rank": 16,
-            "matches": 12,
-            "points": 10,
-            "ownGoals": 12,
-            "againstGoals": 25
+            "matches": 13,
+            "points": 11,
+            "ownGoals": 13,
+            "againstGoals": 26
           }
         },
         {
@@ -5541,10 +5846,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 12,
-            "points": 9,
-            "ownGoals": 15,
-            "againstGoals": 22
+            "matches": 13,
+            "points": 10,
+            "ownGoals": 16,
+            "againstGoals": 23
           }
         },
         {
@@ -5553,10 +5858,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 12,
-            "points": 6,
-            "ownGoals": 14,
-            "againstGoals": 27
+            "matches": 13,
+            "points": 9,
+            "ownGoals": 17,
+            "againstGoals": 28
           }
         }
       ],
@@ -6523,6 +6828,87 @@
           "home_goals": 3,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 15043504,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Kickers Offenbach",
+          "away": "SGV Heilbronn-Freiberg",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15043505,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "1. FC Kaiserslautern II",
+          "away": "SC Freiburg II",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15043498,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FSV Frankfurt",
+          "away": "Eintracht Frankfurt II",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15043499,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "TSV Steinbach Haiger",
+          "away": "VfR Mannheim",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15043500,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Sandhausen",
+          "away": "VfR Aalen",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15043501,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SG Barockstadt Fulda-Lehnerz",
+          "away": "1. FSV Mainz 05 II",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15043502,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC-Astoria Walldorf",
+          "away": "KSV Hessen Kassel",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15043503,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Eintracht Trier",
+          "away": "Stuttgarter Kickers",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15043497,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "SSV Ulm 1846",
+          "away": "FC 08 Homburg",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     },
@@ -6543,10 +6929,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 10,
+            "matches": 11,
             "points": 25,
-            "ownGoals": 27,
-            "againstGoals": 12
+            "ownGoals": 28,
+            "againstGoals": 14
           }
         },
         {
@@ -6555,10 +6941,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 10,
-            "points": 20,
-            "ownGoals": 27,
-            "againstGoals": 14
+            "matches": 11,
+            "points": 23,
+            "ownGoals": 30,
+            "againstGoals": 15
           }
         },
         {
@@ -6567,9 +6953,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 10,
-            "points": 18,
-            "ownGoals": 18,
+            "matches": 11,
+            "points": 21,
+            "ownGoals": 19,
             "againstGoals": 13
           }
         },
@@ -6579,9 +6965,45 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 10,
+            "matches": 11,
             "points": 17,
-            "ownGoals": 24,
+            "ownGoals": 26,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "Alemannia Aachen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 5,
+            "matches": 11,
+            "points": 17,
+            "ownGoals": 17,
+            "againstGoals": 17
+          }
+        },
+        {
+          "team": "FC Ingolstadt 04",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 11,
+            "points": 17,
+            "ownGoals": 15,
+            "againstGoals": 16
+          }
+        },
+        {
+          "team": "SV Waldhof Mannheim",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 7,
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 20,
             "againstGoals": 17
           }
         },
@@ -6590,11 +7012,11 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
-            "matches": 10,
+            "rank": 8,
+            "matches": 11,
             "points": 16,
-            "ownGoals": 20,
-            "againstGoals": 15
+            "ownGoals": 21,
+            "againstGoals": 19
           }
         },
         {
@@ -6602,70 +7024,22 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 10,
-            "points": 15,
-            "ownGoals": 17,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "VfB Stuttgart II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 17,
-            "againstGoals": 18
-          }
-        },
-        {
-          "team": "Alemannia Aachen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 15,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "FC Ingolstadt 04",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
             "rank": 9,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 13,
-            "againstGoals": 15
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 18,
+            "againstGoals": 20
           }
         },
         {
-          "team": "Fortuna Düsseldorf",
+          "team": "SV Wehen Wiesbaden",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 11,
-            "againstGoals": 13
-          }
-        },
-        {
-          "team": "SV Waldhof Mannheim",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 10,
-            "points": 13,
-            "ownGoals": 16,
+            "matches": 11,
+            "points": 15,
+            "ownGoals": 19,
             "againstGoals": 16
           }
         },
@@ -6674,59 +7048,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 12,
-            "matches": 10,
-            "points": 12,
-            "ownGoals": 18,
+            "rank": 11,
+            "matches": 11,
+            "points": 15,
+            "ownGoals": 19,
             "againstGoals": 21
           }
         },
         {
-          "team": "SV Wehen Wiesbaden",
+          "team": "Fortuna Düsseldorf",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 10,
-            "points": 12,
+            "rank": 12,
+            "matches": 11,
+            "points": 15,
             "ownGoals": 12,
-            "againstGoals": 15
-          }
-        },
-        {
-          "team": "SC Verl",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 14,
-            "matches": 10,
-            "points": 12,
-            "ownGoals": 15,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "SG Sonnenhof Großaspach",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 15,
-            "matches": 10,
-            "points": 12,
-            "ownGoals": 12,
-            "againstGoals": 18
-          }
-        },
-        {
-          "team": "Würzburger Kickers",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 16,
-            "matches": 10,
-            "points": 11,
-            "ownGoals": 15,
-            "againstGoals": 19
+            "againstGoals": 14
           }
         },
         {
@@ -6734,11 +7072,59 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 17,
-            "matches": 10,
-            "points": 11,
-            "ownGoals": 12,
+            "rank": 13,
+            "matches": 11,
+            "points": 14,
+            "ownGoals": 16,
             "againstGoals": 17
+          }
+        },
+        {
+          "team": "VfB Stuttgart II",
+          "level": 2,
+          "penalty_points": 0,
+          "published": {
+            "rank": 14,
+            "matches": 11,
+            "points": 14,
+            "ownGoals": 18,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "SC Verl",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 15,
+            "matches": 11,
+            "points": 12,
+            "ownGoals": 16,
+            "againstGoals": 22
+          }
+        },
+        {
+          "team": "SG Sonnenhof Großaspach",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 16,
+            "matches": 11,
+            "points": 12,
+            "ownGoals": 13,
+            "againstGoals": 25
+          }
+        },
+        {
+          "team": "Würzburger Kickers",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 17,
+            "matches": 11,
+            "points": 11,
+            "ownGoals": 15,
+            "againstGoals": 23
           }
         },
         {
@@ -6747,10 +7133,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 10,
+            "matches": 11,
             "points": 10,
             "ownGoals": 20,
-            "againstGoals": 19
+            "againstGoals": 20
           }
         },
         {
@@ -6759,10 +7145,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 19,
-            "matches": 10,
+            "matches": 11,
             "points": 10,
             "ownGoals": 8,
-            "againstGoals": 11
+            "againstGoals": 12
           }
         },
         {
@@ -6771,10 +7157,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 20,
-            "matches": 10,
-            "points": 6,
-            "ownGoals": 13,
-            "againstGoals": 23
+            "matches": 11,
+            "points": 9,
+            "ownGoals": 16,
+            "againstGoals": 25
           }
         }
       ],
@@ -7678,6 +8064,96 @@
           "home_goals": 1,
           "away_goals": 1,
           "awarded": false
+        },
+        {
+          "id": 15017333,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Rot-Weiss Essen",
+          "away": "SSV Jahn Regensburg",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15017331,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Viktoria Köln",
+          "away": "SC Verl",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15017334,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "F.C. Hansa Rostock",
+          "away": "Fortuna Düsseldorf",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15017335,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Wehen Wiesbaden",
+          "away": "SG Sonnenhof Großaspach",
+          "home_goals": 7,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15017337,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Ingolstadt 04",
+          "away": "MSV Duisburg",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15017340,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Meppen",
+          "away": "Würzburger Kickers",
+          "home_goals": 4,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15017338,
+          "kickoff": "2026-10-24T16:30:00+02:00",
+          "home": "VfB Stuttgart II",
+          "away": "Alemannia Aachen",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15017339,
+          "kickoff": "2026-10-25T13:30:00+01:00",
+          "home": "TSV Havelse",
+          "away": "1. FC Saarbrücken",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15017332,
+          "kickoff": "2026-10-25T16:30:00+01:00",
+          "home": "SC Preußen Münster",
+          "away": "SC Fortuna Köln",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15017336,
+          "kickoff": "2026-10-25T19:30:00+01:00",
+          "home": "SV Waldhof Mannheim",
+          "away": "TSG 1899 Hoffenheim II",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     },
@@ -7698,22 +8174,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 11,
-            "points": 23,
-            "ownGoals": 35,
+            "matches": 12,
+            "points": 26,
+            "ownGoals": 37,
             "againstGoals": 19
-          }
-        },
-        {
-          "team": "Heeslinger SC",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 11,
-            "points": 22,
-            "ownGoals": 30,
-            "againstGoals": 13
           }
         },
         {
@@ -7721,11 +8185,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 2,
+            "matches": 11,
+            "points": 24,
+            "ownGoals": 23,
+            "againstGoals": 9
+          }
+        },
+        {
+          "team": "Heeslinger SC",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 3,
-            "matches": 10,
-            "points": 21,
-            "ownGoals": 20,
-            "againstGoals": 7
+            "matches": 12,
+            "points": 23,
+            "ownGoals": 31,
+            "againstGoals": 14
           }
         },
         {
@@ -7734,10 +8210,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 10,
-            "points": 21,
-            "ownGoals": 23,
-            "againstGoals": 12
+            "matches": 11,
+            "points": 22,
+            "ownGoals": 25,
+            "againstGoals": 14
           }
         },
         {
@@ -7758,10 +8234,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 6,
-            "matches": 10,
+            "matches": 11,
             "points": 20,
             "ownGoals": 15,
-            "againstGoals": 8
+            "againstGoals": 10
           }
         },
         {
@@ -7770,22 +8246,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 7,
-            "matches": 10,
-            "points": 17,
-            "ownGoals": 22,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "TuS Bersenbrück",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 10,
-            "points": 16,
-            "ownGoals": 19,
-            "againstGoals": 15
+            "matches": 11,
+            "points": 18,
+            "ownGoals": 23,
+            "againstGoals": 17
           }
         },
         {
@@ -7793,23 +8257,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 11,
-            "points": 16,
-            "ownGoals": 22,
-            "againstGoals": 24
+            "rank": 8,
+            "matches": 12,
+            "points": 17,
+            "ownGoals": 24,
+            "againstGoals": 26
           }
         },
         {
-          "team": "SV Vorwärts Nordhorn",
+          "team": "TuS Bersenbrück",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 10,
+            "rank": 9,
             "matches": 11,
-            "points": 12,
-            "ownGoals": 15,
-            "againstGoals": 28
+            "points": 16,
+            "ownGoals": 19,
+            "againstGoals": 19
           }
         },
         {
@@ -7817,11 +8281,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 11,
-            "matches": 11,
-            "points": 10,
-            "ownGoals": 15,
+            "rank": 10,
+            "matches": 12,
+            "points": 13,
+            "ownGoals": 19,
             "againstGoals": 18
+          }
+        },
+        {
+          "team": "SV Vorwärts Nordhorn",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 11,
+            "matches": 12,
+            "points": 13,
+            "ownGoals": 17,
+            "againstGoals": 30
           }
         },
         {
@@ -7837,39 +8313,27 @@
           }
         },
         {
-          "team": "SC Hemmingen-Westerfeld",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 13,
-            "matches": 10,
-            "points": 7,
-            "ownGoals": 11,
-            "againstGoals": 30
-          }
-        },
-        {
           "team": "Lüneburger Sport-Klub Hansa",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 10,
-            "points": 6,
+            "rank": 13,
+            "matches": 11,
+            "points": 7,
             "ownGoals": 13,
             "againstGoals": 18
           }
         },
         {
-          "team": "SSV Vorsfelde",
+          "team": "SC Hemmingen-Westerfeld",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 15,
+            "rank": 14,
             "matches": 11,
-            "points": 5,
-            "ownGoals": 8,
-            "againstGoals": 27
+            "points": 7,
+            "ownGoals": 13,
+            "againstGoals": 33
           }
         },
         {
@@ -7877,11 +8341,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 15,
+            "matches": 12,
+            "points": 5,
+            "ownGoals": 14,
+            "againstGoals": 28
+          }
+        },
+        {
+          "team": "SSV Vorsfelde",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 16,
-            "matches": 10,
-            "points": 3,
-            "ownGoals": 12,
-            "againstGoals": 26
+            "matches": 11,
+            "points": 5,
+            "ownGoals": 8,
+            "againstGoals": 27
           }
         }
       ],
@@ -8632,6 +9108,69 @@
           "home_goals": 2,
           "away_goals": 3,
           "awarded": false
+        },
+        {
+          "id": 15059469,
+          "kickoff": "2026-10-21T20:00:00+02:00",
+          "home": "SV Drochtersen/Assel II",
+          "away": "Lüneburger Sport-Klub Hansa",
+          "home_goals": 0,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15059490,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "SC Spelle-Venhaus",
+          "away": "SV Vorwärts Nordhorn",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15059492,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "TuS Bersenbrück",
+          "away": "FC Verden 04",
+          "home_goals": 0,
+          "away_goals": 4,
+          "awarded": false
+        },
+        {
+          "id": 15059494,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "Eintracht Braunschweig II",
+          "away": "VfV Borussia 06 Hildesheim",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15059489,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "SV Wilhelmshaven",
+          "away": "SC Hemmingen-Westerfeld",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15059493,
+          "kickoff": "2026-10-25T14:30:00+01:00",
+          "home": "SV Meppen II",
+          "away": "SV Drochtersen/Assel II",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15059495,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "Heeslinger SC",
+          "away": "TuS Blau-Weiß Lohne",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     },
@@ -8664,10 +9203,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 13,
-            "points": 29,
-            "ownGoals": 39,
-            "againstGoals": 19
+            "matches": 14,
+            "points": 32,
+            "ownGoals": 51,
+            "againstGoals": 21
           }
         },
         {
@@ -8676,10 +9215,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 12,
-            "points": 27,
-            "ownGoals": 33,
-            "againstGoals": 17
+            "matches": 13,
+            "points": 30,
+            "ownGoals": 36,
+            "againstGoals": 19
           }
         },
         {
@@ -8688,10 +9227,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 13,
+            "matches": 14,
             "points": 23,
-            "ownGoals": 35,
-            "againstGoals": 17
+            "ownGoals": 37,
+            "againstGoals": 20
           }
         },
         {
@@ -8700,10 +9239,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 5,
-            "matches": 13,
-            "points": 22,
-            "ownGoals": 27,
-            "againstGoals": 26
+            "matches": 14,
+            "points": 23,
+            "ownGoals": 29,
+            "againstGoals": 28
           }
         },
         {
@@ -8712,10 +9251,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 6,
-            "matches": 13,
-            "points": 20,
-            "ownGoals": 27,
-            "againstGoals": 33
+            "matches": 14,
+            "points": 23,
+            "ownGoals": 30,
+            "againstGoals": 34
           }
         },
         {
@@ -8736,10 +9275,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 13,
+            "matches": 14,
             "points": 19,
-            "ownGoals": 27,
-            "againstGoals": 35
+            "ownGoals": 29,
+            "againstGoals": 47
           }
         },
         {
@@ -8748,10 +9287,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 12,
+            "matches": 13,
             "points": 18,
-            "ownGoals": 32,
-            "againstGoals": 26
+            "ownGoals": 36,
+            "againstGoals": 31
           }
         },
         {
@@ -8767,39 +9306,27 @@
           }
         },
         {
-          "team": "Kaltenkirchener Turnerschaft",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 13,
-            "points": 11,
-            "ownGoals": 23,
-            "againstGoals": 37
-          }
-        },
-        {
-          "team": "TSV Nordmark Satrup",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 12,
-            "matches": 13,
-            "points": 11,
-            "ownGoals": 16,
-            "againstGoals": 31
-          }
-        },
-        {
           "team": "MTSV Hohenwestedt",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 13,
-            "points": 10,
-            "ownGoals": 23,
-            "againstGoals": 33
+            "rank": 11,
+            "matches": 14,
+            "points": 13,
+            "ownGoals": 28,
+            "againstGoals": 37
+          }
+        },
+        {
+          "team": "Kaltenkirchener Turnerschaft",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 12,
+            "matches": 14,
+            "points": 12,
+            "ownGoals": 25,
+            "againstGoals": 39
           }
         },
         {
@@ -8807,11 +9334,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 13,
+            "matches": 14,
+            "points": 11,
+            "ownGoals": 25,
+            "againstGoals": 40
+          }
+        },
+        {
+          "team": "TSV Nordmark Satrup",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 14,
             "matches": 13,
-            "points": 10,
-            "ownGoals": 24,
-            "againstGoals": 39
+            "points": 11,
+            "ownGoals": 16,
+            "againstGoals": 31
           }
         },
         {
@@ -8820,10 +9359,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 13,
-            "points": 10,
-            "ownGoals": 22,
-            "againstGoals": 41
+            "matches": 14,
+            "points": 11,
+            "ownGoals": 23,
+            "againstGoals": 42
           }
         },
         {
@@ -8832,10 +9371,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 13,
+            "matches": 14,
             "points": 10,
-            "ownGoals": 17,
-            "againstGoals": 37
+            "ownGoals": 18,
+            "againstGoals": 40
           }
         }
       ],
@@ -9766,6 +10305,60 @@
           "home_goals": 4,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 14987074,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "Oldenburger SV 1865",
+          "away": "MTSV Hohenwestedt",
+          "home_goals": 4,
+          "away_goals": 5,
+          "awarded": false
+        },
+        {
+          "id": 14987075,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "1. FC Phönix Lübeck II",
+          "away": "Eckernförder SV",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14987076,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Heider SV",
+          "away": "VfB Lübeck II",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14987078,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Kilia Kiel",
+          "away": "SC Rapid Lübeck",
+          "home_goals": 12,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14987080,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "TuS Rotenhof",
+          "away": "Kaltenkirchener Turnerschaft",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14987081,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "TSB Flensburg",
+          "away": "VfR Neumünster",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
         }
       ]
     },
@@ -9786,22 +10379,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 12,
-            "points": 26,
-            "ownGoals": 34,
+            "matches": 13,
+            "points": 29,
+            "ownGoals": 36,
             "againstGoals": 23
-          }
-        },
-        {
-          "team": "TuS Dassendorf",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 11,
-            "points": 23,
-            "ownGoals": 31,
-            "againstGoals": 14
           }
         },
         {
@@ -9809,23 +10390,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 3,
-            "matches": 12,
-            "points": 23,
-            "ownGoals": 26,
+            "rank": 2,
+            "matches": 13,
+            "points": 26,
+            "ownGoals": 29,
             "againstGoals": 18
-          }
-        },
-        {
-          "team": "Altona 93",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 4,
-            "matches": 11,
-            "points": 21,
-            "ownGoals": 30,
-            "againstGoals": 24
           }
         },
         {
@@ -9833,11 +10402,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
+            "rank": 3,
+            "matches": 13,
+            "points": 24,
+            "ownGoals": 30,
+            "againstGoals": 24
+          }
+        },
+        {
+          "team": "TuS Dassendorf",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 4,
             "matches": 12,
-            "points": 21,
-            "ownGoals": 25,
-            "againstGoals": 20
+            "points": 23,
+            "ownGoals": 32,
+            "againstGoals": 16
           }
         },
         {
@@ -9845,11 +10426,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 12,
-            "points": 20,
-            "ownGoals": 30,
-            "againstGoals": 17
+            "rank": 5,
+            "matches": 13,
+            "points": 23,
+            "ownGoals": 34,
+            "againstGoals": 20
           }
         },
         {
@@ -9857,11 +10438,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 6,
+            "matches": 13,
+            "points": 23,
+            "ownGoals": 35,
+            "againstGoals": 32
+          }
+        },
+        {
+          "team": "Altona 93",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 7,
             "matches": 12,
-            "points": 20,
+            "points": 21,
             "ownGoals": 32,
-            "againstGoals": 30
+            "againstGoals": 27
           }
         },
         {
@@ -9870,10 +10463,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 11,
-            "points": 17,
-            "ownGoals": 23,
-            "againstGoals": 19
+            "matches": 12,
+            "points": 20,
+            "ownGoals": 26,
+            "againstGoals": 20
           }
         },
         {
@@ -9882,10 +10475,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 12,
-            "points": 17,
-            "ownGoals": 18,
-            "againstGoals": 20
+            "matches": 13,
+            "points": 20,
+            "ownGoals": 21,
+            "againstGoals": 22
           }
         },
         {
@@ -9894,10 +10487,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 12,
-            "points": 15,
-            "ownGoals": 18,
-            "againstGoals": 16
+            "matches": 13,
+            "points": 18,
+            "ownGoals": 20,
+            "againstGoals": 17
           }
         },
         {
@@ -9906,10 +10499,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 12,
+            "matches": 13,
             "points": 15,
-            "ownGoals": 16,
-            "againstGoals": 19
+            "ownGoals": 18,
+            "againstGoals": 22
           }
         },
         {
@@ -9918,10 +10511,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 12,
+            "matches": 13,
             "points": 15,
-            "ownGoals": 31,
-            "againstGoals": 40
+            "ownGoals": 34,
+            "againstGoals": 44
           }
         },
         {
@@ -9930,10 +10523,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 11,
+            "matches": 12,
             "points": 14,
-            "ownGoals": 25,
-            "againstGoals": 25
+            "ownGoals": 29,
+            "againstGoals": 30
           }
         },
         {
@@ -9942,10 +10535,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 12,
+            "matches": 13,
             "points": 12,
-            "ownGoals": 22,
-            "againstGoals": 31
+            "ownGoals": 23,
+            "againstGoals": 34
           }
         },
         {
@@ -9954,10 +10547,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 11,
+            "matches": 12,
             "points": 11,
-            "ownGoals": 21,
-            "againstGoals": 22
+            "ownGoals": 22,
+            "againstGoals": 24
           }
         },
         {
@@ -9966,10 +10559,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 12,
+            "matches": 13,
             "points": 11,
             "ownGoals": 20,
-            "againstGoals": 32
+            "againstGoals": 35
           }
         },
         {
@@ -9978,10 +10571,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 11,
+            "matches": 12,
             "points": 8,
             "ownGoals": 14,
-            "againstGoals": 23
+            "againstGoals": 25
           }
         },
         {
@@ -9990,10 +10583,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 12,
-            "points": 4,
-            "ownGoals": 15,
-            "againstGoals": 38
+            "matches": 13,
+            "points": 7,
+            "ownGoals": 17,
+            "againstGoals": 39
           }
         }
       ],
@@ -10942,6 +11535,87 @@
           "home_goals": 9,
           "away_goals": 5,
           "awarded": false
+        },
+        {
+          "id": 14918022,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Concordia Hamburg",
+          "away": "SC Victoria",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14918018,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "TuRa Harksheide",
+          "away": "USC Paloma",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14918021,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "ETSV Hamburg",
+          "away": "SC Vorwärts/Wacker Billstedt",
+          "home_goals": 4,
+          "away_goals": 5,
+          "awarded": false
+        },
+        {
+          "id": 14918023,
+          "kickoff": "2026-10-23T19:45:00+02:00",
+          "home": "FC Teutonia 05 Ottensen",
+          "away": "TBS Pinneberg",
+          "home_goals": 1,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14918017,
+          "kickoff": "2026-10-23T20:00:00+02:00",
+          "home": "Eintracht Norderstedt II",
+          "away": "FK Nikola Tesla",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14918016,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "TuS Dassendorf",
+          "away": "FC Süderelbe",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14918019,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "Altona 93",
+          "away": "Niendorfer TSV",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14918015,
+          "kickoff": "2026-10-25T10:45:00+01:00",
+          "home": "HEBC Hamburg",
+          "away": "TSV Sasel",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14918020,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "TSV Buchholz 08",
+          "away": "HT 16",
+          "home_goals": 3,
+          "away_goals": 4,
+          "awarded": false
         }
       ]
     },
@@ -10962,22 +11636,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 10,
-            "points": 28,
-            "ownGoals": 40,
+            "matches": 11,
+            "points": 31,
+            "ownGoals": 41,
             "againstGoals": 3
-          }
-        },
-        {
-          "team": "Blumenthaler SV",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 10,
-            "points": 27,
-            "ownGoals": 38,
-            "againstGoals": 9
           }
         },
         {
@@ -10985,11 +11647,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 3,
-            "matches": 10,
-            "points": 25,
-            "ownGoals": 32,
+            "rank": 2,
+            "matches": 11,
+            "points": 28,
+            "ownGoals": 35,
             "againstGoals": 12
+          }
+        },
+        {
+          "team": "Blumenthaler SV",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 3,
+            "matches": 11,
+            "points": 27,
+            "ownGoals": 38,
+            "againstGoals": 10
           }
         },
         {
@@ -10998,22 +11672,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 10,
-            "points": 22,
-            "ownGoals": 37,
+            "matches": 11,
+            "points": 25,
+            "ownGoals": 40,
             "againstGoals": 9
-          }
-        },
-        {
-          "team": "SG Aumund-Vegesack",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 10,
-            "points": 17,
-            "ownGoals": 30,
-            "againstGoals": 21
           }
         },
         {
@@ -11021,23 +11683,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 10,
-            "points": 15,
-            "ownGoals": 29,
+            "rank": 5,
+            "matches": 11,
+            "points": 18,
+            "ownGoals": 32,
             "againstGoals": 26
           }
         },
         {
-          "team": "TuS Schwachhausen",
+          "team": "SG Aumund-Vegesack",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 7,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 16,
-            "againstGoals": 22
+            "rank": 6,
+            "matches": 11,
+            "points": 17,
+            "ownGoals": 30,
+            "againstGoals": 24
           }
         },
         {
@@ -11045,10 +11707,34 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 7,
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 24,
+            "againstGoals": 27
+          }
+        },
+        {
+          "team": "Leher Turnerschaft",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 8,
-            "matches": 10,
-            "points": 13,
-            "ownGoals": 21,
+            "matches": 11,
+            "points": 14,
+            "ownGoals": 27,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "TuS Schwachhausen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 9,
+            "matches": 11,
+            "points": 14,
+            "ownGoals": 17,
             "againstGoals": 25
           }
         },
@@ -11057,47 +11743,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 10,
-            "points": 12,
-            "ownGoals": 19,
-            "againstGoals": 22
-          }
-        },
-        {
-          "team": "TV Eiche Horn",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
             "rank": 10,
-            "matches": 10,
-            "points": 12,
-            "ownGoals": 10,
-            "againstGoals": 21
-          }
-        },
-        {
-          "team": "Leher Turnerschaft",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 10,
-            "points": 11,
-            "ownGoals": 24,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "SV Grohn",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 12,
-            "matches": 10,
-            "points": 10,
-            "ownGoals": 14,
-            "againstGoals": 34
+            "matches": 11,
+            "points": 13,
+            "ownGoals": 21,
+            "againstGoals": 24
           }
         },
         {
@@ -11105,23 +11755,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 10,
-            "points": 9,
-            "ownGoals": 18,
+            "rank": 11,
+            "matches": 11,
+            "points": 12,
+            "ownGoals": 20,
             "againstGoals": 32
           }
         },
         {
-          "team": "FC Oberneuland",
+          "team": "TV Eiche Horn",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 10,
-            "points": 5,
+            "rank": 12,
+            "matches": 11,
+            "points": 12,
             "ownGoals": 12,
-            "againstGoals": 41
+            "againstGoals": 24
+          }
+        },
+        {
+          "team": "SV Grohn",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 13,
+            "matches": 11,
+            "points": 10,
+            "ownGoals": 14,
+            "againstGoals": 37
           }
         },
         {
@@ -11129,11 +11791,23 @@
           "level": 3,
           "penalty_points": 0,
           "published": {
+            "rank": 14,
+            "matches": 11,
+            "points": 5,
+            "ownGoals": 17,
+            "againstGoals": 34
+          }
+        },
+        {
+          "team": "FC Oberneuland",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 15,
-            "matches": 10,
-            "points": 4,
-            "ownGoals": 15,
-            "againstGoals": 32
+            "matches": 11,
+            "points": 5,
+            "ownGoals": 12,
+            "againstGoals": 43
           }
         },
         {
@@ -11142,10 +11816,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 10,
+            "matches": 11,
             "points": 4,
             "ownGoals": 11,
-            "againstGoals": 38
+            "againstGoals": 41
           }
         }
       ],
@@ -11869,6 +12543,78 @@
           "home_goals": 3,
           "away_goals": 4,
           "awarded": false
+        },
+        {
+          "id": 15274670,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Brinkumer SV",
+          "away": "SV Grohn",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15274669,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "FC Oberneuland",
+          "away": "BTS Neustadt",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15274674,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "TS Woltmershausen",
+          "away": "ESC Geestemünde",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15274675,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "FC Union 60 Bremen",
+          "away": "SV Werder Bremen III",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15274671,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SG Aumund-Vegesack",
+          "away": "OSC Bremerhaven",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15274668,
+          "kickoff": "2026-10-25T13:00:00+01:00",
+          "home": "TuS Schwachhausen",
+          "away": "Leher Turnerschaft",
+          "home_goals": 1,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15274672,
+          "kickoff": "2026-10-25T13:30:00+01:00",
+          "home": "TV Eiche Horn",
+          "away": "KSV Vatan Sport",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15274673,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "SV Hemelingen",
+          "away": "Blumenthaler SV",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
         }
       ]
     },
@@ -11889,10 +12635,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 11,
-            "points": 23,
-            "ownGoals": 23,
-            "againstGoals": 15
+            "matches": 12,
+            "points": 26,
+            "ownGoals": 32,
+            "againstGoals": 17
           }
         },
         {
@@ -11901,10 +12647,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 11,
-            "points": 23,
-            "ownGoals": 29,
-            "againstGoals": 22
+            "matches": 12,
+            "points": 24,
+            "ownGoals": 30,
+            "againstGoals": 23
           }
         },
         {
@@ -11913,10 +12659,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 11,
+            "matches": 12,
             "points": 22,
-            "ownGoals": 22,
-            "againstGoals": 15
+            "ownGoals": 23,
+            "againstGoals": 17
           }
         },
         {
@@ -11925,34 +12671,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 11,
-            "points": 20,
-            "ownGoals": 23,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "ASC 09 Dortmund",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 11,
-            "points": 19,
-            "ownGoals": 25,
+            "matches": 12,
+            "points": 21,
+            "ownGoals": 26,
             "againstGoals": 19
-          }
-        },
-        {
-          "team": "TSG Sprockhövel",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 6,
-            "matches": 11,
-            "points": 18,
-            "ownGoals": 27,
-            "againstGoals": 18
           }
         },
         {
@@ -11960,11 +12682,35 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 5,
+            "matches": 12,
+            "points": 21,
+            "ownGoals": 22,
+            "againstGoals": 16
+          }
+        },
+        {
+          "team": "SV Lippstadt 08",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 12,
+            "points": 20,
+            "ownGoals": 20,
+            "againstGoals": 18
+          }
+        },
+        {
+          "team": "ASC 09 Dortmund",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 7,
             "matches": 11,
-            "points": 18,
-            "ownGoals": 20,
-            "againstGoals": 15
+            "points": 19,
+            "ownGoals": 25,
+            "againstGoals": 19
           }
         },
         {
@@ -11973,22 +12719,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 11,
-            "points": 18,
-            "ownGoals": 16,
-            "againstGoals": 12
+            "matches": 12,
+            "points": 19,
+            "ownGoals": 17,
+            "againstGoals": 13
           }
         },
         {
-          "team": "SV Lippstadt 08",
+          "team": "TSG Sprockhövel",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 11,
-            "points": 17,
-            "ownGoals": 18,
-            "againstGoals": 17
+            "matches": 12,
+            "points": 18,
+            "ownGoals": 27,
+            "againstGoals": 20
           }
         },
         {
@@ -11997,21 +12743,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 11,
-            "points": 15,
-            "ownGoals": 17,
-            "againstGoals": 15
-          }
-        },
-        {
-          "team": "Westfalia Kinderhaus",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 11,
-            "points": 15,
-            "ownGoals": 13,
+            "matches": 12,
+            "points": 18,
+            "ownGoals": 19,
             "againstGoals": 16
           }
         },
@@ -12020,11 +12754,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
+            "rank": 11,
+            "matches": 12,
+            "points": 17,
+            "ownGoals": 23,
+            "againstGoals": 19
+          }
+        },
+        {
+          "team": "Westfalia Kinderhaus",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 12,
             "matches": 11,
-            "points": 14,
-            "ownGoals": 20,
-            "againstGoals": 19
+            "points": 15,
+            "ownGoals": 13,
+            "againstGoals": 16
           }
         },
         {
@@ -12033,22 +12779,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 11,
+            "matches": 12,
             "points": 13,
-            "ownGoals": 12,
-            "againstGoals": 21
-          }
-        },
-        {
-          "team": "SpVgg Horsthausen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 14,
-            "matches": 11,
-            "points": 12,
-            "ownGoals": 19,
-            "againstGoals": 26
+            "ownGoals": 13,
+            "againstGoals": 23
           }
         },
         {
@@ -12056,23 +12790,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 15,
-            "matches": 11,
-            "points": 11,
-            "ownGoals": 15,
-            "againstGoals": 19
+            "rank": 14,
+            "matches": 12,
+            "points": 12,
+            "ownGoals": 18,
+            "againstGoals": 22
           }
         },
         {
-          "team": "Victoria Clarholz",
+          "team": "SpVgg Horsthausen",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 16,
-            "matches": 11,
-            "points": 8,
-            "ownGoals": 22,
-            "againstGoals": 26
+            "rank": 15,
+            "matches": 12,
+            "points": 12,
+            "ownGoals": 21,
+            "againstGoals": 35
           }
         },
         {
@@ -12080,11 +12814,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 17,
-            "matches": 11,
-            "points": 8,
-            "ownGoals": 14,
+            "rank": 16,
+            "matches": 12,
+            "points": 11,
+            "ownGoals": 16,
             "againstGoals": 26
+          }
+        },
+        {
+          "team": "Victoria Clarholz",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 17,
+            "matches": 12,
+            "points": 8,
+            "ownGoals": 22,
+            "againstGoals": 29
           }
         },
         {
@@ -12093,10 +12839,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 11,
+            "matches": 12,
             "points": 2,
-            "ownGoals": 10,
-            "againstGoals": 28
+            "ownGoals": 11,
+            "againstGoals": 30
           }
         }
       ],
@@ -12991,6 +13737,78 @@
           "home_goals": 3,
           "away_goals": 1,
           "awarded": false
+        },
+        {
+          "id": 15102038,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "SV Schermbeck",
+          "away": "SV Lippstadt 08",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15102035,
+          "kickoff": "2026-10-25T14:30:00+01:00",
+          "home": "TuS Hiltrup",
+          "away": "SC Preußen Münster II",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15102036,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "SC Verl II",
+          "away": "Victoria Clarholz",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15102037,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "DSC Arminia Bielefeld II",
+          "away": "SC RW Maaslingen",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15102039,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "Eintracht Rheine",
+          "away": "DJK TuS Hordel",
+          "home_goals": 3,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15102040,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "TSG Sprockhövel",
+          "away": "TuS Ennepetal",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15102042,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "SpVgg Vreden",
+          "away": "SpVgg Erkenschwick",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15102041,
+          "kickoff": "2026-10-25T15:15:00+01:00",
+          "home": "SpVgg Horsthausen",
+          "away": "1. FC Gievenbeck",
+          "home_goals": 2,
+          "away_goals": 9,
+          "awarded": false
         }
       ]
     },
@@ -13011,10 +13829,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 10,
-            "points": 26,
-            "ownGoals": 38,
-            "againstGoals": 14
+            "matches": 11,
+            "points": 29,
+            "ownGoals": 42,
+            "againstGoals": 15
           }
         },
         {
@@ -13023,10 +13841,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 10,
-            "points": 24,
-            "ownGoals": 28,
-            "againstGoals": 17
+            "matches": 11,
+            "points": 27,
+            "ownGoals": 32,
+            "againstGoals": 18
           }
         },
         {
@@ -13035,34 +13853,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 10,
-            "points": 20,
-            "ownGoals": 22,
-            "againstGoals": 10
-          }
-        },
-        {
-          "team": "SC St. Tönis 1911/20",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 4,
-            "matches": 10,
-            "points": 17,
-            "ownGoals": 20,
-            "againstGoals": 15
-          }
-        },
-        {
-          "team": "SV Sonsbeck",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 10,
-            "points": 16,
-            "ownGoals": 19,
-            "againstGoals": 15
+            "matches": 11,
+            "points": 21,
+            "ownGoals": 23,
+            "againstGoals": 11
           }
         },
         {
@@ -13070,23 +13864,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 10,
-            "points": 16,
-            "ownGoals": 21,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "SV Blau-Weiß Dingden",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 10,
-            "points": 16,
-            "ownGoals": 14,
-            "againstGoals": 14
+            "rank": 4,
+            "matches": 11,
+            "points": 19,
+            "ownGoals": 23,
+            "againstGoals": 20
           }
         },
         {
@@ -13094,35 +13876,71 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 8,
-            "matches": 10,
-            "points": 15,
-            "ownGoals": 21,
+            "rank": 5,
+            "matches": 11,
+            "points": 18,
+            "ownGoals": 22,
             "againstGoals": 15
           }
         },
         {
-          "team": "1. Spvg. Solingen Wald 03",
+          "team": "SC St. Tönis 1911/20",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 11,
+            "points": 18,
+            "ownGoals": 21,
+            "againstGoals": 16
+          }
+        },
+        {
+          "team": "VfL Jüchen-Garzweiler",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 7,
+            "matches": 11,
+            "points": 17,
+            "ownGoals": 23,
+            "againstGoals": 23
+          }
+        },
+        {
+          "team": "Wuppertaler SV",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 8,
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 18,
+            "againstGoals": 10
+          }
+        },
+        {
+          "team": "SV Sonsbeck",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 10,
-            "points": 15,
-            "ownGoals": 21,
-            "againstGoals": 25
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 19,
+            "againstGoals": 18
           }
         },
         {
-          "team": "KFC Uerdingen",
+          "team": "SV Blau-Weiß Dingden",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 22,
-            "againstGoals": 13
+            "matches": 11,
+            "points": 16,
+            "ownGoals": 15,
+            "againstGoals": 16
           }
         },
         {
@@ -13131,34 +13949,34 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 20,
-            "againstGoals": 19
+            "matches": 11,
+            "points": 15,
+            "ownGoals": 22,
+            "againstGoals": 21
           }
         },
         {
-          "team": "VfL Jüchen-Garzweiler",
+          "team": "1. Spvg. Solingen Wald 03",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 10,
-            "points": 14,
-            "ownGoals": 21,
-            "againstGoals": 22
+            "matches": 11,
+            "points": 15,
+            "ownGoals": 22,
+            "againstGoals": 27
           }
         },
         {
-          "team": "Wuppertaler SV",
+          "team": "KFC Uerdingen",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 10,
-            "points": 13,
-            "ownGoals": 15,
-            "againstGoals": 10
+            "matches": 11,
+            "points": 14,
+            "ownGoals": 22,
+            "againstGoals": 14
           }
         },
         {
@@ -13167,9 +13985,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 10,
-            "points": 8,
-            "ownGoals": 12,
+            "matches": 11,
+            "points": 11,
+            "ownGoals": 15,
             "againstGoals": 25
           }
         },
@@ -13179,10 +13997,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 10,
+            "matches": 11,
             "points": 7,
             "ownGoals": 12,
-            "againstGoals": 26
+            "againstGoals": 29
           }
         },
         {
@@ -13191,10 +14009,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 10,
+            "matches": 11,
             "points": 6,
-            "ownGoals": 11,
-            "againstGoals": 22
+            "ownGoals": 12,
+            "againstGoals": 26
           }
         },
         {
@@ -13203,10 +14021,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 10,
-            "points": 5,
-            "ownGoals": 10,
-            "againstGoals": 24
+            "matches": 11,
+            "points": 6,
+            "ownGoals": 12,
+            "againstGoals": 26
           }
         },
         {
@@ -13215,10 +14033,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 10,
+            "matches": 11,
             "points": 4,
-            "ownGoals": 11,
-            "againstGoals": 33
+            "ownGoals": 12,
+            "againstGoals": 37
           }
         }
       ],
@@ -14032,6 +14850,87 @@
           "home_goals": 1,
           "away_goals": 0,
           "awarded": false
+        },
+        {
+          "id": 15100117,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "Fortuna Düsseldorf II",
+          "away": "SC St. Tönis 1911/20",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15100122,
+          "kickoff": "2026-10-24T17:30:00+02:00",
+          "home": "ETB Schwarz-Weiß Essen",
+          "away": "SpVg Schonnebeck",
+          "home_goals": 1,
+          "away_goals": 4,
+          "awarded": false
+        },
+        {
+          "id": 15100119,
+          "kickoff": "2026-10-24T18:00:00+02:00",
+          "home": "KFC Uerdingen",
+          "away": "1. FC Monheim",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15100115,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "SSVg Velbert",
+          "away": "Holzheimer SG",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15100116,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "Sportfreunde Baumberg",
+          "away": "SV Blau-Weiß Dingden",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15100120,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "TSV Meerbusch",
+          "away": "Ratingen 04/19",
+          "home_goals": 2,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15100121,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "SV Sonsbeck",
+          "away": "Wuppertaler SV",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15100123,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "SV Scherpenberg",
+          "away": "FC Büderich",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15100118,
+          "kickoff": "2026-10-25T15:30:00+01:00",
+          "home": "1. Spvg. Solingen Wald 03",
+          "away": "VfL Jüchen-Garzweiler",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
         }
       ]
     },
@@ -14052,22 +14951,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 8,
-            "points": 19,
-            "ownGoals": 18,
+            "matches": 9,
+            "points": 22,
+            "ownGoals": 19,
             "againstGoals": 7
-          }
-        },
-        {
-          "team": "SV Eintracht Hohkeppel",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 8,
-            "points": 17,
-            "ownGoals": 24,
-            "againstGoals": 14
           }
         },
         {
@@ -14075,11 +14962,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 2,
+            "matches": 9,
+            "points": 19,
+            "ownGoals": 29,
+            "againstGoals": 11
+          }
+        },
+        {
+          "team": "SV Eintracht Hohkeppel",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 3,
-            "matches": 8,
-            "points": 16,
-            "ownGoals": 26,
-            "againstGoals": 10
+            "matches": 9,
+            "points": 17,
+            "ownGoals": 27,
+            "againstGoals": 19
           }
         },
         {
@@ -14088,21 +14987,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 8,
-            "points": 14,
-            "ownGoals": 16,
-            "againstGoals": 14
-          }
-        },
-        {
-          "team": "SC Borussia Lindenthal-Hohenlind",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 8,
-            "points": 14,
-            "ownGoals": 18,
+            "matches": 9,
+            "points": 17,
+            "ownGoals": 21,
             "againstGoals": 17
           }
         },
@@ -14111,11 +14998,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 5,
+            "matches": 9,
+            "points": 16,
+            "ownGoals": 20,
+            "againstGoals": 18
+          }
+        },
+        {
+          "team": "SC Borussia Lindenthal-Hohenlind",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 6,
-            "matches": 8,
-            "points": 13,
-            "ownGoals": 18,
-            "againstGoals": 17
+            "matches": 9,
+            "points": 15,
+            "ownGoals": 19,
+            "againstGoals": 18
           }
         },
         {
@@ -14124,8 +15023,8 @@
           "penalty_points": 0,
           "published": {
             "rank": 7,
-            "matches": 7,
-            "points": 12,
+            "matches": 8,
+            "points": 13,
             "ownGoals": 17,
             "againstGoals": 13
           }
@@ -14136,46 +15035,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 8,
-            "points": 11,
+            "matches": 9,
+            "points": 12,
             "ownGoals": 24,
             "againstGoals": 17
-          }
-        },
-        {
-          "team": "Siegburger SV 04",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 9,
-            "matches": 8,
-            "points": 11,
-            "ownGoals": 16,
-            "againstGoals": 16
-          }
-        },
-        {
-          "team": "TuS Chlodwig Zülpich 1896",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 10,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 19,
-            "againstGoals": 23
-          }
-        },
-        {
-          "team": "FC Hennef 05",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 9,
-            "againstGoals": 13
           }
         },
         {
@@ -14183,11 +15046,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 12,
-            "matches": 8,
-            "points": 9,
-            "ownGoals": 18,
-            "againstGoals": 19
+            "rank": 9,
+            "matches": 9,
+            "points": 12,
+            "ownGoals": 20,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "Siegburger SV 04",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 10,
+            "matches": 9,
+            "points": 11,
+            "ownGoals": 17,
+            "againstGoals": 18
           }
         },
         {
@@ -14195,35 +15070,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 11,
+            "matches": 9,
+            "points": 10,
+            "ownGoals": 8,
+            "againstGoals": 12
+          }
+        },
+        {
+          "team": "TuS Chlodwig Zülpich 1896",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 12,
+            "matches": 9,
+            "points": 10,
+            "ownGoals": 22,
+            "againstGoals": 27
+          }
+        },
+        {
+          "team": "FC Hennef 05",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 13,
-            "matches": 8,
-            "points": 9,
-            "ownGoals": 7,
-            "againstGoals": 11
-          }
-        },
-        {
-          "team": "SpVg Porz 1919",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 14,
-            "matches": 8,
-            "points": 5,
-            "ownGoals": 9,
-            "againstGoals": 15
-          }
-        },
-        {
-          "team": "FSV SW Neunkirchen-Seelscheid",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 15,
-            "matches": 8,
-            "points": 5,
+            "matches": 9,
+            "points": 10,
             "ownGoals": 10,
-            "againstGoals": 19
+            "againstGoals": 16
           }
         },
         {
@@ -14231,11 +15106,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 14,
+            "matches": 8,
+            "points": 6,
+            "ownGoals": 12,
+            "againstGoals": 35
+          }
+        },
+        {
+          "team": "SpVg Porz 1919",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 15,
+            "matches": 9,
+            "points": 5,
+            "ownGoals": 10,
+            "againstGoals": 17
+          }
+        },
+        {
+          "team": "FSV SW Neunkirchen-Seelscheid",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 16,
-            "matches": 7,
-            "points": 3,
-            "ownGoals": 8,
-            "againstGoals": 32
+            "matches": 9,
+            "points": 5,
+            "ownGoals": 10,
+            "againstGoals": 20
           }
         }
       ],
@@ -14806,6 +15705,78 @@
           "home_goals": 2,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 15310618,
+          "kickoff": "2026-10-23T20:00:00+02:00",
+          "home": "1. FC Düren",
+          "away": "SpVg Porz 1919",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15310619,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "FC Hennef 05",
+          "away": "SSV Merten",
+          "home_goals": 1,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15310621,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "FC Wegberg-Beeck",
+          "away": "FSV SW Neunkirchen-Seelscheid",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15310617,
+          "kickoff": "2026-10-25T15:15:00+01:00",
+          "home": "FC Hürth",
+          "away": "SC Borussia Lindenthal-Hohenlind",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15310615,
+          "kickoff": "2026-10-25T15:30:00+01:00",
+          "home": "SC Fortuna Köln II",
+          "away": "VfL Vichttal",
+          "home_goals": 0,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 15310616,
+          "kickoff": "2026-10-25T15:30:00+01:00",
+          "home": "SSV Bornheim",
+          "away": "Siegburger SV 04",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15310620,
+          "kickoff": "2026-10-25T15:30:00+01:00",
+          "home": "TuS Blau-Weiß Königsdorf",
+          "away": "TuS Chlodwig Zülpich 1896",
+          "home_goals": 4,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 15310622,
+          "kickoff": "2026-10-25T15:30:00+01:00",
+          "home": "SV Eintracht Hohkeppel",
+          "away": "SpVg Frechen 20",
+          "home_goals": 3,
+          "away_goals": 5,
+          "awarded": false
         }
       ]
     },
@@ -14826,22 +15797,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 8,
-            "points": 16,
-            "ownGoals": 12,
-            "againstGoals": 7
+            "matches": 9,
+            "points": 19,
+            "ownGoals": 14,
+            "againstGoals": 8
           }
         },
         {
-          "team": "FC Hertha 03 Zehlendorf",
+          "team": "Füchse Berlin",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 8,
-            "points": 15,
-            "ownGoals": 15,
-            "againstGoals": 6
+            "matches": 9,
+            "points": 17,
+            "ownGoals": 13,
+            "againstGoals": 9
           }
         },
         {
@@ -14850,10 +15821,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 8,
+            "matches": 9,
+            "points": 16,
+            "ownGoals": 13,
+            "againstGoals": 10
+          }
+        },
+        {
+          "team": "FC Hertha 03 Zehlendorf",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 4,
+            "matches": 9,
             "points": 15,
-            "ownGoals": 12,
-            "againstGoals": 9
+            "ownGoals": 16,
+            "againstGoals": 8
           }
         },
         {
@@ -14861,23 +15844,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 4,
-            "matches": 8,
-            "points": 14,
-            "ownGoals": 12,
-            "againstGoals": 6
-          }
-        },
-        {
-          "team": "Füchse Berlin",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
             "rank": 5,
-            "matches": 8,
+            "matches": 9,
             "points": 14,
             "ownGoals": 12,
-            "againstGoals": 9
+            "againstGoals": 7
           }
         },
         {
@@ -14886,34 +15857,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 6,
-            "matches": 8,
-            "points": 13,
-            "ownGoals": 12,
-            "againstGoals": 10
-          }
-        },
-        {
-          "team": "FC Anker Wismar",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 8,
-            "points": 13,
-            "ownGoals": 11,
+            "matches": 9,
+            "points": 14,
+            "ownGoals": 13,
             "againstGoals": 11
-          }
-        },
-        {
-          "team": "Tennis Borussia Berlin",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 8,
-            "points": 12,
-            "ownGoals": 8,
-            "againstGoals": 7
           }
         },
         {
@@ -14921,10 +15868,10 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 20,
+            "rank": 7,
+            "matches": 9,
+            "points": 13,
+            "ownGoals": 21,
             "againstGoals": 13
           }
         },
@@ -14933,11 +15880,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 10,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 8,
+            "rank": 8,
+            "matches": 9,
+            "points": 13,
+            "ownGoals": 13,
             "againstGoals": 10
+          }
+        },
+        {
+          "team": "FC Anker Wismar",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 9,
+            "matches": 9,
+            "points": 13,
+            "ownGoals": 11,
+            "againstGoals": 16
+          }
+        },
+        {
+          "team": "Tennis Borussia Berlin",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 10,
+            "matches": 9,
+            "points": 12,
+            "ownGoals": 8,
+            "againstGoals": 8
           }
         },
         {
@@ -14946,10 +15917,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 8,
-            "points": 9,
-            "ownGoals": 11,
-            "againstGoals": 14
+            "matches": 9,
+            "points": 10,
+            "ownGoals": 12,
+            "againstGoals": 15
           }
         },
         {
@@ -14958,9 +15929,21 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 8,
-            "points": 8,
-            "ownGoals": 12,
+            "matches": 9,
+            "points": 9,
+            "ownGoals": 13,
+            "againstGoals": 16
+          }
+        },
+        {
+          "team": "SV Sparta Lichtenberg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 13,
+            "matches": 9,
+            "points": 9,
+            "ownGoals": 11,
             "againstGoals": 15
           }
         },
@@ -14969,9 +15952,9 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 8,
-            "points": 8,
+            "rank": 14,
+            "matches": 9,
+            "points": 9,
             "ownGoals": 8,
             "againstGoals": 14
           }
@@ -14981,11 +15964,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 8,
+            "rank": 15,
+            "matches": 9,
             "points": 8,
             "ownGoals": 6,
-            "againstGoals": 16
+            "againstGoals": 18
           }
         },
         {
@@ -14993,23 +15976,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 15,
-            "matches": 8,
-            "points": 6,
+            "rank": 16,
+            "matches": 9,
+            "points": 7,
             "ownGoals": 12,
             "againstGoals": 18
-          }
-        },
-        {
-          "team": "SV Sparta Lichtenberg",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 16,
-            "matches": 8,
-            "points": 6,
-            "ownGoals": 9,
-            "againstGoals": 15
           }
         }
       ],
@@ -15589,6 +16560,78 @@
           "home_goals": 1,
           "away_goals": 0,
           "awarded": false
+        },
+        {
+          "id": 14951267,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Füchse Berlin",
+          "away": "Tennis Borussia Berlin",
+          "home_goals": 1,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14951262,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "SV Siedenbollentin",
+          "away": "F.C. Hansa Rostock II",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14951264,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "BSV Eintracht Mahlsdorf",
+          "away": "FC Hertha 03 Zehlendorf",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14951261,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FSV Optik Rathenow",
+          "away": "FC Anker Wismar",
+          "home_goals": 5,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14951266,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SV Sparta Lichtenberg",
+          "away": "TuS Makkabi Berlin",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14951260,
+          "kickoff": "2026-10-24T17:00:00+02:00",
+          "home": "FC Mecklenburg Schwerin",
+          "away": "SV Lichtenberg 47",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14951263,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "TSG Neustrelitz",
+          "away": "SG Union 1919 Klosterfelde",
+          "home_goals": 0,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14951265,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "Berliner AK",
+          "away": "1. FC Lok Stendal",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     },
@@ -15609,21 +16652,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 8,
-            "points": 20,
-            "ownGoals": 18,
-            "againstGoals": 7
-          }
-        },
-        {
-          "team": "VfB Germania Halberstadt",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 8,
-            "points": 19,
-            "ownGoals": 25,
+            "matches": 9,
+            "points": 23,
+            "ownGoals": 21,
             "againstGoals": 8
           }
         },
@@ -15632,23 +16663,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 3,
-            "matches": 8,
-            "points": 17,
-            "ownGoals": 19,
-            "againstGoals": 9
+            "rank": 2,
+            "matches": 9,
+            "points": 20,
+            "ownGoals": 23,
+            "againstGoals": 10
           }
         },
         {
-          "team": "FC Eilenburg",
+          "team": "VfB Germania Halberstadt",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 4,
-            "matches": 8,
-            "points": 16,
-            "ownGoals": 26,
-            "againstGoals": 13
+            "rank": 3,
+            "matches": 9,
+            "points": 19,
+            "ownGoals": 25,
+            "againstGoals": 10
           }
         },
         {
@@ -15656,23 +16687,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
-            "matches": 8,
-            "points": 15,
-            "ownGoals": 19,
-            "againstGoals": 16
+            "rank": 4,
+            "matches": 9,
+            "points": 18,
+            "ownGoals": 21,
+            "againstGoals": 17
           }
         },
         {
-          "team": "SSC Weißenfels",
+          "team": "FC Eilenburg",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 8,
-            "points": 12,
-            "ownGoals": 12,
-            "againstGoals": 13
+            "rank": 5,
+            "matches": 9,
+            "points": 16,
+            "ownGoals": 26,
+            "againstGoals": 14
           }
         },
         {
@@ -15680,23 +16711,11 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 7,
-            "matches": 8,
-            "points": 11,
-            "ownGoals": 12,
-            "againstGoals": 8
-          }
-        },
-        {
-          "team": "SG Union Sandersdorf",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 19,
-            "againstGoals": 14
+            "rank": 6,
+            "matches": 9,
+            "points": 14,
+            "ownGoals": 17,
+            "againstGoals": 10
           }
         },
         {
@@ -15704,10 +16723,10 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 14,
+            "rank": 7,
+            "matches": 9,
+            "points": 13,
+            "ownGoals": 16,
             "againstGoals": 12
           }
         },
@@ -15716,34 +16735,34 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 10,
-            "matches": 8,
-            "points": 10,
-            "ownGoals": 16,
-            "againstGoals": 15
+            "rank": 8,
+            "matches": 9,
+            "points": 13,
+            "ownGoals": 19,
+            "againstGoals": 17
           }
         },
         {
-          "team": "FSV Budissa Bautzen",
+          "team": "SSC Weißenfels",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 11,
-            "matches": 8,
-            "points": 9,
-            "ownGoals": 11,
+            "rank": 9,
+            "matches": 9,
+            "points": 12,
+            "ownGoals": 14,
             "againstGoals": 16
           }
         },
         {
-          "team": "FC Einheit Wernigerode",
+          "team": "SG Union Sandersdorf",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 12,
-            "matches": 8,
-            "points": 8,
-            "ownGoals": 13,
+            "rank": 10,
+            "matches": 9,
+            "points": 10,
+            "ownGoals": 21,
             "againstGoals": 19
           }
         },
@@ -15752,11 +16771,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 8,
-            "points": 6,
-            "ownGoals": 9,
+            "rank": 11,
+            "matches": 9,
+            "points": 9,
+            "ownGoals": 12,
             "againstGoals": 14
+          }
+        },
+        {
+          "team": "FSV Budissa Bautzen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 12,
+            "matches": 9,
+            "points": 9,
+            "ownGoals": 12,
+            "againstGoals": 19
+          }
+        },
+        {
+          "team": "FC Einheit Wernigerode",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 13,
+            "matches": 9,
+            "points": 8,
+            "ownGoals": 14,
+            "againstGoals": 23
           }
         },
         {
@@ -15765,9 +16808,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 8,
-            "points": 5,
-            "ownGoals": 9,
+            "matches": 9,
+            "points": 8,
+            "ownGoals": 10,
             "againstGoals": 22
           }
         },
@@ -15777,10 +16820,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 8,
+            "matches": 9,
             "points": 3,
             "ownGoals": 6,
-            "againstGoals": 21
+            "againstGoals": 24
           }
         },
         {
@@ -15789,10 +16832,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 8,
+            "matches": 9,
             "points": 3,
-            "ownGoals": 8,
-            "againstGoals": 29
+            "ownGoals": 9,
+            "againstGoals": 31
           }
         }
       ],
@@ -16372,6 +17415,78 @@
           "home_goals": 3,
           "away_goals": 1,
           "awarded": false
+        },
+        {
+          "id": 14951501,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "FSV Budissa Bautzen",
+          "away": "ZFC Meuselwitz",
+          "home_goals": 1,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14951505,
+          "kickoff": "2026-10-24T13:00:00+02:00",
+          "home": "FC Eilenburg",
+          "away": "VfB 1921 Krieschow",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14951500,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "1. FC Frankfurt",
+          "away": "VfL Halle 1896",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14951502,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "VFC Plauen",
+          "away": "VfB Germania Halberstadt",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14951503,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "VfB Auerbach 1906",
+          "away": "FC Einheit Wernigerode",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14951506,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SC Freital",
+          "away": "SSC Weißenfels",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14951504,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "FC Einheit Rudolstadt",
+          "away": "VfB Empor Glauchau",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14951507,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "SG Dynamo Dresden II",
+          "away": "SG Union Sandersdorf",
+          "home_goals": 5,
+          "away_goals": 2,
+          "awarded": false
         }
       ]
     },
@@ -16392,10 +17507,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 12,
-            "points": 26,
-            "ownGoals": 26,
-            "againstGoals": 10
+            "matches": 13,
+            "points": 29,
+            "ownGoals": 28,
+            "againstGoals": 11
           }
         },
         {
@@ -16404,10 +17519,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 12,
-            "points": 25,
-            "ownGoals": 28,
-            "againstGoals": 13
+            "matches": 13,
+            "points": 28,
+            "ownGoals": 33,
+            "againstGoals": 16
           }
         },
         {
@@ -16416,9 +17531,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 3,
-            "matches": 12,
-            "points": 23,
-            "ownGoals": 24,
+            "matches": 13,
+            "points": 26,
+            "ownGoals": 26,
             "againstGoals": 18
           }
         },
@@ -16428,22 +17543,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 12,
-            "points": 23,
-            "ownGoals": 21,
+            "matches": 13,
+            "points": 26,
+            "ownGoals": 22,
             "againstGoals": 15
-          }
-        },
-        {
-          "team": "Young Boys Reutlingen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 12,
-            "points": 22,
-            "ownGoals": 27,
-            "againstGoals": 17
           }
         },
         {
@@ -16451,11 +17554,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 12,
-            "points": 20,
-            "ownGoals": 19,
+            "rank": 5,
+            "matches": 13,
+            "points": 23,
+            "ownGoals": 21,
             "againstGoals": 16
+          }
+        },
+        {
+          "team": "Young Boys Reutlingen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 13,
+            "points": 22,
+            "ownGoals": 28,
+            "againstGoals": 19
           }
         },
         {
@@ -16464,10 +17579,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 7,
-            "matches": 12,
+            "matches": 13,
             "points": 19,
             "ownGoals": 24,
-            "againstGoals": 14
+            "againstGoals": 15
           }
         },
         {
@@ -16483,27 +17598,27 @@
           }
         },
         {
-          "team": "1. CfR Pforzheim",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 9,
-            "matches": 12,
-            "points": 17,
-            "ownGoals": 22,
-            "againstGoals": 23
-          }
-        },
-        {
           "team": "1. FC Mühlhausen",
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 9,
+            "matches": 13,
+            "points": 18,
+            "ownGoals": 28,
+            "againstGoals": 30
+          }
+        },
+        {
+          "team": "1. CfR Pforzheim",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 10,
-            "matches": 12,
+            "matches": 13,
             "points": 17,
-            "ownGoals": 24,
-            "againstGoals": 26
+            "ownGoals": 22,
+            "againstGoals": 25
           }
         },
         {
@@ -16512,10 +17627,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 12,
+            "matches": 13,
             "points": 17,
-            "ownGoals": 18,
-            "againstGoals": 20
+            "ownGoals": 20,
+            "againstGoals": 23
           }
         },
         {
@@ -16524,10 +17639,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 12,
+            "matches": 13,
             "points": 15,
-            "ownGoals": 16,
-            "againstGoals": 19
+            "ownGoals": 19,
+            "againstGoals": 24
+          }
+        },
+        {
+          "team": "Türkischer SV Singen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 13,
+            "matches": 13,
+            "points": 14,
+            "ownGoals": 17,
+            "againstGoals": 25
           }
         },
         {
@@ -16535,23 +17662,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 13,
-            "matches": 12,
+            "rank": 14,
+            "matches": 13,
             "points": 13,
             "ownGoals": 17,
-            "againstGoals": 18
-          }
-        },
-        {
-          "team": "FC Nöttingen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 14,
-            "matches": 12,
-            "points": 12,
-            "ownGoals": 28,
-            "againstGoals": 21
+            "againstGoals": 20
           }
         },
         {
@@ -16560,22 +17675,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 12,
-            "points": 12,
-            "ownGoals": 20,
-            "againstGoals": 31
+            "matches": 13,
+            "points": 13,
+            "ownGoals": 24,
+            "againstGoals": 35
           }
         },
         {
-          "team": "Türkischer SV Singen",
+          "team": "FC Nöttingen",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 16,
             "matches": 12,
-            "points": 11,
-            "ownGoals": 14,
-            "againstGoals": 23
+            "points": 12,
+            "ownGoals": 28,
+            "againstGoals": 21
           }
         },
         {
@@ -16584,10 +17699,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 12,
+            "matches": 13,
             "points": 9,
-            "ownGoals": 12,
-            "againstGoals": 32
+            "ownGoals": 14,
+            "againstGoals": 36
           }
         },
         {
@@ -16596,10 +17711,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 12,
-            "points": 3,
-            "ownGoals": 10,
-            "againstGoals": 35
+            "matches": 13,
+            "points": 6,
+            "ownGoals": 14,
+            "againstGoals": 37
           }
         }
       ],
@@ -17575,6 +18690,78 @@
           "home_goals": 0,
           "away_goals": 0,
           "awarded": false
+        },
+        {
+          "id": 14994723,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Türkischer SV Singen",
+          "away": "FC Holzhausen",
+          "home_goals": 3,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14994726,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "1. CfR Pforzheim",
+          "away": "FC 08 Villingen",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14994730,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Young Boys Reutlingen",
+          "away": "SV Oberachern",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14994729,
+          "kickoff": "2026-10-24T14:30:00+02:00",
+          "home": "TSV Essingen",
+          "away": "TSG Backnang",
+          "home_goals": 3,
+          "away_goals": 5,
+          "awarded": false
+        },
+        {
+          "id": 14994722,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "TSG Balingen",
+          "away": "Bahlinger SC",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14994727,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "FV Ravensburg",
+          "away": "SSV Reutlingen",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14994728,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "Türkspor Neckarsulm",
+          "away": "1. FC Normannia Gmünd",
+          "home_goals": 2,
+          "away_goals": 4,
+          "awarded": false
+        },
+        {
+          "id": 14994724,
+          "kickoff": "2026-10-25T15:00:00+01:00",
+          "home": "1. FC Mühlhausen",
+          "away": "FC Teningen",
+          "home_goals": 4,
+          "away_goals": 4,
+          "awarded": false
         }
       ]
     },
@@ -17595,10 +18782,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 14,
-            "points": 32,
-            "ownGoals": 41,
-            "againstGoals": 11
+            "matches": 15,
+            "points": 33,
+            "ownGoals": 42,
+            "againstGoals": 12
           }
         },
         {
@@ -17607,22 +18794,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 14,
-            "points": 29,
-            "ownGoals": 37,
+            "matches": 15,
+            "points": 32,
+            "ownGoals": 40,
             "againstGoals": 25
-          }
-        },
-        {
-          "team": "FC Eddersheim",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 3,
-            "matches": 14,
-            "points": 25,
-            "ownGoals": 31,
-            "againstGoals": 24
           }
         },
         {
@@ -17630,11 +18805,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 4,
-            "matches": 14,
-            "points": 24,
-            "ownGoals": 27,
-            "againstGoals": 21
+            "rank": 3,
+            "matches": 15,
+            "points": 27,
+            "ownGoals": 32,
+            "againstGoals": 22
           }
         },
         {
@@ -17642,23 +18817,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 5,
-            "matches": 14,
-            "points": 24,
-            "ownGoals": 24,
-            "againstGoals": 21
+            "rank": 4,
+            "matches": 15,
+            "points": 27,
+            "ownGoals": 30,
+            "againstGoals": 22
           }
         },
         {
-          "team": "FC Turabdin-Babylon",
+          "team": "FC Eddersheim",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
-            "matches": 14,
-            "points": 23,
-            "ownGoals": 21,
-            "againstGoals": 21
+            "rank": 5,
+            "matches": 15,
+            "points": 25,
+            "ownGoals": 32,
+            "againstGoals": 30
           }
         },
         {
@@ -17666,23 +18841,23 @@
           "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 7,
-            "matches": 14,
-            "points": 21,
-            "ownGoals": 31,
+            "rank": 6,
+            "matches": 15,
+            "points": 24,
+            "ownGoals": 34,
             "againstGoals": 18
           }
         },
         {
-          "team": "VfB Marburg",
+          "team": "FC Turabdin-Babylon",
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 8,
-            "matches": 14,
-            "points": 21,
-            "ownGoals": 19,
-            "againstGoals": 18
+            "rank": 7,
+            "matches": 15,
+            "points": 23,
+            "ownGoals": 22,
+            "againstGoals": 23
           }
         },
         {
@@ -17690,11 +18865,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 14,
-            "points": 19,
-            "ownGoals": 21,
-            "againstGoals": 22
+            "rank": 8,
+            "matches": 15,
+            "points": 22,
+            "ownGoals": 23,
+            "againstGoals": 23
           }
         },
         {
@@ -17702,35 +18877,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 9,
+            "matches": 15,
+            "points": 21,
+            "ownGoals": 24,
+            "againstGoals": 20
+          }
+        },
+        {
+          "team": "VfB Marburg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 10,
-            "matches": 14,
-            "points": 18,
-            "ownGoals": 22,
-            "againstGoals": 20
-          }
-        },
-        {
-          "team": "Bayern Alzenau",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 11,
-            "matches": 14,
-            "points": 18,
-            "ownGoals": 18,
-            "againstGoals": 20
-          }
-        },
-        {
-          "team": "CSC 03 Kassel",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 12,
-            "matches": 14,
-            "points": 18,
-            "ownGoals": 15,
-            "againstGoals": 25
+            "matches": 15,
+            "points": 21,
+            "ownGoals": 19,
+            "againstGoals": 21
           }
         },
         {
@@ -17738,11 +18901,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 11,
+            "matches": 15,
+            "points": 20,
+            "ownGoals": 24,
+            "againstGoals": 31
+          }
+        },
+        {
+          "team": "Bayern Alzenau",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 12,
+            "matches": 15,
+            "points": 19,
+            "ownGoals": 19,
+            "againstGoals": 21
+          }
+        },
+        {
+          "team": "CSC 03 Kassel",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 13,
-            "matches": 14,
-            "points": 17,
-            "ownGoals": 22,
-            "againstGoals": 30
+            "matches": 15,
+            "points": 19,
+            "ownGoals": 16,
+            "againstGoals": 26
           }
         },
         {
@@ -17751,22 +18938,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 14,
+            "matches": 15,
             "points": 15,
             "ownGoals": 20,
-            "againstGoals": 26
-          }
-        },
-        {
-          "team": "Hanauer SC 1960",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 15,
-            "matches": 14,
-            "points": 13,
-            "ownGoals": 21,
-            "againstGoals": 32
+            "againstGoals": 28
           }
         },
         {
@@ -17774,11 +18949,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 15,
+            "matches": 15,
+            "points": 13,
+            "ownGoals": 23,
+            "againstGoals": 31
+          }
+        },
+        {
+          "team": "Hanauer SC 1960",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 16,
-            "matches": 14,
-            "points": 12,
-            "ownGoals": 22,
-            "againstGoals": 30
+            "matches": 15,
+            "points": 13,
+            "ownGoals": 21,
+            "againstGoals": 35
           }
         },
         {
@@ -17787,10 +18974,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 14,
+            "matches": 15,
             "points": 12,
-            "ownGoals": 17,
-            "againstGoals": 25
+            "ownGoals": 18,
+            "againstGoals": 30
           }
         },
         {
@@ -17799,10 +18986,10 @@
           "penalty_points": 3,
           "published": {
             "rank": 18,
-            "matches": 14,
+            "matches": 15,
             "points": 6,
-            "ownGoals": 17,
-            "againstGoals": 37
+            "ownGoals": 18,
+            "againstGoals": 39
           }
         }
       ],
@@ -18940,6 +20127,87 @@
           "home_goals": 2,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 14915455,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Gießen",
+          "away": "SV Rot-Weiß Walldorf",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14915456,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "TSV Eintracht Stadtallendorf",
+          "away": "Bayern Alzenau",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14915458,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "Türk Gücü Friedberg",
+          "away": "KSV Hessen Kassel II",
+          "home_goals": 5,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14915461,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "KSV Baunatal",
+          "away": "FSV Fernwald",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14915460,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "SV Darmstadt 98 II",
+          "away": "VfB Marburg",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14915459,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "Unter-Flockenbach",
+          "away": "Hanauer SC 1960",
+          "home_goals": 3,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14915462,
+          "kickoff": "2026-10-24T16:00:00+02:00",
+          "home": "RW Hadamar",
+          "away": "FC Eddersheim",
+          "home_goals": 6,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14915457,
+          "kickoff": "2026-10-25T14:00:00+01:00",
+          "home": "FC Turabdin-Babylon",
+          "away": "Hünfelder SV 1919",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14915463,
+          "kickoff": "2026-10-25T14:30:00+01:00",
+          "home": "CSC 03 Kassel",
+          "away": "SV Hummetroth",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     },
@@ -18960,9 +20228,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 13,
-            "points": 28,
-            "ownGoals": 32,
+            "matches": 14,
+            "points": 31,
+            "ownGoals": 35,
             "againstGoals": 20
           }
         },
@@ -18972,21 +20240,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 2,
-            "matches": 13,
-            "points": 26,
-            "ownGoals": 29,
-            "againstGoals": 14
-          }
-        },
-        {
-          "team": "SV Gonsenheim",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 3,
-            "matches": 13,
-            "points": 25,
-            "ownGoals": 31,
+            "matches": 14,
+            "points": 29,
+            "ownGoals": 32,
             "againstGoals": 15
           }
         },
@@ -18995,71 +20251,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 3,
+            "matches": 14,
+            "points": 27,
+            "ownGoals": 43,
+            "againstGoals": 21
+          }
+        },
+        {
+          "team": "SV Gonsenheim",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 4,
-            "matches": 13,
-            "points": 24,
-            "ownGoals": 39,
-            "againstGoals": 20
-          }
-        },
-        {
-          "team": "FV Engers 07",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 13,
-            "points": 22,
+            "matches": 14,
+            "points": 25,
             "ownGoals": 32,
-            "againstGoals": 23
-          }
-        },
-        {
-          "team": "VfR Wormatia Worms",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 6,
-            "matches": 13,
-            "points": 21,
-            "ownGoals": 38,
-            "againstGoals": 25
-          }
-        },
-        {
-          "team": "SV Rot-Weiss Wittlich",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 7,
-            "matches": 12,
-            "points": 21,
-            "ownGoals": 30,
-            "againstGoals": 22
-          }
-        },
-        {
-          "team": "TuS Koblenz",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 8,
-            "matches": 13,
-            "points": 21,
-            "ownGoals": 23,
-            "againstGoals": 20
-          }
-        },
-        {
-          "team": "FC Rot-Weiss Koblenz",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 9,
-            "matches": 13,
-            "points": 20,
-            "ownGoals": 25,
-            "againstGoals": 18
+            "againstGoals": 19
           }
         },
         {
@@ -19067,11 +20275,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 10,
-            "matches": 12,
-            "points": 20,
-            "ownGoals": 23,
+            "rank": 5,
+            "matches": 13,
+            "points": 23,
+            "ownGoals": 27,
             "againstGoals": 18
+          }
+        },
+        {
+          "team": "FC Rot-Weiss Koblenz",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 6,
+            "matches": 14,
+            "points": 23,
+            "ownGoals": 27,
+            "againstGoals": 19
+          }
+        },
+        {
+          "team": "FV Engers 07",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 7,
+            "matches": 13,
+            "points": 22,
+            "ownGoals": 32,
+            "againstGoals": 23
           }
         },
         {
@@ -19079,11 +20311,47 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 8,
+            "matches": 14,
+            "points": 22,
+            "ownGoals": 25,
+            "againstGoals": 27
+          }
+        },
+        {
+          "team": "VfR Wormatia Worms",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 9,
+            "matches": 14,
+            "points": 21,
+            "ownGoals": 39,
+            "againstGoals": 28
+          }
+        },
+        {
+          "team": "SV Rot-Weiss Wittlich",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 10,
+            "matches": 13,
+            "points": 21,
+            "ownGoals": 31,
+            "againstGoals": 24
+          }
+        },
+        {
+          "team": "TuS Koblenz",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 11,
             "matches": 13,
-            "points": 19,
-            "ownGoals": 21,
-            "againstGoals": 25
+            "points": 21,
+            "ownGoals": 23,
+            "againstGoals": 20
           }
         },
         {
@@ -19092,10 +20360,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 13,
-            "points": 16,
-            "ownGoals": 19,
-            "againstGoals": 26
+            "matches": 14,
+            "points": 19,
+            "ownGoals": 23,
+            "againstGoals": 28
           }
         },
         {
@@ -19104,10 +20372,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 13,
+            "matches": 14,
             "points": 15,
-            "ownGoals": 21,
-            "againstGoals": 29
+            "ownGoals": 23,
+            "againstGoals": 33
           }
         },
         {
@@ -19116,10 +20384,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 13,
+            "matches": 14,
             "points": 15,
-            "ownGoals": 21,
-            "againstGoals": 31
+            "ownGoals": 23,
+            "againstGoals": 35
           }
         },
         {
@@ -19128,10 +20396,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 13,
+            "matches": 14,
             "points": 13,
             "ownGoals": 22,
-            "againstGoals": 27
+            "againstGoals": 31
           }
         },
         {
@@ -19140,10 +20408,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 13,
-            "points": 9,
-            "ownGoals": 19,
-            "againstGoals": 39
+            "matches": 14,
+            "points": 10,
+            "ownGoals": 20,
+            "againstGoals": 40
           }
         },
         {
@@ -19152,10 +20420,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 13,
-            "points": 7,
-            "ownGoals": 10,
-            "againstGoals": 24
+            "matches": 14,
+            "points": 8,
+            "ownGoals": 11,
+            "againstGoals": 25
           }
         },
         {
@@ -19164,10 +20432,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 13,
+            "matches": 14,
             "points": 1,
             "ownGoals": 6,
-            "againstGoals": 45
+            "againstGoals": 48
           }
         }
       ],
@@ -20215,6 +21483,78 @@
           "home_goals": 0,
           "away_goals": 5,
           "awarded": false
+        },
+        {
+          "id": 15167454,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "SV Elversberg II",
+          "away": "SV Auersmacher",
+          "home_goals": 4,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15167455,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FK Pirmasens",
+          "away": "SV Gonsenheim",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15167456,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Rot-Weiss Koblenz",
+          "away": "SV Rot-Weiss Wittlich",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15167457,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Cosmos",
+          "away": "TSV Gau-Odernheim",
+          "home_goals": 0,
+          "away_goals": 4,
+          "awarded": false
+        },
+        {
+          "id": 15167460,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "TSV Schott Mainz",
+          "away": "VfR Wormatia Worms",
+          "home_goals": 3,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15167453,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "FV Diefflen",
+          "away": "Ahrweiler BC 1920",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 15167459,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "FC Emmelshausen-Karbach",
+          "away": "FC Hertha Wiesbach",
+          "home_goals": 4,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 15167452,
+          "kickoff": "2026-10-24T16:00:00+02:00",
+          "home": "SF Eisbachtal",
+          "away": "TuS Mechtersheim",
+          "home_goals": 0,
+          "away_goals": 3,
+          "awarded": false
         }
       ]
     },
@@ -20235,22 +21575,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 15,
-            "points": 40,
-            "ownGoals": 34,
-            "againstGoals": 9
-          }
-        },
-        {
-          "team": "FC Eintracht Bamberg 2010",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 15,
-            "points": 28,
-            "ownGoals": 27,
-            "againstGoals": 14
+            "matches": 16,
+            "points": 43,
+            "ownGoals": 39,
+            "againstGoals": 10
           }
         },
         {
@@ -20258,35 +21586,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 3,
-            "matches": 15,
-            "points": 28,
-            "ownGoals": 28,
+            "rank": 2,
+            "matches": 16,
+            "points": 31,
+            "ownGoals": 32,
             "againstGoals": 19
-          }
-        },
-        {
-          "team": "TSV Kornburg",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 4,
-            "matches": 15,
-            "points": 27,
-            "ownGoals": 28,
-            "againstGoals": 14
-          }
-        },
-        {
-          "team": "SSV Jahn Regensburg II",
-          "level": 2,
-          "penalty_points": 0,
-          "published": {
-            "rank": 5,
-            "matches": 15,
-            "points": 26,
-            "ownGoals": 34,
-            "againstGoals": 23
           }
         },
         {
@@ -20294,11 +21598,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 6,
+            "rank": 3,
+            "matches": 16,
+            "points": 29,
+            "ownGoals": 37,
+            "againstGoals": 26
+          }
+        },
+        {
+          "team": "FC Eintracht Bamberg 2010",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 4,
             "matches": 15,
-            "points": 26,
-            "ownGoals": 34,
-            "againstGoals": 24
+            "points": 28,
+            "ownGoals": 27,
+            "againstGoals": 14
+          }
+        },
+        {
+          "team": "TSV Kornburg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 5,
+            "matches": 15,
+            "points": 27,
+            "ownGoals": 28,
+            "againstGoals": 14
           }
         },
         {
@@ -20306,23 +21634,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 7,
-            "matches": 15,
-            "points": 26,
+            "rank": 6,
+            "matches": 16,
+            "points": 27,
             "ownGoals": 24,
             "againstGoals": 23
           }
         },
         {
-          "team": "SV Fortuna Regensburg",
-          "level": 1,
+          "team": "SSV Jahn Regensburg II",
+          "level": 2,
           "penalty_points": 0,
           "published": {
-            "rank": 8,
-            "matches": 15,
-            "points": 22,
-            "ownGoals": 33,
-            "againstGoals": 24
+            "rank": 7,
+            "matches": 16,
+            "points": 26,
+            "ownGoals": 37,
+            "againstGoals": 27
           }
         },
         {
@@ -20330,11 +21658,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 9,
-            "matches": 15,
-            "points": 22,
+            "rank": 8,
+            "matches": 16,
+            "points": 23,
             "ownGoals": 27,
             "againstGoals": 21
+          }
+        },
+        {
+          "team": "SV Fortuna Regensburg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 9,
+            "matches": 16,
+            "points": 22,
+            "ownGoals": 34,
+            "againstGoals": 26
           }
         },
         {
@@ -20343,10 +21683,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 10,
-            "matches": 15,
+            "matches": 16,
             "points": 21,
             "ownGoals": 18,
-            "againstGoals": 21
+            "againstGoals": 25
           }
         },
         {
@@ -20355,10 +21695,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 11,
-            "matches": 15,
+            "matches": 16,
             "points": 19,
-            "ownGoals": 21,
-            "againstGoals": 25
+            "ownGoals": 23,
+            "againstGoals": 28
           }
         },
         {
@@ -20367,22 +21707,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 15,
-            "points": 16,
-            "ownGoals": 19,
-            "againstGoals": 27
-          }
-        },
-        {
-          "team": "DJK Ammerthal",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 13,
-            "matches": 15,
-            "points": 15,
-            "ownGoals": 18,
-            "againstGoals": 29
+            "matches": 16,
+            "points": 19,
+            "ownGoals": 23,
+            "againstGoals": 30
           }
         },
         {
@@ -20390,23 +21718,35 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 14,
-            "matches": 15,
-            "points": 14,
-            "ownGoals": 22,
-            "againstGoals": 31
+            "rank": 13,
+            "matches": 16,
+            "points": 17,
+            "ownGoals": 26,
+            "againstGoals": 34
           }
         },
         {
-          "team": "FC Ingolstadt 04 II",
-          "level": 2,
+          "team": "DJK Ammerthal",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 14,
+            "matches": 16,
+            "points": 15,
+            "ownGoals": 19,
+            "againstGoals": 33
+          }
+        },
+        {
+          "team": "DJK Don Bosco Bamberg",
+          "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 15,
-            "matches": 15,
-            "points": 13,
-            "ownGoals": 21,
-            "againstGoals": 31
+            "matches": 16,
+            "points": 14,
+            "ownGoals": 19,
+            "againstGoals": 33
           }
         },
         {
@@ -20415,22 +21755,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 16,
-            "matches": 15,
-            "points": 11,
-            "ownGoals": 15,
-            "againstGoals": 32
+            "matches": 16,
+            "points": 14,
+            "ownGoals": 17,
+            "againstGoals": 33
           }
         },
         {
-          "team": "DJK Don Bosco Bamberg",
-          "level": 1,
+          "team": "FC Ingolstadt 04 II",
+          "level": 2,
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 15,
-            "points": 11,
-            "ownGoals": 15,
-            "againstGoals": 32
+            "matches": 16,
+            "points": 13,
+            "ownGoals": 24,
+            "againstGoals": 35
           }
         },
         {
@@ -20439,10 +21779,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 15,
+            "matches": 16,
             "points": 6,
-            "ownGoals": 11,
-            "againstGoals": 30
+            "ownGoals": 12,
+            "againstGoals": 35
           }
         }
       ],
@@ -21661,6 +23001,78 @@
           "home_goals": 0,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 14900008,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "DJK Don Bosco Bamberg",
+          "away": "DJK Ammerthal",
+          "home_goals": 4,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900009,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "ASV Cham",
+          "away": "ASV Neumarkt",
+          "home_goals": 5,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900011,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "TSV Neudrossenfeld",
+          "away": "SpVgg Bayern Hof",
+          "home_goals": 2,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14900015,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "Viktoria Aschaffenburg",
+          "away": "DJK Gebenbach",
+          "home_goals": 0,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14900012,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "SpVgg SV Weiden",
+          "away": "FC Ingolstadt 04 II",
+          "home_goals": 4,
+          "away_goals": 3,
+          "awarded": false
+        },
+        {
+          "id": 14900014,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "Würzburger FV",
+          "away": "FSV Stadeln",
+          "home_goals": 4,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14900013,
+          "kickoff": "2026-10-24T15:30:00+02:00",
+          "home": "TSV Nördlingen",
+          "away": "SV Fortuna Regensburg",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900007,
+          "kickoff": "2026-10-24T16:00:00+02:00",
+          "home": "TSV Großbardorf",
+          "away": "SSV Jahn Regensburg II",
+          "home_goals": 4,
+          "away_goals": 3,
+          "awarded": false
         }
       ]
     },
@@ -21681,22 +23093,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 1,
-            "matches": 15,
+            "matches": 16,
             "points": 33,
             "ownGoals": 42,
-            "againstGoals": 19
-          }
-        },
-        {
-          "team": "TSV 1880 Wasserburg",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 2,
-            "matches": 15,
-            "points": 31,
-            "ownGoals": 35,
-            "againstGoals": 23
+            "againstGoals": 21
           }
         },
         {
@@ -21704,11 +23104,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 2,
+            "matches": 16,
+            "points": 32,
+            "ownGoals": 23,
+            "againstGoals": 10
+          }
+        },
+        {
+          "team": "TSV 1880 Wasserburg",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 3,
-            "matches": 15,
-            "points": 29,
-            "ownGoals": 21,
-            "againstGoals": 9
+            "matches": 16,
+            "points": 31,
+            "ownGoals": 36,
+            "againstGoals": 25
           }
         },
         {
@@ -21717,9 +23129,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 4,
-            "matches": 15,
-            "points": 26,
-            "ownGoals": 27,
+            "matches": 16,
+            "points": 29,
+            "ownGoals": 29,
             "againstGoals": 25
           }
         },
@@ -21729,10 +23141,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 5,
-            "matches": 15,
-            "points": 25,
-            "ownGoals": 28,
-            "againstGoals": 18
+            "matches": 16,
+            "points": 28,
+            "ownGoals": 30,
+            "againstGoals": 19
           }
         },
         {
@@ -21741,9 +23153,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 6,
-            "matches": 15,
-            "points": 25,
-            "ownGoals": 26,
+            "matches": 16,
+            "points": 28,
+            "ownGoals": 27,
             "againstGoals": 19
           }
         },
@@ -21753,9 +23165,9 @@
           "penalty_points": 0,
           "published": {
             "rank": 7,
-            "matches": 15,
-            "points": 24,
-            "ownGoals": 30,
+            "matches": 16,
+            "points": 27,
+            "ownGoals": 35,
             "againstGoals": 19
           }
         },
@@ -21765,10 +23177,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 8,
-            "matches": 15,
+            "matches": 16,
             "points": 23,
-            "ownGoals": 31,
-            "againstGoals": 22
+            "ownGoals": 32,
+            "againstGoals": 24
           }
         },
         {
@@ -21777,10 +23189,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 9,
-            "matches": 15,
-            "points": 18,
-            "ownGoals": 31,
+            "matches": 16,
+            "points": 21,
+            "ownGoals": 33,
             "againstGoals": 30
+          }
+        },
+        {
+          "team": "TSV Schwabmünchen",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
+            "rank": 10,
+            "matches": 16,
+            "points": 19,
+            "ownGoals": 31,
+            "againstGoals": 32
           }
         },
         {
@@ -21788,23 +23212,11 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
-            "rank": 10,
-            "matches": 15,
-            "points": 18,
-            "ownGoals": 26,
-            "againstGoals": 28
-          }
-        },
-        {
-          "team": "FC Gundelfingen",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
             "rank": 11,
-            "matches": 15,
-            "points": 17,
-            "ownGoals": 22,
-            "againstGoals": 24
+            "matches": 16,
+            "points": 19,
+            "ownGoals": 27,
+            "againstGoals": 29
           }
         },
         {
@@ -21813,22 +23225,22 @@
           "penalty_points": 0,
           "published": {
             "rank": 12,
-            "matches": 15,
-            "points": 17,
-            "ownGoals": 14,
-            "againstGoals": 20
+            "matches": 16,
+            "points": 18,
+            "ownGoals": 15,
+            "againstGoals": 21
           }
         },
         {
-          "team": "TSV Schwabmünchen",
+          "team": "FC Gundelfingen",
           "level": 1,
           "penalty_points": 0,
           "published": {
             "rank": 13,
-            "matches": 15,
-            "points": 16,
-            "ownGoals": 29,
-            "againstGoals": 31
+            "matches": 16,
+            "points": 17,
+            "ownGoals": 22,
+            "againstGoals": 25
           }
         },
         {
@@ -21837,22 +23249,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 14,
-            "matches": 15,
+            "matches": 16,
             "points": 16,
             "ownGoals": 21,
-            "againstGoals": 32
-          }
-        },
-        {
-          "team": "SV Kirchanschöring",
-          "level": 1,
-          "penalty_points": 0,
-          "published": {
-            "rank": 15,
-            "matches": 15,
-            "points": 15,
-            "ownGoals": 20,
-            "againstGoals": 31
+            "againstGoals": 37
           }
         },
         {
@@ -21860,11 +23260,23 @@
           "level": 1,
           "penalty_points": 0,
           "published": {
+            "rank": 15,
+            "matches": 16,
+            "points": 15,
+            "ownGoals": 20,
+            "againstGoals": 29
+          }
+        },
+        {
+          "team": "SV Kirchanschöring",
+          "level": 1,
+          "penalty_points": 0,
+          "published": {
             "rank": 16,
-            "matches": 15,
-            "points": 12,
-            "ownGoals": 18,
-            "againstGoals": 28
+            "matches": 16,
+            "points": 15,
+            "ownGoals": 20,
+            "againstGoals": 33
           }
         },
         {
@@ -21873,10 +23285,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 17,
-            "matches": 15,
+            "matches": 16,
             "points": 11,
-            "ownGoals": 15,
-            "againstGoals": 32
+            "ownGoals": 16,
+            "againstGoals": 34
           }
         },
         {
@@ -21885,10 +23297,10 @@
           "penalty_points": 0,
           "published": {
             "rank": 18,
-            "matches": 15,
+            "matches": 16,
             "points": 10,
-            "ownGoals": 18,
-            "againstGoals": 44
+            "ownGoals": 19,
+            "againstGoals": 46
           }
         }
       ],
@@ -23107,8 +24519,90 @@
           "home_goals": 0,
           "away_goals": 2,
           "awarded": false
+        },
+        {
+          "id": 14900320,
+          "kickoff": "2026-10-23T18:30:00+02:00",
+          "home": "SV Erlbach",
+          "away": "SV Schalding-Heining",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900316,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "TSV 1860 München II",
+          "away": "FC Pipinsried",
+          "home_goals": 2,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14900318,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "TSV 1860 Rosenheim",
+          "away": "TuS Geretsried",
+          "home_goals": 2,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900323,
+          "kickoff": "2026-10-23T19:00:00+02:00",
+          "home": "TSV 1880 Wasserburg",
+          "away": "SpVgg Landshut",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14900315,
+          "kickoff": "2026-10-23T19:30:00+02:00",
+          "home": "FC Sportfreunde Schwaig",
+          "away": "FC Deisenhofen",
+          "home_goals": 5,
+          "away_goals": 0,
+          "awarded": false
+        },
+        {
+          "id": 14900317,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "TSV Kottern",
+          "away": "SV Heimstetten",
+          "home_goals": 1,
+          "away_goals": 1,
+          "awarded": false
+        },
+        {
+          "id": 14900319,
+          "kickoff": "2026-10-24T14:00:00+02:00",
+          "home": "FC Ismaning",
+          "away": "TSV Schwabmünchen",
+          "home_goals": 1,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14900321,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "SV Kirchanschöring",
+          "away": "FSV Pfaffenhofen/Ilm",
+          "home_goals": 0,
+          "away_goals": 2,
+          "awarded": false
+        },
+        {
+          "id": 14900322,
+          "kickoff": "2026-10-24T15:00:00+02:00",
+          "home": "FC Gundelfingen",
+          "away": "SpVgg Hankofen-Hailing",
+          "home_goals": 0,
+          "away_goals": 1,
+          "awarded": false
         }
       ]
     }
-  ]
+  ],
+  "valuation_note": "Rekonstruktion aus datierten Ergebnissen mit heutigem Spielwertungs- und Punktabzugsstand; spätere Sportgerichtsentscheidungen können von den damals veröffentlichten Tabellen abweichen."
 }
