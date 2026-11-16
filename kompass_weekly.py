@@ -163,11 +163,23 @@ def reconstruct_table(league, cutoff):
     groups = defaultdict(list)
     for row in rows.values():
         groups[row["points"]].append(row)
+    use_direct_comparison = (league["second_sort"] == "direct_comparison"
+                             and len(matches) * 2 >= len(rows) * (len(rows) - 1))
     ordered = []
     for points in sorted(groups, reverse=True):
         tied = groups[points]
+        names = {row["team"] for row in tied}
+        direct = aggregate(names, [match for match in matches
+                                   if match["home"] in names and match["away"] in names]) if use_direct_comparison else {}
         def sort_key(row):
-            return (-row["goal_difference"], -row["goals_for"])
+            overall = (-row["goal_difference"], -row["goals_for"])
+            if not direct:
+                return overall
+            head = direct[row["team"]]
+            comparison = (-head["points"], head["goals_against"] - head["goals_for"])
+            if len(tied) > 2:
+                comparison += (-head["goals_for"],)
+            return comparison + overall
         tied.sort(key=lambda row: (sort_key(row), row["team"].casefold()))
         for row in tied:
             row["ranking_tie"] = [other["team"] for other in tied

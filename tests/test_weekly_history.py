@@ -48,6 +48,27 @@ def test_third_liga_relegation_marks_follow_historical_bottom_four():
     assert [row["rank"] for row in rows if row["mark"] == "down"] == [3, 4, 5, 6]
 
 
+def test_direct_comparison_starts_at_midseason_using_only_completed_results():
+    source = league([
+        match("2026-08-01T12:00:00Z", "B", "A", (1, 0)),
+        match("2026-08-02T12:00:00Z", "A", "C", (10, 0)),
+        match("2026-08-03T12:00:00Z", "D", "A", (1, 0)),
+        match("2026-08-04T12:00:00Z", "C", "B", (1, 0)),
+        match("2026-08-05T12:00:00Z", "D", "B", (1, 0)),
+        match("2026-08-09T12:00:00Z", "C", "D", (1, 0)),
+    ])
+    source["teams"] = source["teams"][:4]
+    source["second_sort"] = "direct_comparison"
+    before = [row["team"] for row in weekly.reconstruct_table(source, date(2026, 8, 8))]
+    after = [row["team"] for row in weekly.reconstruct_table(source, date(2026, 8, 9))]
+    assert before.index("A") < before.index("B")
+    assert after.index("B") < after.index("A")
+    assert after.index("C") < after.index("D")
+    source["second_sort"] = "goal_diff"
+    overall = [row["team"] for row in weekly.reconstruct_table(source, date(2026, 8, 9))]
+    assert overall.index("A") < overall.index("B")
+
+
 def test_all_leagues_must_have_started_and_sunday_must_be_complete():
     sources = [league([match("2026-08-01T12:00:00+00:00")], str(i)) for i in range(19)]
     sources.append(league([match("2026-08-28T12:00:00+00:00")], "last"))

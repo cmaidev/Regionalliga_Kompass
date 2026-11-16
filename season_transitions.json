@@ -2,12 +2,12 @@
   "promoted_to_3liga": [
     "FC Memmingen",
     "FC Rot-Weiß Erfurt",
+    "Hannover 96 II",
     "Rot-Weiß Oberhausen",
-    "SC Weiche Flensburg 08",
     "SGV Heilbronn-Freiberg"
   ],
   "promoted_to_3liga_league": {
-    "SC Weiche Flensburg 08": "Nord",
+    "Hannover 96 II": "Nord",
     "FC Rot-Weiß Erfurt": "Nordost",
     "Rot-Weiß Oberhausen": "West",
     "FC Memmingen": "Bayern",
@@ -22,14 +22,14 @@
     "FC St. Pauli II",
     "FSV 63 Luckenwalde",
     "FSV Frankfurt",
-    "Hamburger SV II",
+    "HSC Hannover",
     "Hertha BSC II",
     "RSV Eintracht 1949",
-    "SC Paderborn 07 II",
     "SC Wiedenbrück",
     "SG Barockstadt Fulda-Lehnerz",
     "SG Wattenscheid 09",
     "SSV Ulm 1846",
+    "SV Bergisch Gladbach 09",
     "SV Rödinghausen",
     "SV Tasmania Berlin",
     "SV Todesfelde",
@@ -40,73 +40,73 @@
     "TSV Landsberg"
   ],
   "relegated_from_regionalliga_league": {
-    "FC St. Pauli II": "Nord",
-    "Eintracht Norderstedt": "Nord",
-    "Hamburger SV II": "Nord",
+    "HSC Hannover": "Nord",
     "SV Todesfelde": "Nord",
     "Bremer SV": "Nord",
-    "SV Tasmania Berlin": "Nordost",
+    "FC St. Pauli II": "Nord",
+    "Eintracht Norderstedt": "Nord",
     "Hertha BSC II": "Nordost",
+    "SV Tasmania Berlin": "Nordost",
     "RSV Eintracht 1949": "Nordost",
     "FSV 63 Luckenwalde": "Nordost",
-    "SC Paderborn 07 II": "West",
-    "SG Wattenscheid 09": "West",
+    "SV Bergisch Gladbach 09": "West",
     "SV Rödinghausen": "West",
+    "SG Wattenscheid 09": "West",
     "SC Wiedenbrück": "West",
     "Sportfreunde Lotte": "West",
     "1. FC Schweinfurt 05": "Bayern",
-    "SpVgg Greuther Fürth II": "Bayern",
     "SpVgg Ansbach 09": "Bayern",
     "TSV Aubstadt": "Bayern",
+    "SpVgg Greuther Fürth II": "Bayern",
     "TSV Landsberg": "Bayern",
     "FSV Frankfurt": "Südwest",
-    "1. FC Kaiserslautern II": "Südwest",
     "1. FSV Mainz 05 II": "Südwest",
+    "SG Barockstadt Fulda-Lehnerz": "Südwest",
     "SSV Ulm 1846": "Südwest",
-    "SG Barockstadt Fulda-Lehnerz": "Südwest"
+    "1. FC Kaiserslautern II": "Südwest"
   },
   "relegated_from_3liga": [
     "SC Fortuna Köln",
-    "SSV Jahn Regensburg",
-    "TSV Havelse",
-    "Würzburger Kickers"
+    "SC Verl",
+    "SG Sonnenhof Großaspach",
+    "TSV Havelse"
   ],
   "relegated_from_3liga_league": {
-    "Würzburger Kickers": "Südwest",
-    "SSV Jahn Regensburg": "Bayern",
+    "SC Verl": "West",
+    "SG Sonnenhof Großaspach": "Südwest",
     "SC Fortuna Köln": "West",
     "TSV Havelse": "Nord"
   },
   "promoted_from_oberliga": [
-    "Eintracht Braunschweig II",
-    "Holstein Kiel II",
+    "SV Wilhelmshaven",
+    "FC Kilia Kiel",
     "USC Paloma",
     "SV Hemelingen",
     "1. FC Gievenbeck",
     "SpVg Schonnebeck",
-    "FC Wegberg-Beeck",
+    "SSV Merten",
     "BSV Eintracht Mahlsdorf",
-    "ZFC Meuselwitz",
-    "SV Oberachern",
+    "VfB Auerbach 1906",
+    "TSG Backnang",
     "TSV Eintracht Stadtallendorf",
-    "TuS Mechtersheim",
+    "TSV Schott Mainz",
     "ASV Cham",
-    "FC Pipinsried"
+    "SV Erlbach"
   ],
   "current_regionalliga_after_transitions": {
     "Nord": [
       "1. FC Phönix Lübeck",
       "Eimsbütteler TV",
-      "Eintracht Braunschweig II",
+      "FC Kilia Kiel",
       "FSV Schöningen",
-      "Hannover 96 II",
-      "Holstein Kiel II",
-      "HSC Hannover",
+      "Hamburger SV II",
       "Kickers Emden",
+      "SC Weiche Flensburg 08",
       "SSV Jeddeloh",
       "SV Atlas Delmenhorst",
       "SV Drochtersen/Assel",
       "SV Hemelingen",
+      "SV Wilhelmshaven",
       "TSV Havelse",
       "USC Paloma",
       "VfB Lübeck",
@@ -127,8 +127,8 @@
       "Greifswalder FC",
       "Hallescher FC",
       "SV Babelsberg 03",
-      "VSG Altglienicke",
-      "ZFC Meuselwitz"
+      "VfB Auerbach 1906",
+      "VSG Altglienicke"
     ],
     "West": [
       "1. FC Bocholt",
@@ -139,11 +139,12 @@
       "Borussia Mönchengladbach II",
       "FC Gütersloh",
       "FC Schalke 04 II",
-      "FC Wegberg-Beeck",
       "SC Fortuna Köln",
+      "SC Paderborn 07 II",
+      "SC Verl",
       "Sportfreunde Siegen",
       "SpVg Schonnebeck",
-      "SV Bergisch Gladbach 09",
+      "SSV Merten",
       "VfB 03 Hilden",
       "VfL Bochum II",
       "Westfalia Rhynern"
@@ -154,12 +155,11 @@
       "DJK Vilzing",
       "FC Augsburg II",
       "FC Bayern München II",
-      "FC Pipinsried",
       "FV Illertissen",
       "SC Eltersdorf",
       "SpVgg Bayreuth",
       "SpVgg Unterhaching",
-      "SSV Jahn Regensburg",
+      "SV Erlbach",
       "TSV 1860 München",
       "TSV Buchbach",
       "TSV Schwaben Augsburg",
@@ -173,16 +173,16 @@
       "Kickers Offenbach",
       "KSV Hessen Kassel",
       "SC Freiburg II",
+      "SG Sonnenhof Großaspach",
       "Stuttgarter Kickers",
       "SV Eintracht Trier",
-      "SV Oberachern",
       "SV Sandhausen",
+      "TSG Backnang",
       "TSV Eintracht Stadtallendorf",
+      "TSV Schott Mainz",
       "TSV Steinbach Haiger",
-      "TuS Mechtersheim",
       "VfR Aalen",
-      "VfR Mannheim",
-      "Würzburger Kickers"
+      "VfR Mannheim"
     ]
   },
   "reform_rule": "12+4+14+2",
@@ -220,7 +220,7 @@
   "source_season": "2026/27",
   "target_season": "2027/28",
   "is_projection": true,
-  "generated_at": "2026-10-26T09:07:27.004089+00:00",
+  "generated_at": "2026-11-16T10:50:47.255669+00:00",
   "source_priority": [
     "fupa",
     "wikipedia"
@@ -231,12 +231,12 @@
       "promoted_to_3liga": [
         "FC Memmingen",
         "FC Rot-Weiß Erfurt",
+        "Hannover 96 II",
         "Rot-Weiß Oberhausen",
-        "SC Weiche Flensburg 08",
         "SGV Heilbronn-Freiberg"
       ],
       "promoted_to_3liga_league": {
-        "SC Weiche Flensburg 08": "Nord",
+        "Hannover 96 II": "Nord",
         "FC Rot-Weiß Erfurt": "Nordost",
         "Rot-Weiß Oberhausen": "West",
         "FC Memmingen": "Bayern",
@@ -251,14 +251,14 @@
         "FC St. Pauli II",
         "FSV 63 Luckenwalde",
         "FSV Frankfurt",
-        "Hamburger SV II",
+        "HSC Hannover",
         "Hertha BSC II",
         "RSV Eintracht 1949",
-        "SC Paderborn 07 II",
         "SC Wiedenbrück",
         "SG Barockstadt Fulda-Lehnerz",
         "SG Wattenscheid 09",
         "SSV Ulm 1846",
+        "SV Bergisch Gladbach 09",
         "SV Rödinghausen",
         "SV Tasmania Berlin",
         "SV Todesfelde",
@@ -269,73 +269,73 @@
         "TSV Landsberg"
       ],
       "relegated_from_regionalliga_league": {
-        "FC St. Pauli II": "Nord",
-        "Eintracht Norderstedt": "Nord",
-        "Hamburger SV II": "Nord",
+        "HSC Hannover": "Nord",
         "SV Todesfelde": "Nord",
         "Bremer SV": "Nord",
-        "SV Tasmania Berlin": "Nordost",
+        "FC St. Pauli II": "Nord",
+        "Eintracht Norderstedt": "Nord",
         "Hertha BSC II": "Nordost",
+        "SV Tasmania Berlin": "Nordost",
         "RSV Eintracht 1949": "Nordost",
         "FSV 63 Luckenwalde": "Nordost",
-        "SC Paderborn 07 II": "West",
-        "SG Wattenscheid 09": "West",
+        "SV Bergisch Gladbach 09": "West",
         "SV Rödinghausen": "West",
+        "SG Wattenscheid 09": "West",
         "SC Wiedenbrück": "West",
         "Sportfreunde Lotte": "West",
         "1. FC Schweinfurt 05": "Bayern",
-        "SpVgg Greuther Fürth II": "Bayern",
         "SpVgg Ansbach 09": "Bayern",
         "TSV Aubstadt": "Bayern",
+        "SpVgg Greuther Fürth II": "Bayern",
         "TSV Landsberg": "Bayern",
         "FSV Frankfurt": "Südwest",
-        "1. FC Kaiserslautern II": "Südwest",
         "1. FSV Mainz 05 II": "Südwest",
+        "SG Barockstadt Fulda-Lehnerz": "Südwest",
         "SSV Ulm 1846": "Südwest",
-        "SG Barockstadt Fulda-Lehnerz": "Südwest"
+        "1. FC Kaiserslautern II": "Südwest"
       },
       "relegated_from_3liga": [
         "SC Fortuna Köln",
-        "SSV Jahn Regensburg",
-        "TSV Havelse",
-        "Würzburger Kickers"
+        "SC Verl",
+        "SG Sonnenhof Großaspach",
+        "TSV Havelse"
       ],
       "relegated_from_3liga_league": {
-        "Würzburger Kickers": "Südwest",
-        "SSV Jahn Regensburg": "Bayern",
+        "SC Verl": "West",
+        "SG Sonnenhof Großaspach": "Südwest",
         "SC Fortuna Köln": "West",
         "TSV Havelse": "Nord"
       },
       "promoted_from_oberliga": [
-        "Eintracht Braunschweig II",
-        "Holstein Kiel II",
+        "SV Wilhelmshaven",
+        "FC Kilia Kiel",
         "USC Paloma",
         "SV Hemelingen",
         "1. FC Gievenbeck",
         "SpVg Schonnebeck",
-        "FC Wegberg-Beeck",
+        "SSV Merten",
         "BSV Eintracht Mahlsdorf",
-        "ZFC Meuselwitz",
-        "SV Oberachern",
+        "VfB Auerbach 1906",
+        "TSG Backnang",
         "TSV Eintracht Stadtallendorf",
-        "TuS Mechtersheim",
+        "TSV Schott Mainz",
         "ASV Cham",
-        "FC Pipinsried"
+        "SV Erlbach"
       ],
       "current_regionalliga_after_transitions": {
         "Nord": [
           "1. FC Phönix Lübeck",
           "Eimsbütteler TV",
-          "Eintracht Braunschweig II",
+          "FC Kilia Kiel",
           "FSV Schöningen",
-          "Hannover 96 II",
-          "Holstein Kiel II",
-          "HSC Hannover",
+          "Hamburger SV II",
           "Kickers Emden",
+          "SC Weiche Flensburg 08",
           "SSV Jeddeloh",
           "SV Atlas Delmenhorst",
           "SV Drochtersen/Assel",
           "SV Hemelingen",
+          "SV Wilhelmshaven",
           "TSV Havelse",
           "USC Paloma",
           "VfB Lübeck",
@@ -356,8 +356,8 @@
           "Greifswalder FC",
           "Hallescher FC",
           "SV Babelsberg 03",
-          "VSG Altglienicke",
-          "ZFC Meuselwitz"
+          "VfB Auerbach 1906",
+          "VSG Altglienicke"
         ],
         "West": [
           "1. FC Bocholt",
@@ -368,11 +368,12 @@
           "Borussia Mönchengladbach II",
           "FC Gütersloh",
           "FC Schalke 04 II",
-          "FC Wegberg-Beeck",
           "SC Fortuna Köln",
+          "SC Paderborn 07 II",
+          "SC Verl",
           "Sportfreunde Siegen",
           "SpVg Schonnebeck",
-          "SV Bergisch Gladbach 09",
+          "SSV Merten",
           "VfB 03 Hilden",
           "VfL Bochum II",
           "Westfalia Rhynern"
@@ -383,12 +384,11 @@
           "DJK Vilzing",
           "FC Augsburg II",
           "FC Bayern München II",
-          "FC Pipinsried",
           "FV Illertissen",
           "SC Eltersdorf",
           "SpVgg Bayreuth",
           "SpVgg Unterhaching",
-          "SSV Jahn Regensburg",
+          "SV Erlbach",
           "TSV 1860 München",
           "TSV Buchbach",
           "TSV Schwaben Augsburg",
@@ -402,16 +402,16 @@
           "Kickers Offenbach",
           "KSV Hessen Kassel",
           "SC Freiburg II",
+          "SG Sonnenhof Großaspach",
           "Stuttgarter Kickers",
           "SV Eintracht Trier",
-          "SV Oberachern",
           "SV Sandhausen",
+          "TSG Backnang",
           "TSV Eintracht Stadtallendorf",
+          "TSV Schott Mainz",
           "TSV Steinbach Haiger",
-          "TuS Mechtersheim",
           "VfR Aalen",
-          "VfR Mannheim",
-          "Würzburger Kickers"
+          "VfR Mannheim"
         ]
       },
       "reform_rule": "12+4+14+2",
@@ -449,7 +449,7 @@
       "source_season": "2026/27",
       "target_season": "2027/28",
       "is_projection": true,
-      "generated_at": "2026-10-26T09:07:27.004089+00:00",
+      "generated_at": "2026-11-16T10:50:47.255669+00:00",
       "source_priority": [
         "fupa",
         "wikipedia"
@@ -459,33 +459,33 @@
       "promoted_to_3liga": [
         "FC Memmingen",
         "FC Rot-Weiß Erfurt",
+        "Hannover 96 II",
         "Rot-Weiß Oberhausen",
-        "SC Weiche Flensburg 08",
         "SGV Heilbronn-Freiberg"
       ],
       "promoted_to_3liga_league": {
-        "SC Weiche Flensburg 08": "Nord",
+        "Hannover 96 II": "Nord",
         "FC Rot-Weiß Erfurt": "Nordost",
         "Rot-Weiß Oberhausen": "West",
         "FC Memmingen": "Bayern",
         "SGV Heilbronn-Freiberg": "Südwest"
       },
       "relegated_from_regionalliga": [
+        "1. FC Kaiserslautern II",
         "1. FC Schweinfurt 05",
         "BFC Preussen",
         "BSG Chemie Leipzig",
         "Bremer SV",
-        "Eimsbütteler TV",
+        "DJK Vilzing",
         "Eintracht Norderstedt",
         "FC St. Pauli II",
         "FSV 63 Luckenwalde",
-        "Hamburger SV II",
+        "HSC Hannover",
         "Hertha BSC II",
         "RSV Eintracht 1949",
         "SC Eltersdorf",
-        "SG Barockstadt Fulda-Lehnerz",
+        "SC Wiedenbrück",
         "SSV Jeddeloh",
-        "SSV Ulm 1846",
         "SV Babelsberg 03",
         "SV Tasmania Berlin",
         "SV Todesfelde",
@@ -494,17 +494,17 @@
         "Sportfreunde Lotte",
         "TSV Aubstadt",
         "TSV Landsberg",
-        "TSV Schwaben Augsburg"
+        "Werder Bremen II"
       ],
       "relegated_from_3liga": [
         "SC Fortuna Köln",
-        "SSV Jahn Regensburg",
-        "TSV Havelse",
-        "Würzburger Kickers"
+        "SC Verl",
+        "SG Sonnenhof Großaspach",
+        "TSV Havelse"
       ],
       "relegated_from_3liga_league": {
-        "Würzburger Kickers": "Südwest",
-        "SSV Jahn Regensburg": "Bayern",
+        "SC Verl": "West",
+        "SG Sonnenhof Großaspach": "Südwest",
         "SC Fortuna Köln": "West",
         "TSV Havelse": "Nord"
       },
@@ -512,28 +512,28 @@
         "1. FC Gievenbeck",
         "ASV Cham",
         "BSV Eintracht Mahlsdorf",
-        "Eintracht Braunschweig II",
-        "FC Pipinsried",
-        "FC Wegberg-Beeck",
-        "Holstein Kiel II",
+        "FC Kilia Kiel",
+        "SSV Merten",
+        "SV Erlbach",
         "SV Hemelingen",
-        "SV Oberachern",
+        "SV Wilhelmshaven",
         "SpVg Schonnebeck",
+        "TSG Backnang",
         "TSV Eintracht Stadtallendorf",
-        "TuS Mechtersheim",
+        "TSV Schott Mainz",
         "USC Paloma",
-        "ZFC Meuselwitz"
+        "VfB Auerbach 1906"
       ],
       "promoted_from_oberliga_details": [
         {
           "competition": "Niedersachsen",
-          "team": "Eintracht Braunschweig II",
+          "team": "SV Wilhelmshaven",
           "macro_region": "Nord/Nordost/Bayern",
           "future_league": "Nord"
         },
         {
           "competition": "Schleswig-Holstein",
-          "team": "Holstein Kiel II",
+          "team": "FC Kilia Kiel",
           "macro_region": "Nord/Nordost/Bayern",
           "future_league": "Nord"
         },
@@ -563,7 +563,7 @@
         },
         {
           "competition": "Mittelrhein",
-          "team": "FC Wegberg-Beeck",
+          "team": "SSV Merten",
           "macro_region": "West",
           "future_league": "West"
         },
@@ -575,13 +575,13 @@
         },
         {
           "competition": "NOFV Süd",
-          "team": "ZFC Meuselwitz",
+          "team": "VfB Auerbach 1906",
           "macro_region": "Nord/Nordost/Bayern",
           "future_league": "Ost"
         },
         {
           "competition": "Baden-Württemberg",
-          "team": "SV Oberachern",
+          "team": "TSG Backnang",
           "macro_region": "Südwest",
           "future_league": "Südwest"
         },
@@ -593,7 +593,7 @@
         },
         {
           "competition": "Rheinland-Pfalz/Saar",
-          "team": "TuS Mechtersheim",
+          "team": "TSV Schott Mainz",
           "macro_region": "Südwest",
           "future_league": "Südwest"
         },
@@ -605,7 +605,7 @@
         },
         {
           "competition": "Bayernliga Süd",
-          "team": "FC Pipinsried",
+          "team": "SV Erlbach",
           "macro_region": "Nord/Nordost/Bayern",
           "future_league": "Ost"
         }
@@ -653,7 +653,7 @@
       "source_season": "2026/27",
       "target_season": "2027/28",
       "is_projection": true,
-      "generated_at": "2026-10-26T09:07:27.004127+00:00",
+      "generated_at": "2026-11-16T10:50:47.255683+00:00",
       "source_priority": [
         "fupa",
         "wikipedia"
@@ -667,14 +667,14 @@
       "meisterrunde_teams": {
         "Süd": [
           {
-            "team": "DJK Vilzing",
+            "team": "1. FC Nürnberg II",
             "rl_league": "Bayern",
-            "rl_rank": 8
+            "rl_rank": 7
           },
           {
             "team": "FC Augsburg II",
             "rl_league": "Bayern",
-            "rl_rank": 5
+            "rl_rank": 8
           },
           {
             "team": "FC Memmingen",
@@ -684,7 +684,7 @@
           {
             "team": "FV Illertissen",
             "rl_league": "Bayern",
-            "rl_rank": 6
+            "rl_rank": 4
           },
           {
             "team": "SGV Heilbronn-Freiberg",
@@ -694,34 +694,34 @@
           {
             "team": "SpVgg Unterhaching",
             "rl_league": "Bayern",
-            "rl_rank": 3
+            "rl_rank": 5
           },
           {
             "team": "Stuttgarter Kickers",
             "rl_league": "Südwest",
-            "rl_rank": 4
+            "rl_rank": 5
           },
           {
             "team": "TSV 1860 München",
             "rl_league": "Bayern",
-            "rl_rank": 4
+            "rl_rank": 2
           },
           {
             "team": "TSV Buchbach",
             "rl_league": "Bayern",
-            "rl_rank": 2
+            "rl_rank": 3
           },
           {
             "team": "VfR Aalen",
             "rl_league": "Südwest",
-            "rl_rank": 2
+            "rl_rank": 3
           }
         ],
         "Ost": [
           {
             "team": "BFC Dynamo",
             "rl_league": "Nordost",
-            "rl_rank": 6
+            "rl_rank": 3
           },
           {
             "team": "Chemnitzer FC",
@@ -731,12 +731,12 @@
           {
             "team": "FC Carl Zeiss Jena",
             "rl_league": "Nordost",
-            "rl_rank": 5
+            "rl_rank": 7
           },
           {
             "team": "FC Erzgebirge Aue",
             "rl_league": "Nordost",
-            "rl_rank": 7
+            "rl_rank": 6
           },
           {
             "team": "FC Rot-Weiß Erfurt",
@@ -756,17 +756,17 @@
           {
             "team": "Hallescher FC",
             "rl_league": "Nordost",
-            "rl_rank": 3
+            "rl_rank": 4
           },
           {
             "team": "SpVgg Bayreuth",
             "rl_league": "Bayern",
-            "rl_rank": 7
+            "rl_rank": 6
           },
           {
             "team": "VSG Altglienicke",
             "rl_league": "Nordost",
-            "rl_rank": 4
+            "rl_rank": 5
           }
         ],
         "Nord": [
@@ -783,32 +783,32 @@
           {
             "team": "FC Gütersloh",
             "rl_league": "West",
-            "rl_rank": 3
+            "rl_rank": 4
           },
           {
             "team": "Hannover 96 II",
             "rl_league": "Nord",
-            "rl_rank": 2
+            "rl_rank": 1
           },
           {
             "team": "Kickers Emden",
             "rl_league": "Nord",
-            "rl_rank": 8
+            "rl_rank": 7
           },
           {
             "team": "SC Weiche Flensburg 08",
             "rl_league": "Nord",
-            "rl_rank": 1
-          },
-          {
-            "team": "SV Atlas Delmenhorst",
-            "rl_league": "Nord",
-            "rl_rank": 7
+            "rl_rank": 2
           },
           {
             "team": "SV Drochtersen/Assel",
             "rl_league": "Nord",
             "rl_rank": 3
+          },
+          {
+            "team": "VfB Lübeck",
+            "rl_league": "Nord",
+            "rl_rank": 8
           },
           {
             "team": "VfB Oldenburg",
@@ -818,19 +818,24 @@
           {
             "team": "Westfalia Rhynern",
             "rl_league": "West",
-            "rl_rank": 7
+            "rl_rank": 8
           }
         ],
         "West": [
           {
             "team": "1. FC Köln II",
             "rl_league": "West",
+            "rl_rank": 7
+          },
+          {
+            "team": "Bonner SC",
+            "rl_league": "West",
             "rl_rank": 6
           },
           {
             "team": "Borussia Mönchengladbach II",
             "rl_league": "West",
-            "rl_rank": 4
+            "rl_rank": 3
           },
           {
             "team": "FC 08 Homburg",
@@ -838,19 +843,19 @@
             "rl_rank": 7
           },
           {
-            "team": "FC Schalke 04 II",
-            "rl_league": "West",
-            "rl_rank": 8
-          },
-          {
             "team": "Kickers Offenbach",
             "rl_league": "Südwest",
-            "rl_rank": 6
+            "rl_rank": 4
           },
           {
             "team": "Rot-Weiß Oberhausen",
             "rl_league": "West",
             "rl_rank": 1
+          },
+          {
+            "team": "SC Freiburg II",
+            "rl_league": "Südwest",
+            "rl_rank": 8
           },
           {
             "team": "Sportfreunde Siegen",
@@ -860,36 +865,31 @@
           {
             "team": "SV Eintracht Trier",
             "rl_league": "Südwest",
-            "rl_rank": 5
-          },
-          {
-            "team": "SV Sandhausen",
-            "rl_league": "Südwest",
-            "rl_rank": 8
+            "rl_rank": 6
           },
           {
             "team": "VfR Mannheim",
             "rl_league": "Südwest",
-            "rl_rank": 3
+            "rl_rank": 2
           }
         ]
       },
       "abstiegsrunde_teams": {
         "Bayern": [
           {
-            "team": "VfB Eichstätt",
+            "team": "TSV Schwaben Augsburg",
             "rl_rank": 9
           },
           {
-            "team": "Wacker Burghausen",
+            "team": "FC Bayern München II",
             "rl_rank": 10
           },
           {
-            "team": "1. FC Nürnberg II",
+            "team": "VfB Eichstätt",
             "rl_rank": 11
           },
           {
-            "team": "FC Bayern München II",
+            "team": "Wacker Burghausen",
             "rl_rank": 12
           },
           {
@@ -897,7 +897,7 @@
             "rl_rank": 13
           },
           {
-            "team": "TSV Schwaben Augsburg",
+            "team": "DJK Vilzing",
             "rl_rank": 14
           },
           {
@@ -905,15 +905,15 @@
             "rl_rank": 15
           },
           {
-            "team": "SpVgg Greuther Fürth II",
+            "team": "SpVgg Ansbach 09",
             "rl_rank": 16
           },
           {
-            "team": "SpVgg Ansbach 09",
+            "team": "TSV Aubstadt",
             "rl_rank": 17
           },
           {
-            "team": "TSV Aubstadt",
+            "team": "SpVgg Greuther Fürth II",
             "rl_rank": 18
           },
           {
@@ -923,19 +923,19 @@
         ],
         "Nord": [
           {
-            "team": "VfB Lübeck",
+            "team": "SV Atlas Delmenhorst",
             "rl_rank": 9
           },
           {
-            "team": "HSC Hannover",
+            "team": "Eimsbütteler TV",
             "rl_rank": 10
           },
           {
-            "team": "Werder Bremen II",
+            "team": "Hamburger SV II",
             "rl_rank": 11
           },
           {
-            "team": "Eimsbütteler TV",
+            "team": "Werder Bremen II",
             "rl_rank": 12
           },
           {
@@ -943,37 +943,37 @@
             "rl_rank": 13
           },
           {
-            "team": "FC St. Pauli II",
+            "team": "HSC Hannover",
             "rl_rank": 14
           },
           {
-            "team": "Eintracht Norderstedt",
+            "team": "SV Todesfelde",
             "rl_rank": 15
           },
           {
-            "team": "Hamburger SV II",
+            "team": "Bremer SV",
             "rl_rank": 16
           },
           {
-            "team": "SV Todesfelde",
+            "team": "FC St. Pauli II",
             "rl_rank": 17
           },
           {
-            "team": "Bremer SV",
+            "team": "Eintracht Norderstedt",
             "rl_rank": 18
           }
         ],
         "Nordost": [
           {
-            "team": "1. FC Magdeburg II",
+            "team": "1. FC Lokomotive Leipzig",
             "rl_rank": 9
           },
           {
-            "team": "FSV Zwickau",
+            "team": "1. FC Magdeburg II",
             "rl_rank": 10
           },
           {
-            "team": "1. FC Lokomotive Leipzig",
+            "team": "FSV Zwickau",
             "rl_rank": 11
           },
           {
@@ -981,19 +981,19 @@
             "rl_rank": 12
           },
           {
-            "team": "BSG Chemie Leipzig",
+            "team": "BFC Preussen",
             "rl_rank": 13
           },
           {
-            "team": "BFC Preussen",
+            "team": "BSG Chemie Leipzig",
             "rl_rank": 14
           },
           {
-            "team": "SV Tasmania Berlin",
+            "team": "Hertha BSC II",
             "rl_rank": 15
           },
           {
-            "team": "Hertha BSC II",
+            "team": "SV Tasmania Berlin",
             "rl_rank": 16
           },
           {
@@ -1007,23 +1007,23 @@
         ],
         "Südwest": [
           {
-            "team": "SC Freiburg II",
+            "team": "TSV Steinbach Haiger",
             "rl_rank": 9
           },
           {
-            "team": "TSV Steinbach Haiger",
+            "team": "SV Sandhausen",
             "rl_rank": 10
           },
           {
-            "team": "Eintracht Frankfurt II",
+            "team": "KSV Hessen Kassel",
             "rl_rank": 11
           },
           {
-            "team": "KSV Hessen Kassel",
+            "team": "FC-Astoria Walldorf",
             "rl_rank": 12
           },
           {
-            "team": "FC-Astoria Walldorf",
+            "team": "Eintracht Frankfurt II",
             "rl_rank": 13
           },
           {
@@ -1031,11 +1031,11 @@
             "rl_rank": 14
           },
           {
-            "team": "1. FC Kaiserslautern II",
+            "team": "1. FSV Mainz 05 II",
             "rl_rank": 15
           },
           {
-            "team": "1. FSV Mainz 05 II",
+            "team": "SG Barockstadt Fulda-Lehnerz",
             "rl_rank": 16
           },
           {
@@ -1043,25 +1043,25 @@
             "rl_rank": 17
           },
           {
-            "team": "SG Barockstadt Fulda-Lehnerz",
+            "team": "1. FC Kaiserslautern II",
             "rl_rank": 18
           }
         ],
         "West": [
           {
-            "team": "VfB 03 Hilden",
+            "team": "SC Paderborn 07 II",
             "rl_rank": 9
           },
           {
-            "team": "Bonner SC",
+            "team": "1. FC Bocholt",
             "rl_rank": 10
           },
           {
-            "team": "1. FC Bocholt",
+            "team": "FC Schalke 04 II",
             "rl_rank": 11
           },
           {
-            "team": "SV Bergisch Gladbach 09",
+            "team": "VfB 03 Hilden",
             "rl_rank": 12
           },
           {
@@ -1069,15 +1069,15 @@
             "rl_rank": 13
           },
           {
-            "team": "SC Paderborn 07 II",
+            "team": "SV Bergisch Gladbach 09",
             "rl_rank": 14
           },
           {
-            "team": "SG Wattenscheid 09",
+            "team": "SV Rödinghausen",
             "rl_rank": 15
           },
           {
-            "team": "SV Rödinghausen",
+            "team": "SG Wattenscheid 09",
             "rl_rank": 16
           },
           {
@@ -1102,7 +1102,7 @@
       "source_season": "2026/27",
       "target_season": "2027/28",
       "is_projection": true,
-      "generated_at": "2026-10-26T09:07:27.004145+00:00",
+      "generated_at": "2026-11-16T10:50:47.255687+00:00",
       "source_priority": [
         "fupa",
         "wikipedia"
