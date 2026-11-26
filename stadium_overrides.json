@@ -1925,6 +1925,20 @@
     "notes": "Wikipedia-Auflösung führt zum Ortsmittelpunkt Spelle und wurde verworfen; Wikidata ohne Stadionpunkt. Nominatim-Punkt der OSM-Sportanlage SC Spelle-Venhaus an der auf der Vereinsseite bestätigten Adresse, keine exakte Zuordnung zu Platz A.",
     "additional_venue_source_url": "https://www.scsv.de/verein/mitgliedschaft/sportstaetten"
   },
+  "TSV 1880 Wasserburg": {
+    "lat": 48.064116,
+    "lon": 12.235594,
+    "stadium": "Altstadt Stadion an der Landwehrstraße",
+    "address": "Landwehrstraße 10, 83512 Wasserburg am Inn",
+    "source_url": "https://fussball-wasserburg.de/club/spielstaetten/",
+    "venue_source_url": "https://www.fupa.net/club/tsv-1880-wasserburg",
+    "coordinate_source": "official_club.published_coordinates",
+    "coordinate_precision": "stadium_or_pitch",
+    "verified_season": "2026/27",
+    "verified_at": "2026-11-26",
+    "notes": "FuPa und der BFV nennen die Landwehrstraße als aktuelle Heimspielstätte. Wikipedia nennt zusätzlich das Badria-Stadion, enthält aber keinen Stadionpunkt; Wikidata war beim Abruf nicht verfügbar. Verwendet werden die vom Verein im Routenplaner für das Stadion an der Landwehrstraße veröffentlichten Koordinaten.",
+    "additional_venue_source_url": "https://www.bfv.de/mannschaften/tsv-1880-wasserburg-fb-h/016PCB1SO0000000VV0AG80NVV8OQVTB"
+  },
   "VfL Vichttal": {
     "lat": 50.7495313,
     "lon": 6.2688634,
